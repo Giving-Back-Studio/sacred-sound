@@ -32,8 +32,12 @@ creds.js
 # Except these important ones
 !package.json
 !package-lock.json
+
+# Sacred Sound Logo exception
+!src/assets/SacredSoundLogo.png
  
  
+
 # Mac/OSX
 .DS_Store
  
