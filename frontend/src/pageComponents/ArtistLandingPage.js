@@ -1,12 +1,13 @@
 import React from 'react';
 import logo from '../assets/HorozontalLogoWhiteFont.png';
 import { useAuth0 } from '@auth0/auth0-react';
-import ExplainerVideo from '../assets/SacredSoundExplainerVideo.mp4';
 import styled from 'styled-components';
 import userGroup from '../assets/userGroup.png';
 import musicNote from '../assets/musicNote.png';
 import heart from '../assets/heart.png'
 import FAQsContainer from '../components/CloudStudioComponents/FAQsContainer';
+
+const EXPLAINER_VIDEO_URL = 'https://storage.googleapis.com/staging-sacred-sound-f472b.appspot.com/introduction-video/Sacred-Sound-Explainer-Video.mp4';
 
 const ArtistLandingPage = () => {
     const { loginWithRedirect } = useAuth0();;
@@ -160,7 +161,7 @@ const ArtistLandingPage = () => {
             </div>
             <div style={rightVideoStyle}>
                     <video 
-                        src={ExplainerVideo} 
+                        src={EXPLAINER_VIDEO_URL} 
                         controls 
                         style={{ width: '90%', height: 'auto', objectFit: 'cover' }}
                     >
