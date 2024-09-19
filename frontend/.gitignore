@@ -28,6 +28,10 @@ creds.js
 *.tsv
 *.tsv.gz
 *.xlsx
+
+# Except these important ones
+!package.json
+!package-lock.json
  
  
 # Mac/OSX
