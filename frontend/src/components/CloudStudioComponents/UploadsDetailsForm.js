@@ -12,8 +12,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import WhiteEditIcon from '../../assets/WhiteEditIcon.png';
 
 const UploadDetailsForm = ({ file, trackDetails, progress, videoId, onTrackDetailChange, handleDelete, index  }) => {
-    const { user } = useAuth0();
-    // const user = { name: "debug9@debug.com" };
+    // const { user } = useAuth0();
+    const user = { name: "debug9@debug.com" };
 
     const inputId = `coverImage-${index}`; // Unique ID for each input
 

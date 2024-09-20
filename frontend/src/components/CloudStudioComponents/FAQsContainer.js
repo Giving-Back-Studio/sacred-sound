@@ -11,12 +11,19 @@ const FAQButton = styled.button`
     border: 1px solid #D9D9D9;
     border-radius: 0px; 
     cursor: pointer;
-    font-size: 24px;
-    width: 56.4vw; 
+    font-size: 18px;
+    width: 66%; 
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: transparent;
+    @media (max-width: 1200px){
+      font-size: 15px;
+      }
+    @media (max-width: 768px){
+    width: 100%; 
+    font-size: 12px;
+    }
 `;
 
 const FAQAnswer = styled.p`
@@ -26,11 +33,18 @@ const FAQAnswer = styled.p`
     font-size: 18px; 
     line-height: 1.6;
     padding: 15px 30px;
-    width: 56.4vw;
+    width: 66%;
     border-left: 1px solid #D9D9D9;
     border-right: 1px solid #D9D9D9;
     border-bottom: 1px solid #D9D9D9;
     margin-bottom: 0px;
+    @media (max-width: 1200px){
+      font-size: 15px;
+      }
+    @media (max-width: 768px){
+      width: 100%; 
+      font-size: 12px;
+      }
 `;
 
 const createAnswerWithLink = (text, link, linkText) => {

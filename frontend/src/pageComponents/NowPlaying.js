@@ -1,66 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext, useContext } from "react";
 import MusicPlayer from "../components/MusicPlayer";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import styled from "styled-components";
-import Banner from "../assets/Image.svg";
-import Banner2 from "../assets/images.jpeg";
-import Banner3 from "../assets/download.jpeg";
-import Banner4 from "../assets/playlist.jpg";
-import MediaControl from "../components/MediaControl";
 import useAudioPlayer from "../Hooks/useAudioPlayer";
+import { Outlet } from "react-router-dom";
+import axios from "axios";
+import MediaControl from "../components/MediaControl";
+import { useAuth0 } from '@auth0/auth0-react';
 
-const playListData = {
-  time: "",
-  volume: "",
-  muted: false,
-  playing: false,
-  filledHeart: false,
-  loop: false,
-  shuffle: false,
-  albumCoverUrl: "",
-  artistName: "",
-  queue: [],
-  song: [
-    {
-      id: 1,
-      songUrl:
-        "https://onlinetestcase.com/wp-content/uploads/2023/06/1-MB-MP3.mp3",
-      songTitle: "song-1",
-      isVideo: false,
-      img: Banner,
-    },
-    {
-      id: 2,
-      songUrl:
-        "https://cdn.simplecast.com/audio/cae8b0eb-d9a9-480d-a652-0defcbe047f4/episodes/af52a99b-88c0-4638-b120-d46e142d06d3/audio/500344fb-2e2b-48af-be86-af6ac341a6da/default_tc.mp3",
-      songTitle: "song-2",
-      isVideo: false,
-      img: Banner2,
-    },
-    {
-      id: 3,
-      songUrl:
-        "http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3",
-      songTitle: "song-3",
-      isVideo: false,
-      img: Banner3,
-    },
-    {
-      id: 4,
-      songUrl:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      songTitle: "song-3",
-      isVideo: true,
-      img: Banner4,
-    },
-  ],
-  currentSongIndex: 0,
-  album: null,
-};
+// const isAuthenticated = true;
+// const user = { name: "debug9@debug.com" };
 
-function NowPlaying() {
+const NowPlayingContext = createContext({});
+
+const MemoizedComponent = React.memo(({ children }) => {
+  return <>{children}</>
+});
+
+function NowPlaying({ children }) {
+const { user, isAuthenticated } = useAuth0();
+
+  const [smallScreen, setSmallScreen] = useState(true);
   const [toggle, setToggle] = useState(false);
-  const [smallScreen, setSmallScreen] = useState(false);
   const handle = useFullScreenHandle();
   const {
     state,
@@ -77,7 +38,10 @@ function NowPlaying() {
     playPrev,
     handleShuffle,
     handlePlay,
-  } = useAudioPlayer(playListData);
+    setSongs,
+    getCurrentSong,
+    getCurrentRunningStatus
+  } = useAudioPlayer();
   useEffect(() => {
     const updateTimeline = () => {
       if (audioRef.current) {
@@ -94,10 +58,77 @@ function NowPlaying() {
       currentAudioRef.removeEventListener("timeupdate", updateTimeline);
     };
   }, [audioRef, setState, state.currentSongIndex, state.song]);
+
+  useEffect(() => {    
+
+    const userLog = async () => {
+      try {
+        const response  = await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}/api/logContentUsage/`,
+          {
+            user: user.name,  
+            videoId: state.song[0].id,
+          }
+        );
+      } catch (error) {
+        console.log("error creating userLog", error);
+      }
+    };
+
+    if(state.playing){
+      const intervalId = setInterval(userLog, 60000)
+      return () => {
+        clearInterval(intervalId)
+      };
+    }
+  }, [state.playing]);
+
   return (
-    <FullScreenOuter className={smallScreen ? "mini-screen" : ""}>
+  <>
+    {state.song[state.currentSongIndex].isVideo ?  
+      <NowPlayingContext.Provider
+     value={{
+      state,
+      setState,
+      audioRef,
+      getCurrentTime,
+      playNext,
+      togglePlay,
+      toggleHeart,
+      handleVolume,
+      handleTimeline,
+      getSongDuration,
+      handleLoop,
+      playPrev,
+      handleShuffle,
+      handlePlay,
+      setSongs,
+      getCurrentSong,
+      getCurrentRunningStatus
+     }}
+   >   
+      <FullScreenOuter className={smallScreen ? "mini-screen library-mini-screen" : " library-full-screen"}>
       <FullScreen handle={handle}>
-        <MediaControl
+      <>
+      <MusicPlayer
+      audioRef={audioRef}
+      setSmallScreen={setSmallScreen}
+      smallScreen={smallScreen}
+      setState={setState}
+      state={state}
+      playNext={playNext}
+      getCurrentTime={getCurrentTime}
+      togglePlay={togglePlay}
+      toggleHeart={toggleHeart}
+      handleVolume={handleVolume}
+      handleTimeline={handleTimeline}
+      getSongDuration={getSongDuration}
+      handleLoop={handleLoop}
+      playPrev={playPrev}
+      handlePlay={handlePlay}
+      handleShuffle={handleShuffle}
+    />
+      <MediaControl
           state={state}
           audioRef={audioRef}
           handle={handle}
@@ -110,7 +141,38 @@ function NowPlaying() {
           setState={setState}
           handlePlay={handlePlay}
         />
-        <MusicPlayer
+        </>
+      </FullScreen>
+    </FullScreenOuter>
+      <Outlet/>
+    </NowPlayingContext.Provider>
+      : 
+    <NowPlayingContext.Provider
+      value={{
+        state,
+        setState,
+        audioRef,
+        getCurrentTime,
+        playNext,
+        togglePlay,
+        toggleHeart,
+        handleVolume,
+        handleTimeline,
+        getSongDuration,
+        handleLoop,
+        playPrev,
+        handleShuffle,
+        handlePlay,
+        setSongs,
+        getCurrentSong,
+        getCurrentRunningStatus
+      }}
+    >
+      <MemoizedComponent>
+        {children}
+      </MemoizedComponent>
+      <MainContainer>
+     <MusicPlayer
           audioRef={audioRef}
           setSmallScreen={setSmallScreen}
           smallScreen={smallScreen}
@@ -125,15 +187,29 @@ function NowPlaying() {
           getSongDuration={getSongDuration}
           handleLoop={handleLoop}
           playPrev={playPrev}
+          handlePlay={handlePlay}
           handleShuffle={handleShuffle}
         />
-      </FullScreen>
-    </FullScreenOuter>
-  );
+        </MainContainer>
+        <Outlet/>
+    </NowPlayingContext.Provider>
+}
+ </> );
+}
+
+export const usePlayingContext = (cb) => {
+ let val =  useContext(NowPlayingContext);
+ if(cb) val = cb(val);
+ return val
 }
 
 export default NowPlaying;
 
+
+
+const MainContainer = styled.div`
+  position: absolute;
+`
 const FullScreenOuter = styled.div`
   display: flex;
   align-items: center;
@@ -143,10 +219,17 @@ const FullScreenOuter = styled.div`
     height: calc(100vh - 206px);
     width: 100%;
   }
-
+  &.library-full-screen{
+    position: absolute;
+    width:100%;
+    z-index:999;
+  }
   &.mini-screen {
     height: 200px;
     width: 200px;
+    &.library-mini-screen{
+      height: 0px;
+    }
     .fullscreen {
       height: 200px;
       .icon-img-outer {
@@ -233,3 +316,4 @@ const FullScreenOuter = styled.div`
     }
   }
 `;
+

@@ -1,14 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
+import { useRef } from 'react';
 
     const VideoPlayer = () => {
         const { videoId } = useParams();
         const [videoData, setVideoData] = useState(null);
+        const [interval, setIntervalId] = useState('')
         const navigate = useNavigate();
         const [recommendations, setRecommendations] = useState([]);
-        const userId = "someUserId";
+        // const { user, isAuthenticated } = useAuth0();
+        const user = {name : "debug9@debug.com"};
+        const userId = user.name;
+
+        const videoRef = useRef(null);
+
+        const userLog = async () => {
+            try {
+              await axios.post(
+                `${process.env.REACT_APP_API_BASE_URL}/api/logContentUsage/`,
+                {
+                  user: userId,
+                  videoId,
+                }
+              );
+            } catch (error) {
+              console.log("error creating userLog", error);
+            }
+        };
+
+        const handlePlay = () => {
+          const intervalId = setInterval(userLog, 30000); // 60000 milliseconds = 1 minute
+          setIntervalId(intervalId);
+        };
+
+        const handlePause = () => {
+          clearInterval(interval);
+        };
+    
 
         useEffect(() => {
         const fetchVideoData = async () => {
@@ -16,6 +47,7 @@ import axios from 'axios';
                 const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetadataFromVideoId/${videoId}`);
                 setVideoData(response.data);
             } catch (error) {
+                setVideoData({fileUrl: 'https://firebasestorage.googleapis.com/v0/b/sacred-music-60ce6.appspot.com/o/Uploads%2Fdebug9%40debug.com%2F0bd405a9-e8c4-4386-9b87-51e010593682?alt=media&token=ca7758e2-59f7-4378-9aab-31e4cd2ddf93'})
                 console.error('Error fetching video data:', error);
             }
         };
@@ -53,7 +85,7 @@ import axios from 'axios';
             <BackButton onClick={() => navigate(-1)} style={{color:'black'}}>Close</BackButton>
         </VideoPlayerHeader>
         <div id="videoPlayerContainer" style={{display:'flex', justifyContent:'center'}}>
-        <video width="80%" height="auto" controls>
+        <video ref={videoRef} width="80%" height="auto" controls onPlay={handlePlay} onPause={handlePause}>
             <source src={videoData.fileUrl} type="video/mp4" />
             <p>Your browser does not support HTML5 video. Here is a <a href={videoData.fileUrl}>link to the video</a> instead.</p>
         </video>

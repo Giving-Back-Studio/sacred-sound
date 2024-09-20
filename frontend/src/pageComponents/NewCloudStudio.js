@@ -36,13 +36,32 @@ export default function NewCloudStudio() {
     const [allFilesUploaded, setAllFilesUploaded] = useState(false); //To prevent user to click the Publish button before file upload finishes
     const [uploadProgress, setUploadProgress] = useState({});
     const navigate = useNavigate();
-
+    
     //Verify via the Auth0 Hook if the user has an account inside MongoDb, if not it redirect the user toward the AccountNameSelectionPage
     useEffect(() => {
         const fetchUser = async () => {
         try {
             if (user && user.name) {
                 const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${user.name}`);
+                if(response.data.user.isOnboardingStepsPending){
+                    switch (response.data.user.currentOnBoardingStep) {
+                      case 0:
+                        navigate("/welcome");
+                        break;
+                      case 1:
+                        navigate("/welcome");
+                        break;
+                      case 2:
+                        navigate("/topics");
+                        break;
+                      case 3:
+                        navigate("/payment-details");
+                        break;
+
+                      default:
+                        break;
+                    }
+                }
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
@@ -152,7 +171,7 @@ export default function NewCloudStudio() {
                 body: JSON.stringify({ albumId, title, description, visibility, albumOrder }),
             });
             const result = await response.json();
-            console.log(result);
+            console.log(result);    
         } catch (error) {
             console.error('Error updating album metadata:', error);
         }

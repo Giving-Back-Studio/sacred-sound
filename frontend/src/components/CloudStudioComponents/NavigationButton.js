@@ -9,8 +9,7 @@ const NavigationButton = ({ onClick, active, children }) => (
 
 const Button = styled.button`
   width: 100%;
-  height: 11vh;
-  margin-bottom: 1vh;
+  height: 8vh;
   background-color: transparent;
   color: #434289;
   border-radius: 0px;

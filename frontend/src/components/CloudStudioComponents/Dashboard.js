@@ -17,23 +17,29 @@ const Dashboard = ({ user }) => {
                     const recoResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations/${user}`);
                     // console.log("recoResponse: ", recoResponse )
                     const objectIds = recoResponse.data.recomms.map(recomm => recomm.id);
-                    // console.log("objectIds: ", objectIds);
-
-                    const videosData = await Promise.all(objectIds.map(async (id) => {
+                    // console.log("VideoIds: ", videoIds);
+                    const list = []
+                    const videosData = await Promise.allSettled(objectIds.map(async (id) => {
                         const videoResp = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`);
                         const videoData = videoResp.data;
                         // console.log("videoData: ", videoData);
-
                         const userResp = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getUserProfile/${videoData.owner}`);
                         const userData = userResp.data;
+                        if(videoData){
+                            list.push({
+                                ...videoData,
+                                accountName: userData.accountName // Assume this field exists in your user response
+                            })
+                        }
 
                         return {
                             ...videoData,
                             accountName: userData.accountName // Assume this field exists in your user response
                         };
                     }));
-
-                    setVideos(videosData);
+                    
+                    console.log("🚀 ~ fetchRecommendations ~ list:", list)  
+                    setVideos(list);
                 }
             } catch (error) {
                 console.error(error);
