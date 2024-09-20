@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import BackImg from "../../assets/back.svg";
+import BackImg from "../../assets/Back.svg";
 import BackImgBlack from "../../assets/back-black.svg";
 import { useNavigate } from "react-router-dom";
 export default function BackButton({black}) {
