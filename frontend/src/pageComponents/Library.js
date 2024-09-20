@@ -111,8 +111,9 @@ export default function Library() {
   }, [filter]);
   return (
     <MainContainer>
-      <CoverSection>
-        <CoverImage></CoverImage>
+      <CoverSection style={{ backgroundImage: BgImg }}>
+        <CoverImage>
+        </CoverImage>
         <ButtonTabs>
           <button
             onClick={() => setFilter("all")}
@@ -220,7 +221,7 @@ const CoverImage = styled.div`
     inset: 0;
     height: 99%;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #434289 0%, #687550 100%);
     z-index: 1;
   }
   @media (max-width: 767px) {
