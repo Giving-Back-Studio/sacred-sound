@@ -111,7 +111,7 @@ export default function Library() {
   }, [filter]);
   return (
     <MainContainer>
-      <CoverSection style={{ backgroundImage: BgImg }}>
+      <CoverSection>
         <CoverImage>
         </CoverImage>
         <ButtonTabs>
