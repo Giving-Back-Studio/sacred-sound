@@ -7,7 +7,7 @@
 *.code-workspace
 # Local History for Visual Studio Code
 .history/
-
+ 
 # Common credential files
 **/credentials.json
 **/client_secrets.json
@@ -16,6 +16,7 @@
 *.dat
 *password*
 *.httr-oauth*
+*.mp4
  
 # Private Node Modules
 node_modules/
@@ -28,8 +29,12 @@ creds.js
 *.tsv
 *.tsv.gz
 *.xlsx
- 
- 
+
+# except for package.json & !package-lock.json
+!package.json
+!package-lock.json
+!sacred-sound-2a7ce18e134a.json
+
 # Mac/OSX
 .DS_Store
  
@@ -124,7 +129,7 @@ ipython_config.py
 # .python-version
  
 # pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in <a href="https://www.jcchouinard.com/git/">version control</a>.
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in <a href="https://www.jcchouinard.com/version-control/">version control.</a>
 #   However, in case of collaboration, if having platform-specific dependencies or dependencies
 #   having no cross-platform support, pipenv may install dependencies that don't work, or not
 #   install all needed dependencies.
