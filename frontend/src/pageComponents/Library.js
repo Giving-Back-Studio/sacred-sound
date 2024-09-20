@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import SwipeComponet from "../components/SwipeComponet";
-import BgImg from "../assets/bg-img.jpg";
 
 import { useOutletContext } from "react-router-dom";
 export default function Library() {
@@ -112,10 +111,8 @@ export default function Library() {
   }, [filter]);
   return (
     <MainContainer>
-      <CoverSection style={{ backgroundImage: BgImg }}>
-        <CoverImage>
-          <img src={BgImg} alt="not loaded"></img>
-        </CoverImage>
+      <CoverSection>
+        <CoverImage></CoverImage>
         <ButtonTabs>
           <button
             onClick={() => setFilter("all")}
@@ -216,24 +213,18 @@ const CoverImage = styled.div`
   position: relative;
   z-index: 2;
   height: 400px;
+  background: linear-gradient(135deg, #434289 0%, #687550 100%);
   &::before {
     content: "";
     position: absolute;
     inset: 0;
     height: 99%;
     width: 100%;
-    background-color: #00000061;
-    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 1;
   }
-  img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    @media (max-width: 767px) {
-      height: 100%;
-      object-position: center center;
-    }
+  @media (max-width: 767px) {
+    height: 100%;
   }
 `;
 
