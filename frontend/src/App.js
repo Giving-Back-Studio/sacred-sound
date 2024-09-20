@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import HomePage from './pageComponents/HomePage';
+// import HomePage from './pageComponents/HomePage';
 import ArtistProfilePage from './pageComponents/ArtistProfilePage';
 import AccountNameSelection from './pageComponents/ArtistAccountNameSelectionPage';
 import NewCloudStudio from './pageComponents/NewCloudStudio';
@@ -42,7 +42,7 @@ const App = () => {
     <BrowserRouter>
       <GlobalStyle></GlobalStyle>
       <Routes>
-        <Route exact path="/" element={<HomePage />} />
+        <Route exact path="/" element={<LandingPage />} />
         <Route exact path="/welcome" element={<Welcome />} />
         <Route exact path="/topics" element={<Topics />} />
         <Route exact path="/payment-details" element={<PaymentDetail/>}/>
@@ -66,7 +66,6 @@ const App = () => {
         />
         <Route exact path="/play/:videoId" element={<VideoPlayer />} />
         <Route exact path="/ModifyAlbum/:albumId" element={<ModifyAlbum />} />
-        <Route exact path="/landing-page" element={<LandingPage />} />
 
         <Route exact path="/myAccount" element={<MyAccountSidebarComponent/>}>
           <Route exact path="" element={<MyAccount/>}/>
