@@ -1,5 +1,5 @@
 import React from "react";
-import ExplainerVideo from "../assets/SacredSoundExplainerVideo.mp4";
+// import ExplainerVideo from "../assets/SacredSoundExplainerVideo.mp4";
 import Shuffle from "../assets/stop.svg";
 import Next from "../assets/Next.svg";
 import styled from "styled-components";
