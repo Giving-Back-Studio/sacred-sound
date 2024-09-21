@@ -2643,8 +2643,8 @@ const PostUserOnboardingProgress = async (req, res) => {
     }
   };
   
-  const getArtistNames = async (req, res) => {
-  console.log("getArtistNames reached!")
+const getArtistNames = async (req, res) => {
+  console.log("getArtistNames reached!");
   console.log("req.query", req.query);
   const { emails } = req.query;
   if (!emails) {
@@ -2660,7 +2660,7 @@ const PostUserOnboardingProgress = async (req, res) => {
     const userCollection = db.collection("userAccounts"); 
 
     const users = await userCollection.find({ email: { $in: emailArray } }).toArray();
-    console.log("users", users);
+    console.log("users found:", users.length);
     const artistNames = {};
     users.forEach(user => {
       artistNames[user.email] = user.accountName;
