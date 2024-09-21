@@ -150,10 +150,10 @@ const MainContainer = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   margin: 0;
-  padding: 0;
-  height: 90vh;
+  padding: 0 0 120px 0; // Add padding to the bottom
+  height: calc(100vh - 120px); // Adjust height to account for MusicPlayer
   @media (max-width: 1000px) {
-    height: 80vh;
+    height: calc(100vh - 200px); // Adjust for mobile view
   }
   .sec-title {
     margin: 15px 20px;
