@@ -9,55 +9,55 @@ export default function Library() {
   // const { user, isAuthenticated } = useAuth0();
   // const isAuthenticated = true;
   const user ={ name: "debug9@debug.com" }
-  const [recommendations, setRecommendations] = useState([]);
+  const [recommendations_MusicVideo, setRecommendations_MusicVideo] = useState([]);
+  const [recommendations_Meditation, setRecommendations_Meditation] = useState([]);
+  const [recommendations_StudioRecording, setRecommendations_StudioRecording] = useState([]);
   const userEmail = user ? user.name : null;
   useEffect(() => {
-  let isMounted = true;
+    let isMounted = true;
 
-  const fetchRecommendations = async () => {
-    try {
-      if (user) {
-        console.log("Fetching recommendations for user:", user.name);
-        const recoResponse = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations_Scenario_MusicVideo/${user.name}`
-        );
-        console.log("Received recommendation response:", recoResponse.data);
-        const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
-        console.log("Extracted video IDs:", videoIds);
-        
-        const list = await Promise.all(
-          videoIds.map(async (id) => {
-            try {
-              const videoResp = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
-              );
-              return {
-                ...videoResp.data,
-              };
-            } catch (error) {
-              console.error(`Error fetching metadata for video ID ${id}:`, error);
-              return null;
-            }
-          })
-        );
+    const fetchRecommendations = async (scenario, setRecommendations) => {
+      try {
+        if (user) {
+          const recoResponse = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/api/${scenario}/${user.name}`
+          );
+          const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
+          
+          const list = await Promise.all(
+            videoIds.map(async (id) => {
+              try {
+                const videoResp = await axios.get(
+                  `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
+                );
+                return {
+                  ...videoResp.data,
+                };
+              } catch (error) {
+                return null;
+              }
+            })
+          );
 
-        const filteredList = list.filter(item => item !== null);
-        console.log("Final recommendations list:", filteredList);
-        
-        if (isMounted) {
-          setRecommendations(filteredList);
+          const filteredList = list.filter(item => item !== null);
+          console.log(`Final ${scenario} recommendations list:`, filteredList);
+          
+          if (isMounted) {
+            setRecommendations(filteredList);
+          }
         }
+      } catch (error) {
+        console.error(`Error fetching ${scenario} recommendations:`, error);
       }
-    } catch (error) {
-      console.error("Error fetching recommendations:", error);
-    }
-  };
+    };
 
-  fetchRecommendations();
+    fetchRecommendations("getItemToUserRecommendations_Scenario_MusicVideo", setRecommendations_MusicVideo);
+    fetchRecommendations("getItemToUserRecommendations_Scenario_Meditation", setRecommendations_Meditation);
+    fetchRecommendations("getItemToUserRecommendations_Scenario_StudioRecording", setRecommendations_StudioRecording);
 
-  return () => {
-    isMounted = false;
-  };
+    return () => {
+      isMounted = false;
+    };
 }, [userEmail]);
 
   return (
@@ -65,7 +65,11 @@ export default function Library() {
       <Main>
         <div className="top-section">
           <h2 className="sec-title">Music Video</h2>
-          <SwipeComponet arr={recommendations}></SwipeComponet>
+          <SwipeComponet arr={recommendations_MusicVideo}></SwipeComponet>
+          <h2 className="sec-title">Meditation</h2>
+          <SwipeComponet arr={recommendations_Meditation}></SwipeComponet>
+          <h2 className="sec-title">Studio Recording</h2>
+          <SwipeComponet arr={recommendations_StudioRecording}></SwipeComponet>
         </div>
       </Main>
     </MainContainer>

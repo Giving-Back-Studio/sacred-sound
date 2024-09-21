@@ -17,10 +17,8 @@ export default function SwipeComponet({ arr }) {
   useEffect(() => {
   const fetchArtistName = async () => {
     const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
-    console.log("Unique emails to fetch:", emails);
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
-      console.log("API request URL:", `/api/getArtistNames?${queryParams}`);
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/getArtistNames?${queryParams}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -29,7 +27,6 @@ export default function SwipeComponet({ arr }) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("API response data:", data);
       setArtistNames(data);
     } catch (error) {
       console.error('Error fetching artist names:', error);
@@ -65,7 +62,6 @@ export default function SwipeComponet({ arr }) {
         }}
       >
         {arr.map((content) => {
-          console.log("content", content);
           let thumbnail =
             content?.selectedImageThumbnail?.length > 0
               ? content.selectedImageThumbnail
@@ -94,7 +90,6 @@ export default function SwipeComponet({ arr }) {
                           }}
                           style={{textDecoration: 'underline', cursor: 'pointer'}}
                         >
-                          {console.log("Artist name for", content.owner, ":", artistNames[content.owner])}
                           {artistNames[content.owner] || 'Loading...'}
                         </span>
                       </h1>

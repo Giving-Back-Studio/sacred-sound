@@ -81,6 +81,7 @@ const {
   sendThanksCoinsViaContent,
   PostUserOnboardingProgress,
   getArtistNames,
+  storeEmailOnWaitlist,
 } = require("./handlers");
 
 const {
@@ -142,6 +143,7 @@ express()
   .patch("/api/sendThanksCoinsViaContent", sendThanksCoinsViaContent)
   .post("/api/PostUserOnboardingProgress", PostUserOnboardingProgress)
   .get("/api/getArtistNames", getArtistNames)
+  .post("/api/storeEmailOnWaitlist", storeEmailOnWaitlist)
   
 
   //Key encryption:
@@ -150,9 +152,9 @@ express()
 
   //Recombee:
   .get("/api/syncCatalog", syncCatalog)
-  .get("/api/getItemToUserRecommendations_Scenario_StudioRecording/:userId", getItemToUserRecommendations_Scenario_StudioRecording)
   .get("/api/getItemToUserRecommendations_Scenario_MusicVideo/:userId", getItemToUserRecommendations_Scenario_MusicVideo)
   .get("/api/getItemToUserRecommendations_Scenario_Meditation/:userId", getItemToUserRecommendations_Scenario_Meditation)
+  .get("/api/getItemToUserRecommendations_Scenario_StudioRecording/:userId", getItemToUserRecommendations_Scenario_StudioRecording)
   .get("/api/getItemToUserRecommendations_Scenario_DJSet/:userId", getItemToUserRecommendations_Scenario_DJSet)
   .get("/api/getItemToUserRecommendations_Scenario_BehindTheScenes/:userId", getItemToUserRecommendations_Scenario_BehindTheScenes)
   .get("/api/getItemToUserRecommendations_Scenario_Concert/:userId", getItemToUserRecommendations_Scenario_Concert)
