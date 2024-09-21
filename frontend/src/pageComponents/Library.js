@@ -25,7 +25,7 @@ export default function Library() {
     try {
       if (user) {
         const recoResponse = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations/${user.name}`
+          `${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations_Scenario_MusicVideo/${user.name}`
         );
         const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
         const list = [];
