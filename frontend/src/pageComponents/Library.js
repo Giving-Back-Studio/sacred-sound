@@ -106,7 +106,7 @@ export default function Library() {
     } else if (filter === "all") {
       fetchData(filter, setAllContent);
       fetchRecommendations();
-      fetchEvents();
+      // fetchEvents();
     }
   }, [filter]);
   return (
