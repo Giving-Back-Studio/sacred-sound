@@ -10,6 +10,10 @@ export default function Library() {
   // const isAuthenticated = true;
   const user ={ name: "debug9@debug.com" }
   const [recommendations, setRecommendations] = useState([]);
+
+  useEffect(() => {
+  let isMounted = true;
+
   const fetchRecommendations = async () => {
     try {
       if (user) {
@@ -20,40 +24,50 @@ export default function Library() {
         console.log("Received recommendation response:", recoResponse.data);
         const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
         console.log("Extracted video IDs:", videoIds);
-        const list = [];
-        await Promise.allSettled(
+        
+        const list = await Promise.all(
           videoIds.map(async (id) => {
-            console.log("Fetching metadata for video ID:", id);
-            const videoResp = await axios.get(
-              `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
-            );
-            const videoData = videoResp.data;
-            if (videoData) {
-              console.log("Received video data for ID", id, ":", videoData);
-              list.push({
-                ...videoData,
+            try {
+              const videoResp = await axios.get(
+                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
+              );
+              return {
+                ...videoResp.data,
                 contentType: "recommendation",
-              });
-            } else {
-              console.log("No video data received for ID:", id);
+              };
+            } catch (error) {
+              console.error(`Error fetching metadata for video ID ${id}:`, error);
+              return null;
             }
           })
         );
 
-        setRecommendations(list);
-        console.log("Final recommendations list:", list);
-      } else {
-        console.log("No user available, skipping recommendation fetch");
+        const filteredList = list.filter(item => item !== null);
+        console.log("Final recommendations list:", filteredList);
+        
+        if (isMounted) {
+          setRecommendations(filteredList);
+        }
       }
     } catch (error) {
       console.error("Error fetching recommendations:", error);
-      console.error("Error details:", error.response ? error.response.data : "No response data");
     }
   };
 
+  fetchRecommendations();
+
+  return () => {
+    isMounted = false;
+  };
+}, [user]);
+
+  const userEmail = user ? user.name : null;
+
   useEffect(() => {
-    fetchRecommendations();
-  }, [user]);
+    if (userEmail) {
+      fetchRecommendations();
+    }
+  }, [userEmail]);
 
   return (
     <MainContainer>
