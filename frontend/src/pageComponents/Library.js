@@ -45,6 +45,7 @@ export default function Library() {
         );
 
         setRecommendations(list);
+        console.log("Recommendations received:", list);
       }
     } catch (error) {
       console.error(error);
