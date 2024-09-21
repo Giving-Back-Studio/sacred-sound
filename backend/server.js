@@ -83,7 +83,7 @@ const {
 
 express()
   .use(cors({
-    origin: ['https://staging.ss-mono-repo.pages.dev', '*'],
+    origin: ['https://staging.ss-mono-repo.pages.dev', 'http://localhost:3000', '*'],
     methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
   }))
   .use(express.json())
