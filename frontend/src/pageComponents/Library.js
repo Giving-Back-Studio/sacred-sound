@@ -20,6 +20,7 @@ export default function Library() {
   const [allContent, setAllContent] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [events, setEvents] = useState([]);
+  
   const fetchRecommendations = async () => {
     try {
       if (user) {
