@@ -1,11 +1,36 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import styled from "styled-components";
+import axios from 'axios';
 import bannerImage from '../assets/landing-banner.png'
 import logo from '../assets/logo-white.png'
 import harmonium from '../assets/harmonium.png'
 import user from '../assets/user.png'
 import workshop from '../assets/workshop.png'
+
+
 export default function LandingPage() {
+  const registerFormRef = useRef(null);
+  const [email, setEmail] = useState('');
+
+  const scrollToRegisterForm = () => {
+    registerFormRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/saveEmail`, {
+        email,
+        timestamp: new Date()
+      });
+      alert('Thank you for registering!');
+      setEmail('');
+    } catch (error) {
+      console.error('Error saving email:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+
   return (
     <MainContainer>
         <Banner>
@@ -22,13 +47,13 @@ export default function LandingPage() {
                     <p id='second-text'>
                     Connect with sacred music and artists that inspire you.
                     </p>
-                    <button>JOIN THE WAITLIST</button>
+                    <button onClick={scrollToRegisterForm}>JOIN THE WAITLIST</button>
 
                 </div>
             </Content>
         </Banner>
         <FeatureSection>
-            <Title>It’s time to elevate sacred music together.</Title>
+            <Title>It's time to elevate sacred music together.</Title>
             <Features>
                 <Feature>
                     <p className='feature-title'>Discover</p>    
@@ -70,7 +95,7 @@ export default function LandingPage() {
                             <img src={harmonium} alt='not loaded' style={{width: '60px', height: '50px'}}></img>
                             <div>
                                 <p style={{fontSize: '32px', margin: '0'}}>For sacred music seekers</p>
-                                <p style={{fontSize: '16px'}}>Discover new music and enjoy mindfully curated content on Sacred Sound’s library and online concert hall.</p> 
+                                <p style={{fontSize: '16px'}}>Discover new music and enjoy mindfully curated content on Sacred Sound's library and online concert hall.</p> 
 
                             </div>
                         </Seeker>
@@ -95,15 +120,17 @@ export default function LandingPage() {
 
             </InnerSection>
         </UserSection>
-        <RegisterForm>
+        <RegisterForm ref={registerFormRef}>
             <p>Be the first to know when we launch!</p> 
-            <form>
-                    <input type='text' placeholder='Enter your email'></input>
-                    <CheckboxContainer>
-                        <input type='checkbox' id='artist-checkbox' className="checkbox"></input>
-                        <label htmlFor='artist-checkbox'><b>Sacred music artist?</b> Check this box.</label>
-                    </CheckboxContainer>
-                    <button style={{}}>PRE-REGISTER</button>
+            <form onSubmit={handleSubmit}>
+                    <input 
+                      type='email' 
+                      placeholder='Enter your email'
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    ></input>
+                    <button type="submit">PRE-REGISTER</button>
             </form>
         </RegisterForm>
     </MainContainer>

@@ -99,47 +99,16 @@ export default function Library() {
   };
 
   useEffect(() => {
-    if (filter === "audio") {
-      fetchData(filter, setContents);
-    } else if (filter === "video") {
-      fetchData(filter, setContents);
-    } else if (filter === "all") {
-      fetchData(filter, setAllContent);
-      fetchRecommendations();
+          fetchRecommendations();
       // fetchEvents();
-    }
+    
   }, [filter]);
+
   return (
     <MainContainer>
       <CoverSection>
         <CoverImage>
         </CoverImage>
-        <ButtonTabs>
-          <button
-            onClick={() => setFilter("all")}
-            style={{
-              backgroundColor: filter === "all" ? "#687550" : "#434289",
-            }}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilter("audio")}
-            style={{
-              backgroundColor: filter === "audio" ? "#687550" : "#434289",
-            }}
-          >
-            Music
-          </button>
-          <button
-            onClick={() => setFilter("video")}
-            style={{
-              backgroundColor: filter === "video" ? "#687550" : "#434289",
-            }}
-          >
-            Video
-          </button>
-        </ButtonTabs>
       </CoverSection>
       <Main>
         {!isSearched ? (
@@ -149,15 +118,13 @@ export default function Library() {
             ) : (
               <>
                 <div className="top-section">
-                  <h2 className="sec-title">All Contents</h2>
+                  <h2 className="sec-title">Music Video</h2>
                   <SwipeComponet arr={allContent}></SwipeComponet>
                 </div>
-                <h2 className="sec-title">Recommendation</h2>
+                <h2 className="sec-title">Meditation</h2>
                 <SwipeComponet arr={recommendations}></SwipeComponet>
-                <h2 className="sec-title">All Contents</h2>
+                <h2 className="sec-title">Studio recording</h2>
                 <SwipeComponet arr={allContent}></SwipeComponet>
-                <h2 className="sec-title">Events</h2>
-                <SwipeComponet arr={events}></SwipeComponet>
               </>
             )}
           </>
