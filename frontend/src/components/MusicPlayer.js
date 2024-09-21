@@ -166,10 +166,9 @@ const PlayerFooter = styled.div`
   width: auto;
   left: 0;
   right: 0;
-  z-index: 20;
+  z-index: 1000;
   @media (max-width: 991px) {
     flex-direction: column;
-    z-index: 9;
   }
   div {
     background-color: transparent;
