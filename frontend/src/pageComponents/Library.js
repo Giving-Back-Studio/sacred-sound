@@ -6,9 +6,9 @@ import SwipeComponet from "../components/SwipeComponet";
 
 import { useOutletContext } from "react-router-dom";
 export default function Library() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
-  // const isAuthenticated = true;
-  // const user ={ name: "debug9@debug.com" }
+  // const { user, isAuthenticated, isLoading } = useAuth0();
+  const isAuthenticated = true;
+  const user ={ name: "debug9@debug.com" }
 
   const context = useOutletContext();
   const { isSearched, result } = context;
