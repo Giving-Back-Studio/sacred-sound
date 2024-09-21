@@ -1138,7 +1138,7 @@ const syncCatalog = async (req, res) => {
 
 const getItemToUserRecommendations = async (req, res) => {
     const userId = req.params.userId;
-    const { recombeeClient } = require("./utils/constants");
+    const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
         const count = 10;
