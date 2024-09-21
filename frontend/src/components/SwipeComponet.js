@@ -8,9 +8,34 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import rect from '../assets/rect.png'
 import PlayButton from "./common/PlayButton";
+import { useState, useEffect } from "react";
 
 export default function SwipeComponet({ arr }) {
-  let navigate = useNavigate();
+  const [artistNames, setArtistNames] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+  const fetchArtistName = async () => {
+    const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
+    console.log("Unique emails to fetch:", emails);
+    try {
+      const queryParams = new URLSearchParams({ emails: emails.join(',') });
+      console.log("API request URL:", `/api/getArtistName?${queryParams}`);
+      const response = await fetch(`/api/getArtistName?${queryParams}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      console.log("API response data:", data);
+      setArtistNames(data);
+    } catch (error) {
+      console.error('Error fetching artist names:', error);
+    }
+  };
+
+  fetchArtistName();
+}, [arr]);
+
   return (
     <Discography>
       <Swiper
@@ -41,9 +66,9 @@ export default function SwipeComponet({ arr }) {
               ? content.selectedImageThumbnail
               : rect;
                 const handleClick = () => {
-                  if (content.contentType === 'album') {
+                  if (content.contentType === 'AlbumMetaData') {
                       navigate(`/main/album?id=${content._id}`);
-                  }else if(content.contentType === 'artist') {
+                  }else if(content.contentType === 'userAccounts') {
                     navigate(`/main/artist?id=${content.user._id}`);
                   }else{
                     navigate(`/main/track?id=${content._id}`);
@@ -51,11 +76,11 @@ export default function SwipeComponet({ arr }) {
               };
           return (
               <SwiperSlide key={content._id}>
-                <div className="item" id="content-card" onClick={() => handleClick()} style={{ cursor: content.contentType === 'album' ? 'pointer' : 'default' }}>
+                <div className="item" id="content-card" onClick={() => handleClick()} style={{ cursor: 'pointer' }}>
                   <img className="swiper-thumb-img" src={thumbnail} alt="Item Thumb"></img>
                   <div style={{marginLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
                     <div>
-                      <h1 className="slider-trackname">{content.contentType !== 'album' ? content.title: content.albumName}</h1>
+                      <h1 className="slider-trackname">{content.contentType !== 'AlbumMetaData' ? content.title: content.albumName}</h1>
                       <h1 className="slider-artist">
                       
                         Artist -
@@ -66,7 +91,8 @@ export default function SwipeComponet({ arr }) {
                           }}
                           style={{textDecoration: 'underline', cursor: 'pointer'}}
                         >
-                          {content.videoOwner}
+                          {console.log("Artist name for", content.owner, ":", artistNames[content.owner])}
+                          {artistNames[content.owner] || 'Loading...'}
                         </span>
                       </h1>
                     </div>

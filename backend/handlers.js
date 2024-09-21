@@ -2643,6 +2643,28 @@ const PostUserOnboardingProgress = async (req, res) => {
     }
   };
   
+  const getArtistNames = async (req, res) => {
+    console.log("getArtistNames reached!")
+    console.log("req.body", req.body);
+    const { emails } = req.body;
+    console.log("emails", emails);
+    const client = new MongoClient(MONGO_URI, options);
+
+    try {
+      await client.connect();
+      const db = client.db("db-name");
+      const userCollection = db.collection("userAccounts"); 
+  
+      const users = await userCollection.find({ email: { $in: emails } }).toArray();
+      console.log("users", users);
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching artist names:", error);
+      res.status(500).json({ error: "Internal server error." });
+    } finally {
+      await client.close();
+    }
+  };
 
 module.exports = {
     getServerHomePage,
@@ -2721,5 +2743,6 @@ module.exports = {
     sendThanksCoinsViaArtistPage,
     sendThanksCoinsViaAlbumPage,
     sendThanksCoinsViaContent,
-    PostUserOnboardingProgress
+    PostUserOnboardingProgress,
+    getArtistNames
 };
