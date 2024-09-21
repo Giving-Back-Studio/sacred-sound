@@ -156,79 +156,86 @@ export default function Artist() {
         </div>
       </MusicInfo>
 
-      <FeaturedTracks>
+      <SectionContainer>
         <HeadingText>
           <h1>Featured tracks</h1>
         </HeadingText>
-        {featured.map((element, index) => (
-          <div className="track-bar active" key={element._id}>
-            <div className="track-left">
-              <div className="icon-number">
-                {/* <img src={Play} className="track-icon" alt="track-icon"></img> */}
-                <PlayButton
-                  track={{
-                    id: element._id,
-                    songUrl: element.fileUrl,
-                    songTitle: element.title,
-                    isVideo: false,
-                    artistName: element.user.accountName,
-                    img: element.selectedImageThumbnail,
-                  }}
-                />
-                {/* <h5>{index + 1}</h5> */}
+        <FeaturedTracks>
+          {featured.map((element, index) => (
+            <div className="track-bar active" key={element._id}>
+              <div className="track-left">
+                <div className="icon-number">
+                  {/* <img src={Play} className="track-icon" alt="track-icon"></img> */}
+                  <PlayButton
+                    track={{
+                      id: element._id,
+                      songUrl: element.fileUrl,
+                      songTitle: element.title,
+                      isVideo: false,
+                      artistName: element.user.accountName,
+                      img: element.selectedImageThumbnail,
+                    }}
+                  />
+                  {/* <h5>{index + 1}</h5> */}
+                </div>
+                <img
+                  className="track-thumb"
+                  src={
+                    element.selectedImageThumbnail
+                      ? element.selectedImageThumbnail
+                      : Thumb
+                  }
+                  alt="track-thumb"
+                ></img>
+                <div className="flex-line">
+                  <h5 className="track-title">{element.title}</h5>
+                  <h5 className="album-title">Album title</h5>
+                </div>
               </div>
-              <img
-                className="track-thumb"
-                src={
-                  element.selectedImageThumbnail
-                    ? element.selectedImageThumbnail
-                    : Thumb
-                }
-                alt="track-thumb"
-              ></img>
-              <div className="flex-line">
-                <h5 className="track-title">{element.title}</h5>
-                <h5 className="album-title">Album title</h5>
+              <div className="track-right">
+                <h5 className="track-time">02:36</h5>
+                <img src={TrackLike} alt="track-like"></img>
               </div>
             </div>
-            <div className="track-right">
-              <h5 className="track-time">02:36</h5>
-              <img src={TrackLike} alt="track-like"></img>
-            </div>
-          </div>
-        ))}
-      </FeaturedTracks>
-      <HeadingText>
-        <h1>Discography</h1>
-      </HeadingText>
-      <Tabs>
-        <button
-          className={`btn btn-tab ${tab === 0 ? "active" : ""}`}
-          onClick={() => setTab(0)}
-        >
-          Albums
-        </button>
-        <button
-          className={`btn btn-tab ${tab === 1 ? "active" : ""}`}
-          onClick={() => setTab(1)}
-        >
-          Videos
-        </button>
-        <button
-          className={`btn btn-tab ${tab === 2 ? "active" : ""}`}
-          onClick={() => setTab(2)}
-        >
-          Audio
-        </button>
-      </Tabs>
-      <SwipeComponet arr={contents}></SwipeComponet>
+          ))}
+        </FeaturedTracks>
+      </SectionContainer>
 
-      <HeadingText>
-        <h1>Upcoming Events</h1>
-      </HeadingText>
-      <Events>
-        <SwipeEventComponet arr={events} />
-      </Events>
+      <SectionContainer>
+        <HeadingText>
+          <h1>Discography</h1>
+        </HeadingText>
+        <Tabs>
+          <button
+            className={`btn btn-tab ${tab === 0 ? "active" : ""}`}
+            onClick={() => setTab(0)}
+          >
+            Albums
+          </button>
+          <button
+            className={`btn btn-tab ${tab === 1 ? "active" : ""}`}
+            onClick={() => setTab(1)}
+          >
+            Videos
+          </button>
+          <button
+            className={`btn btn-tab ${tab === 2 ? "active" : ""}`}
+            onClick={() => setTab(2)}
+          >
+            Audio
+          </button>
+        </Tabs>
+        <SwipeComponet arr={contents}></SwipeComponet>
+      </SectionContainer>
+
+      <SectionContainer>
+        <HeadingText>
+          <h1>Upcoming Events</h1>
+        </HeadingText>
+        <Events>
+          <SwipeEventComponet arr={events} />
+        </Events>
+      </SectionContainer>
     </MainContainer>
   );
 }
@@ -536,4 +543,9 @@ const Tabs = styled.div`
       color: #fff;
     }
   }
+`;
+
+const SectionContainer = styled.div`
+  padding: 0 20px;
+  margin-top: 20px;
 `;
