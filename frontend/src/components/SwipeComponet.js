@@ -15,25 +15,26 @@ export default function SwipeComponet({ arr }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchArtistName = async () => {
-      const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
-      console.log("emails", emails);
-      try {
-        const queryParams = new URLSearchParams({ emails: emails.join(',') });
-        const response = await fetch(`/api/getArtistName?${queryParams}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const data = await response.json();
-        console.log("data", data);
-        setArtistNames(data);
-      } catch (error) {
-        console.error('Error fetching artist names:', error);
-      }
-    };
+  const fetchArtistName = async () => {
+    const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
+    console.log("Unique emails to fetch:", emails);
+    try {
+      const queryParams = new URLSearchParams({ emails: emails.join(',') });
+      console.log("API request URL:", `/api/getArtistName?${queryParams}`);
+      const response = await fetch(`/api/getArtistName?${queryParams}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      console.log("API response data:", data);
+      setArtistNames(data);
+    } catch (error) {
+      console.error('Error fetching artist names:', error);
+    }
+  };
 
-    fetchArtistName();
-  }, [arr]);
+  fetchArtistName();
+}, [arr]);
 
   return (
     <Discography>
@@ -90,6 +91,7 @@ export default function SwipeComponet({ arr }) {
                           }}
                           style={{textDecoration: 'underline', cursor: 'pointer'}}
                         >
+                          {console.log("Artist name for", content.owner, ":", artistNames[content.owner])}
                           {artistNames[content.owner] || 'Loading...'}
                         </span>
                       </h1>

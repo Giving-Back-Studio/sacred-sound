@@ -2644,7 +2644,10 @@ const PostUserOnboardingProgress = async (req, res) => {
   };
   
   const getArtistNames = async (req, res) => {
+    console.log("getArtistNames reached!")
+    console.log("req.body", req.body);
     const { emails } = req.body;
+    console.log("emails", emails);
     const client = new MongoClient(MONGO_URI, options);
 
     try {
@@ -2653,6 +2656,7 @@ const PostUserOnboardingProgress = async (req, res) => {
       const userCollection = db.collection("userAccounts"); 
   
       const users = await userCollection.find({ email: { $in: emails } }).toArray();
+      console.log("users", users);
       res.json(users);
     } catch (error) {
       console.error("Error fetching artist names:", error);
