@@ -37,8 +37,8 @@ import Topics from "./pageComponents/Topics"
 import PaymentDetail from "./pageComponents/PaymentDetails";
 import Login from './pageComponents/Login';
 import Signup from './pageComponents/Signup';
-import ForgotPassword from './pageComponents/ForgotPassword';
-import ResetPassword from './pageComponents/ResetPassword';
+import ForgotPassword from './pageComponents/Forgot';
+import ResetPassword from './pageComponents/Reset';
 
 const App = () => {
   const { isLoading, error } = useAuth0();
