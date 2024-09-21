@@ -82,12 +82,10 @@ const {
 
 
 express()
-  .use(
-    cors({
-      origin: "*", // ['https://sacredsound.app']
-      methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
-    })
-  )
+  .use(cors({
+    origin: ['https://staging.ss-mono-repo.pages.dev', 'http://localhost:3000', '*'],
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+  }))
   .use(express.json())
   .use(bodyParser.json())
   .get("/", getServerHomePage)

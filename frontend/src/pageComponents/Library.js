@@ -15,20 +15,18 @@ export default function Library() {
   // useEffect(() => {
   //   console.log(result)
   // }, [isSearched, result])
+  // const user = { name: "debug9@debug.com" };
   const [filter, setFilter] = useState("all");
   const [contents, setContents] = useState([]);
   const [allContent, setAllContent] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [events, setEvents] = useState([]);
-  
   const fetchRecommendations = async () => {
     try {
       if (user) {
-        console.log("Starting to fetch recommendations");
         const recoResponse = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations/${user.name}`
         );
-        console.log("Received recommendation response:", recoResponse.data);
         const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
         const list = [];
         await Promise.allSettled(
@@ -47,10 +45,9 @@ export default function Library() {
         );
 
         setRecommendations(list);
-        console.log("Recommendations received:", list);
       }
     } catch (error) {
-      console.error("Error fetching recommendations:", error);
+      console.error(error);
     }
   };
   const fetchData = async (type, setState) => {
@@ -108,15 +105,10 @@ export default function Library() {
       fetchData(filter, setContents);
     } else if (filter === "all") {
       fetchData(filter, setAllContent);
-      if (isAuthenticated && user) {
-        console.log("Fetching recommendations for user:", user.name);
-        fetchRecommendations();
-      } else {
-        console.log("User not authenticated or user object not available");
-      }
+      fetchRecommendations();
       // fetchEvents();
     }
-  }, [filter, isAuthenticated, user]);
+  }, [filter]);
   return (
     <MainContainer>
       <CoverSection>
