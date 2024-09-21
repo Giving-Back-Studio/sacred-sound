@@ -194,28 +194,9 @@ export default SidebarComponent;
 
 const Main = styled.div`
   display: flex;
+  background-color: rgba(0, 128, 128, 0.8); // Added teal background with 80% transparency
   .sidebar {
-    .ps-sidebar-container {
-      background-color: #fff;
-      .ps-menuitem-root {
-        a {
-          .ps-menu-label {
-            gap: 15px;
-            display: flex;
-            align-items: center;
-          }
-        }
-    }
-    }
-    .side-menu{
-      li{
-        margin:15px 0
-      }
-      .sidebar-bottom-menu{
-        position: absolute;
-        bottom: 30px;
-    }
-    }
+    ...
   }
 `;
 

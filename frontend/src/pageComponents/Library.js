@@ -62,19 +62,11 @@ export default function Library() {
 
   return (
     <MainContainer>
-      <CoverSection>
-        <CoverImage>
-        </CoverImage>
-      </CoverSection>
       <Main>
-            <div className="top-section">
-              <h2 className="sec-title">Music Video</h2>
-              <SwipeComponet arr={recommendations}></SwipeComponet>
-            </div>
-            {/* <h2 className="sec-title">Meditation</h2>
-            <SwipeComponet arr={recommendations}></SwipeComponet>
-            <h2 className="sec-title">Studio recording</h2>
-            <SwipeComponet arr={recommendations}></SwipeComponet> */}
+        <div className="top-section">
+          <h2 className="sec-title">Music Video</h2>
+          <SwipeComponet arr={recommendations}></SwipeComponet>
+        </div>
       </Main>
     </MainContainer>
   );
@@ -82,72 +74,20 @@ export default function Library() {
 
 const MainContainer = styled.div`
   width: 100%;
-  overflow-y: auto;
+  overflow-y: auto; // Ensure it's scrollable
   overflow-x: hidden;
-  margin: 0;
-  padding: 0 0 120px 0; // Add padding to the bottom
-  height: calc(100vh - 120px); // Adjust height to account for MusicPlayer
-  @media (max-width: 1000px) {
-    height: calc(100vh - 200px); // Adjust for mobile view
-  }
-  .sec-title {
-    margin: 15px 20px;
-  }
-  .top-section {
-    margin-top: -130px;
-    z-index: 3; // Increase z-index
-    position: relative;
-    h2 {
-      color: #fff;
-    }
-  }
-`;
-
-const CoverSection = styled.div`
-  width: 100%;
-  height: calc(100vh - 120px); // Adjust height to fill space between player and viewport
-  background-color: #d9d9d9;
-  margin-bottom: 20px;
-  overflow: hidden;
-  position: relative;
-`;
-
-const CoverImage = styled.div`
-  position: relative;
-  z-index: 1; // Decrease z-index
-  height: 100%; // Make height 100% to fill CoverSection
-  background: linear-gradient(135deg, #434289 0%, #687550 100%);
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    height: 100%; // Change to 100% to fill CoverImage
-    width: 100%;
-    background: linear-gradient(135deg, #434289 0%, #687550 100%);
-    z-index: 1;
-  }
-  @media (max-width: 767px) {
-    height: 100%;
-  }
-`;
-
-const ButtonTabs = styled.div`
-  display: flex;
-  height: 100%;
-  flex-direction: row;
-  align-items: center;
-  margin: 0 20px;
-  position: absolute;
-  top: 0;
-  z-index: 4; // Increase z-index
-  button {
-    height: 50px;
-    margin-right: 10px;
-  }
+  margin: 0; // Remove margins from MainContainer
+  height: 100vh; // Fill the entire viewport height
+  background: linear-gradient(135deg, rgba(168, 224, 255, 0.5), rgba(208, 232, 208, 0.5), rgba(255, 224, 178, 0.5), rgba(255, 179, 179, 0.5)); // Softer gradient colors with reduced opacity
+  // Remove animation properties
+  // ... existing styles ...
 `;
 
 const Main = styled.div`
   position: relative;
   z-index: 2; // Add z-index
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0); // Keep the background transparent
+  margin: 20px; // Add margins to Main
+  padding: 0 0 120px 0; // Keep padding for Main
+  height: calc(100vh - 120px); // Adjust height for Main
 `;
