@@ -78,7 +78,7 @@ const MainContainer = styled.div`
   overflow-x: hidden;
   margin: 0; // Remove margins from MainContainer
   height: 100vh; // Fill the entire viewport height
-  background: radial-gradient(circle, rgba(0, 0, 0, 1), rgba(0, 128, 128, 0.7)); // Black and teal radial gradient
+  background-color: #CCE6E6; // Change background to CCE6E6
   // Remove animation properties
   // ... existing styles ...
 `;
@@ -87,7 +87,7 @@ const Main = styled.div`
   position: relative;
   z-index: 2; // Add z-index
   background-color: rgba(0, 0, 0, 0); // Keep the background transparent
-  margin: 20px; // Add margins to Main
+  margin: 55px; // Add margins to Main
   padding: 0 0 120px 0; // Keep padding for Main
   height: calc(100vh - 120px); // Adjust height for Main
 `;

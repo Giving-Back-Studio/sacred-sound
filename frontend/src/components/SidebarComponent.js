@@ -194,7 +194,7 @@ export default SidebarComponent;
 
 const Main = styled.div`
   display: flex;
-  background-color: rgba(0, 128, 128, 0.8); // Added teal background with 80% transparency
+  background-color: #E6F2F2; // Change background to CCE6E6
   .sidebar {
     ...
   }
