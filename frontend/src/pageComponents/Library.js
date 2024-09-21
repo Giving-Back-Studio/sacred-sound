@@ -6,7 +6,6 @@ import SwipeComponet from "../components/SwipeComponet";
 
 import { useOutletContext } from "react-router-dom";
 export default function Library() {
-  // const { user, isAuthenticated, isLoading } = useAuth0();
   const isAuthenticated = true;
   const user ={ name: "debug9@debug.com" }
 
@@ -111,8 +110,6 @@ export default function Library() {
     if (isAuthenticated && user) {
       console.log("User authenticated:", user.name);
       fetchRecommendations();
-    } else if (!isLoading) {
-      console.log("User not authenticated or still loading");
     }
     if (filter === "audio") {
       fetchData(filter, setContents);
@@ -128,7 +125,7 @@ export default function Library() {
       }
       // fetchEvents();
     }
-  }, [filter, isAuthenticated, isLoading, user]);
+  }, [filter, isAuthenticated, user]);
   return (
     <MainContainer>
       <CoverSection>
