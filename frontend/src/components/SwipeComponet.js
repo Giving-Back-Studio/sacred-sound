@@ -21,7 +21,7 @@ export default function SwipeComponet({ arr }) {
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
       console.log("API request URL:", `/api/getArtistNames?${queryParams}`);
-      const response = await fetch(`/api/getArtistNames?${queryParams}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/getArtistNames?${queryParams}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -87,8 +87,6 @@ export default function SwipeComponet({ arr }) {
                     <div>
                       <h1 className="slider-trackname">{content.contentType !== 'AlbumMetaData' ? content.title: content.albumName}</h1>
                       <h1 className="slider-artist">
-                      
-                        Artist -
                         <span
                           onClick={(e) =>{
                             e.stopPropagation()
