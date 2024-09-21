@@ -33,7 +33,6 @@ export default function Library() {
               );
               return {
                 ...videoResp.data,
-                contentType: "recommendation",
               };
             } catch (error) {
               console.error(`Error fetching metadata for video ID ${id}:`, error);
