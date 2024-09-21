@@ -1153,7 +1153,7 @@ const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
         });
 
         const response = await recombeeClient.send(getRecommendationsRequest);
-        console.log(response);
+        console.log("getRecommendationsRequest"+ response);
 
         return res.json(response);
 
