@@ -146,9 +146,9 @@ export default function Track() {
 }
 
 const MainContainer = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 120px); // Adjust height to account for MusicPlayer
   margin: 0;
-  padding: 0;
+  padding: 0 0 120px 0; // Add padding to the bottom
   width: 100%;
   overflow-x: hidden;
 `;
