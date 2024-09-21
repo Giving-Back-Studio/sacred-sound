@@ -10,6 +10,45 @@ export default function Library() {
   // const isAuthenticated = true;
   // const user ={ name: "debug9@debug.com" }
 
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+        try {
+            if (user) {
+                console.log('user :', user);
+                const recoResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations/${user}`);
+                // console.log("recoResponse: ", recoResponse )
+                const objectIds = recoResponse.data.recomms.map(recomm => recomm.id);
+                // console.log("VideoIds: ", videoIds);
+                const list = []
+                const videosData = await Promise.allSettled(objectIds.map(async (id) => {
+                    const videoResp = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`);
+                    const videoData = videoResp.data;
+                    // console.log("videoData: ", videoData);
+                    const userResp = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getUserProfile/${videoData.owner}`);
+                    const userData = userResp.data;
+                    if(videoData){
+                        list.push({
+                            ...videoData,
+                            accountName: userData.accountName // Assume this field exists in your user response
+                        })
+                    }
+
+                    return {
+                        ...videoData,
+                        accountName: userData.accountName // Assume this field exists in your user response
+                    };
+                }));
+                
+                console.log("🚀 ~ fetchRecommendations ~ list:", list)  
+                setVideos(list);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    fetchRecommendations();
+    }, [user]);
+
   const context = useOutletContext();
   const { isSearched, result } = context;
   // useEffect(() => {
