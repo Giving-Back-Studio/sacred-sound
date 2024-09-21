@@ -8,4 +8,6 @@ const recombeeClient = new recombee.ApiClient(
   { region: process.env.RECOMBEE_REGION }
 );
 
-module.exports = recombeeClient;
+module.exports = {
+    recombeeClient,
+};
