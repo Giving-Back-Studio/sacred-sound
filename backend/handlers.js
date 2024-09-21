@@ -47,7 +47,7 @@ const postNewUserWithAccountName = async (req, res) => {
 
     const client = await new MongoClient(MONGO_URI, options);
     try {
-        const { recombeeClient } = require("./utils/constants");
+        const { recombeeClient } = require("./utils/recombeeClient");
         client.connect();
         const db = client.db("db-name");
 
@@ -249,7 +249,7 @@ const updateUserProfile = async (req, res) => {
             return res.status(404).json({ error: "No document found with that email" });
         }
         else {
-            const { recombeeClient } = require("./utils/constants");
+            const { recombeeClient } = require("./utils/recombeeClient");
             // Set values for the user properties in Recombee
             const userProperties = {
                 accountName: accountName,
@@ -533,7 +533,7 @@ const getApprovedVideoContent = async (req, res) => {
 const deleteContent = async (req, res) => {
     const client = new MongoClient(MONGO_URI, options);
     try {
-        const { recombeeClient } = require("./utils/constants");
+        const { recombeeClient } = require("./utils/recombeeClient");
         await client.connect();
         const collection = client.db('db-name').collection('ContentMetaData');
         const videoId = req.query.videoId;
@@ -1005,7 +1005,7 @@ const deleteAlbum = async (req, res) => {
     const artistId = req.query.artistId; 
 
     const client = new MongoClient(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-    const { recombeeClient } = require("./utils/constants");
+    const { recombeeClient } = require("./utils/recombeeClient");
 
     try {
         await client.connect();
@@ -1190,7 +1190,7 @@ const addUserPropertyOnRecombee = async (req, res) => {
 const addUserOnRecombee = async (req, res) => {
     const userId = req.params.userId;
     try{
-        const { recombeeClient } = require("./utils/constants");
+        const { recombeeClient } = require("./utils/recombeeClient");
         await recombeeClient.send(new AddUser(userId));
         res.status(200).json({ status: 200, message: "User added successfuly on Recombee." });
     }catch (e){
@@ -1204,7 +1204,7 @@ const addUserOnRecombee = async (req, res) => {
 const setUserOnRecombee = async (req, res) => {
     const userId = req.params.userId;
     try{
-        const { recombeeClient } = require("./utils/constants");
+        const { recombeeClient } = require("./utils/recombeeClient");
             const userProperties = {
                 accountName: 'accountName',
                 artistLink: 'artistLink',
@@ -1229,7 +1229,7 @@ const setUserOnRecombee = async (req, res) => {
 const getItemPropertiesFromRecombee = async (req, res) => {
     const itemId = req.params.itemId;
 
-    const { recombeeClient } = require("./utils/constants");
+    const { recombeeClient } = require("./utils/recombeeClient");
     const rqs = require('recombee-api-client/lib/requests');
     try {
         const response = await recombeeClient.send(new GetItemValues(itemId));
@@ -1248,7 +1248,7 @@ const getItemPropertiesFromRecombee = async (req, res) => {
 
 const getItemToItemRecommendations = async (req, res) => {
     const { itemId, userId } = req.params;
-    const { recombeeClient } = require("./utils/constants");
+    const { recombeeClient } = require("./utils/recombeeClient");
     const count = 3;
 
     try {
@@ -1465,7 +1465,7 @@ const getOrders = async (req, res) => {
 
 const getSearchResult = async (req, res) => {
     const { userId, searchQuery } = req.params;
-    const { recombeeClient } = require("./utils/constants");
+    const { recombeeClient } = require("./utils/recombeeClient");
     console.log("user: ", userId);
     console.log("searchQuery: ", searchQuery);
     const count = 5; // Number of items to return
