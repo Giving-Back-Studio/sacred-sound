@@ -82,7 +82,7 @@ const MainContainer = styled.div`
   overflow-x: hidden;
   margin: 0; // Remove margins from MainContainer
   height: 100vh; // Fill the entire viewport height
-  background: linear-gradient(135deg, rgba(168, 224, 255, 0.5), rgba(208, 232, 208, 0.5), rgba(255, 224, 178, 0.5), rgba(255, 179, 179, 0.5)); // Softer gradient colors with reduced opacity
+  background: radial-gradient(circle, rgba(0, 0, 0, 1), rgba(0, 128, 128, 0.7)); // Black and teal radial gradient
   // Remove animation properties
   // ... existing styles ...
 `;
