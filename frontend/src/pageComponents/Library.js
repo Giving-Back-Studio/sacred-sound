@@ -6,7 +6,7 @@ import SwipeComponet from "../components/SwipeComponet";
 
 import { useOutletContext } from "react-router-dom";
 export default function Library() {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
   // const isAuthenticated = true;
   // const user ={ name: "debug9@debug.com" }
 
@@ -24,30 +24,35 @@ export default function Library() {
   const fetchRecommendations = async () => {
     try {
       if (user) {
-        console.log("Starting to fetch recommendations");
+        console.log("Starting to fetch recommendations for:", user.name);
         const recoResponse = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations/${user.name}`
         );
         console.log("Received recommendation response:", recoResponse.data);
         const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
+        console.log("Video IDs to fetch:", videoIds);
         const list = [];
         await Promise.allSettled(
           videoIds.map(async (id) => {
+            console.log("Fetching video data for ID:", id);
             const videoResp = await axios.get(
               `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
             );
             const videoData = videoResp.data;
             if (videoData) {
+              console.log("Received video data for ID:", id, videoData);
               list.push({
                 ...videoData,
                 contentType: "recommendation",
               });
+            } else {
+              console.log("No video data received for ID:", id);
             }
           })
         );
 
         setRecommendations(list);
-        console.log("Recommendations received:", list);
+        console.log("Final recommendations list:", list);
       }
     } catch (error) {
       console.error("Error fetching recommendations:", error);
@@ -102,6 +107,13 @@ export default function Library() {
   };
 
   useEffect(() => {
+    console.log("Auth state changed:", { isAuthenticated, isLoading, user });
+    if (isAuthenticated && user && !isLoading) {
+      console.log("User authenticated:", user.name);
+      fetchRecommendations();
+    } else if (!isLoading) {
+      console.log("User not authenticated or still loading");
+    }
     if (filter === "audio") {
       fetchData(filter, setContents);
     } else if (filter === "video") {
@@ -116,7 +128,7 @@ export default function Library() {
       }
       // fetchEvents();
     }
-  }, [filter, isAuthenticated, user]);
+  }, [filter, isAuthenticated, isLoading, user]);
   return (
     <MainContainer>
       <CoverSection>
