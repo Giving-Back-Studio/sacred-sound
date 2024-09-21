@@ -890,45 +890,22 @@ const getVideoMetadataFromObjectId = async (req, res) => {
     const { id } = req.params;
     const client = await new MongoClient(MONGO_URI, options);
 
-    console.log("getVideoMetadata for: ", id);
+    console.log("getVideoMetadataFromObjectId for: ", id);
     
     
     try {
         await client.connect();
-        const db = client.db("db-name");
-        const videosCollection = db.collection('ContentMetaData'); 
-        
-            const video = await videosCollection.aggregate([
-                {$match: {_id: new ObjectId(id)}},
-                {$lookup: {
-                    from: 'userAccounts',
-                    localField: 'owner',
-                    foreignField: 'email',
-                    as: 'user'
-                }},
-                {$unwind: '$user'}
-            ]).toArray()
-        if (!video) {
-            // If no video is found, return a 404 response
-            return res.status(404).json({ message: 'Video not found' });
-        }
-        
-        // If a video is found, return the video metadata
-        return res.status(200).json({
-            videoId: video[0].videoId,
-            owner: video[0].owner,
-            isOnlyAudio: video[0].isOnlyAudio,
-            title: video[0].title,
-            selectedImageThumbnail: video[0].selectedImageThumbnail || null,
-            fileUrl: video[0].fileUrl,
-            _id:video[0]._id,
-            user: video[0].user
-        });
+        const db = client.db("sacred_sound_studio");
+        const result = await db.collection("ContentMetaData").findOne({ _id: new ObjectId(id) });
 
-        
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({ message: "Video not found" });
+        }
     } catch (error) {
-        console.error("Failed to retrieve video metadata:", error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error("Error retrieving video metadata:", error);
+        res.status(500).json({ message: "Error retrieving video metadata", error: error.message });
     } finally {
         await client.close();
     }
@@ -1143,8 +1120,6 @@ const getItemToUserRecommendations_Scenario_Meditation = async (req, res) => {
     try {
         const count = 10;
 
-        console.log("getRecommendations's UserId is: " + userId);
-
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
             'scenario': 'Scenario_Meditation',
             'cascadeCreate': true,
@@ -1171,7 +1146,6 @@ const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
     try {
         const count = 10;
 
-        console.log("getRecommendations's UserId is: " + userId);
 
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
             'scenario': 'Scenario_MusicVideo',
@@ -1199,8 +1173,6 @@ const getItemToUserRecommendations_Scenario_StudioRecording = async (req, res) =
     try {
         const count = 10;
 
-        console.log("getRecommendations's UserId is: " + userId);
-
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
             'scenario': 'Scenario_StudioRecording',
             'cascadeCreate': true,
@@ -1227,7 +1199,6 @@ const getItemToUserRecommendations_Scenario_DJSet = async (req, res) => {
     try {
         const count = 10;
 
-        console.log("getRecommendations's UserId is: " + userId);
 
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
             'scenario': 'Scenario_DJSet',
@@ -1255,7 +1226,6 @@ const getItemToUserRecommendations_Scenario_BehindTheScenes = async (req, res) =
     try {
         const count = 10;
 
-        console.log("getRecommendations's UserId is: " + userId);
 
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
             'scenario': 'Scenario_BehindTheScenes',
@@ -1283,7 +1253,6 @@ const getItemToUserRecommendations_Scenario_Concert = async (req, res) => {
     try {
         const count = 10;
 
-        console.log("getRecommendations's UserId is: " + userId);
 
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
             'scenario': 'Scenario_Concert',
@@ -1310,8 +1279,6 @@ const getItemToUserRecommendations_Scenario_VideoLesson = async (req, res) => {
     
     try {
         const count = 10;
-
-        console.log("getRecommendations's UserId is: " + userId);
 
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
             'scenario': 'Scenario_VideoLesson',
