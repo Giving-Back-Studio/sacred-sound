@@ -147,10 +147,15 @@ export default function Track() {
 
 const MainContainer = styled.div`
   min-height: calc(100vh - 120px); // Adjust height to account for MusicPlayer
-  margin: 0;
-  padding: 0 0 120px 0; // Add padding to the bottom
+  padding: 0 0 120px 0; // Add padding to the bottom to prevent cutoff
   width: 100%;
   overflow-x: hidden;
+  overflow-y: auto; // Ensure vertical scrolling is enabled
+
+  @media (max-width: 767px) {
+    min-height: calc(100vh - 200px); // Adjust for mobile view
+    padding: 0 0 200px 0; // Adjust padding for mobile
+  }
 `;
 const HeadPart = styled.div`
   position: relative;
