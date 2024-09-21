@@ -193,7 +193,7 @@ const MainContainer = styled.div`
   }
   .top-section {
     margin-top: -130px;
-    z-index: 99;
+    z-index: 3; // Increase z-index
     position: relative;
     h2 {
       color: #fff;
@@ -212,7 +212,7 @@ const CoverSection = styled.div`
 
 const CoverImage = styled.div`
   position: relative;
-  z-index: 2;
+  z-index: 1; // Decrease z-index
   height: 400px;
   background: linear-gradient(135deg, #434289 0%, #687550 100%);
   &::before {
@@ -237,7 +237,7 @@ const ButtonTabs = styled.div`
   margin: 0 20px;
   position: absolute;
   top: 0;
-  z-index: 9;
+  z-index: 4; // Increase z-index
   button {
     height: 50px;
     margin-right: 10px;
@@ -245,6 +245,7 @@ const ButtonTabs = styled.div`
 `;
 
 const Main = styled.div`
-  // margin-top: -200px;
+  position: relative;
+  z-index: 2; // Add z-index
   background-color: rgba(0, 0, 0, 0);
 `;
