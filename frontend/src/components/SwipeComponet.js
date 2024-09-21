@@ -35,6 +35,7 @@ export default function SwipeComponet({ arr }) {
         }}
       >
         {arr.map((content) => {
+          console.log("content", content);
           let thumbnail =
             content?.selectedImageThumbnail?.length > 0
               ? content.selectedImageThumbnail
@@ -65,7 +66,7 @@ export default function SwipeComponet({ arr }) {
                           }}
                           style={{textDecoration: 'underline', cursor: 'pointer'}}
                         >
-                          {content.user.accountName}
+                          {content.videoOwner}
                         </span>
                       </h1>
                     </div>
@@ -73,7 +74,7 @@ export default function SwipeComponet({ arr }) {
                         {content.contentType === 'audio' || content.contentType === 'video' || content.contentType === 'recommendation'? <PlayButton track={{id: content._id, songUrl: content.fileUrl,
                                   songTitle: content.title,
                                   isVideo: content.contentType == "video",
-                                  artistName: content.user.accountName,
+                                  artistName: content.videoOwner,
                                   img: content.selectedImageThumbnail}}/> : ''}
 
                       </div>

@@ -72,10 +72,10 @@ export default function Library() {
               <h2 className="sec-title">Music Video</h2>
               <SwipeComponet arr={recommendations}></SwipeComponet>
             </div>
-            <h2 className="sec-title">Meditation</h2>
+            {/* <h2 className="sec-title">Meditation</h2>
             <SwipeComponet arr={recommendations}></SwipeComponet>
             <h2 className="sec-title">Studio recording</h2>
-            <SwipeComponet arr={recommendations}></SwipeComponet>
+            <SwipeComponet arr={recommendations}></SwipeComponet> */}
       </Main>
     </MainContainer>
   );
