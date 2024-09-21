@@ -20,11 +20,14 @@ export default function SwipeComponet({ arr }) {
     console.log("Unique emails to fetch:", emails);
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
-      console.log("API request URL:", `/api/getArtistName?${queryParams}`);
-      const response = await fetch(`/api/getArtistName?${queryParams}`, {
+      console.log("API request URL:", `/api/getArtistNames?${queryParams}`);
+      const response = await fetch(`/api/getArtistNames?${queryParams}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       console.log("API response data:", data);
       setArtistNames(data);
@@ -33,7 +36,9 @@ export default function SwipeComponet({ arr }) {
     }
   };
 
-  fetchArtistName();
+  if (arr && arr.length > 0) {
+    fetchArtistName();
+  }
 }, [arr]);
 
   return (
