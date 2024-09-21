@@ -10,6 +10,8 @@ export default function Library() {
   // const isAuthenticated = true;
   // const user ={ name: "debug9@debug.com" }
 
+  const [videos, setVideos] = useState([]);
+
   useEffect(() => {
     const fetchRecommendations = async () => {
         try {
