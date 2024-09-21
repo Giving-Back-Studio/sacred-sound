@@ -6,76 +6,68 @@ import SwipeComponet from "../components/SwipeComponet";
 
 import { useOutletContext } from "react-router-dom";
 export default function Library() {
-  const { user, isAuthenticated } = useAuth0();
+  // const { user, isAuthenticated } = useAuth0();
   // const isAuthenticated = true;
-  // const user ={ name: "debug9@debug.com" }
-
-  const context = useOutletContext();
-  const { isSearched, result } = context;
-  // useEffect(() => {
-  //   console.log(result)
-  // }, [isSearched, result])
-  // const user = { name: "debug9@debug.com" };
-  const [filter, setFilter] = useState("all");
-  const [contents, setContents] = useState([]);
-  const [allContent, setAllContent] = useState([]);
+  const user ={ name: "debug9@debug.com" }
   const [recommendations, setRecommendations] = useState([]);
-  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+  let isMounted = true;
+
   const fetchRecommendations = async () => {
     try {
       if (user) {
+        console.log("Fetching recommendations for user:", user.name);
         const recoResponse = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations_Scenario_MusicVideo/${user.name}`
         );
+        console.log("Received recommendation response:", recoResponse.data);
         const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
-        const list = [];
-        await Promise.allSettled(
+        console.log("Extracted video IDs:", videoIds);
+        
+        const list = await Promise.all(
           videoIds.map(async (id) => {
-            const videoResp = await axios.get(
-              `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
-            );
-            const videoData = videoResp.data;
-            if (videoData) {
-              list.push({
-                ...videoData,
+            try {
+              const videoResp = await axios.get(
+                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
+              );
+              return {
+                ...videoResp.data,
                 contentType: "recommendation",
-              });
+              };
+            } catch (error) {
+              console.error(`Error fetching metadata for video ID ${id}:`, error);
+              return null;
             }
           })
         );
 
-        setRecommendations(list);
+        const filteredList = list.filter(item => item !== null);
+        console.log("Final recommendations list:", filteredList);
+        
+        if (isMounted) {
+          setRecommendations(filteredList);
+        }
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching recommendations:", error);
     }
   };
 
+  fetchRecommendations();
 
-  const fetchEvents = async (type, setState) => {
-    try {
-      let url = `${process.env.REACT_APP_API_BASE_URL}/api/getEvents/all`;
-
-      const response = await axios.get(url);
-      if (response.status === 200) {
-        response.data.events = response.data.events.map((content) => ({
-          ...content,
-          contentType: "event",
-        }));
-        setEvents(response.data.events);
-      } else {
-        console.error(`Request failed with status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error(`An error occurred: ${error}`);
-    }
+  return () => {
+    isMounted = false;
   };
+}, [user]);
+
+  const userEmail = user ? user.name : null;
 
   useEffect(() => {
-          fetchRecommendations();
-      // fetchEvents();
-    
-  }, [filter]);
+    if (userEmail) {
+      fetchRecommendations();
+    }
+  }, [userEmail]);
 
   return (
     <MainContainer>
@@ -84,35 +76,14 @@ export default function Library() {
         </CoverImage>
       </CoverSection>
       <Main>
-        {!isSearched ? (
-          <>
-            {filter !== "all" ? (
-              <SwipeComponet arr={contents}></SwipeComponet>
-            ) : (
-              <>
-                <div className="top-section">
-                  <h2 className="sec-title">Music Video</h2>
-                  <SwipeComponet arr={allContent}></SwipeComponet>
-                </div>
-                <h2 className="sec-title">Meditation</h2>
-                <SwipeComponet arr={recommendations}></SwipeComponet>
-                <h2 className="sec-title">Studio recording</h2>
-                <SwipeComponet arr={allContent}></SwipeComponet>
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <h2 className="sec-title">Tracks</h2>
-            <SwipeComponet arr={result.tracks}></SwipeComponet>
-
-            <h2 className="sec-title">Artists</h2>
-            <SwipeComponet arr={result.artists}></SwipeComponet>
-
-            <h2 className="sec-title">Albums</h2>
-            <SwipeComponet arr={result.albums}></SwipeComponet>
-          </>
-        )}
+            <div className="top-section">
+              <h2 className="sec-title">Music Video</h2>
+              <SwipeComponet arr={recommendations}></SwipeComponet>
+            </div>
+            <h2 className="sec-title">Meditation</h2>
+            <SwipeComponet arr={recommendations}></SwipeComponet>
+            <h2 className="sec-title">Studio recording</h2>
+            <SwipeComponet arr={recommendations}></SwipeComponet>
       </Main>
     </MainContainer>
   );
