@@ -895,7 +895,7 @@ const getVideoMetadataFromObjectId = async (req, res) => {
     
     try {
         await client.connect();
-        const db = client.db("sacred_sound_studio");
+        const db = client.db("db-name");
         const result = await db.collection("ContentMetaData").findOne({ _id: new ObjectId(id) });
 
         if (result) {
@@ -1153,7 +1153,7 @@ const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
         });
 
         const response = await recombeeClient.send(getRecommendationsRequest);
-        console.log(response);
+        console.log("getRecommendationsRequest"+ response);
 
         return res.json(response);
 

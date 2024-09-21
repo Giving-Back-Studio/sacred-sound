@@ -10,7 +10,7 @@ export default function Library() {
   // const isAuthenticated = true;
   const user ={ name: "debug9@debug.com" }
   const [recommendations, setRecommendations] = useState([]);
-
+  const userEmail = user ? user.name : null;
   useEffect(() => {
   let isMounted = true;
 
@@ -59,15 +59,7 @@ export default function Library() {
   return () => {
     isMounted = false;
   };
-}, [user]);
-
-  const userEmail = user ? user.name : null;
-
-  useEffect(() => {
-    if (userEmail) {
-      fetchRecommendations();
-    }
-  }, [userEmail]);
+}, [userEmail]);
 
   return (
     <MainContainer>
