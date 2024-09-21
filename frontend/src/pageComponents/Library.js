@@ -50,34 +50,7 @@ export default function Library() {
       console.error(error);
     }
   };
-  const fetchData = async (type, setState) => {
-    try {
-      let url = `${process.env.REACT_APP_API_BASE_URL}/api/getAllContent?type=${type}`;
 
-      const response = await axios.get(url);
-      if (response.status === 200) {
-        if (type !== "all") {
-          response.data = response.data.map((element) => ({
-            ...element,
-            contentType: type,
-          }));
-        } else {
-          response.data = response.data.map((element) => {
-            if (element.isOnlyAudio) {
-              return { ...element, contentType: "audio" };
-            } else {
-              return { ...element, contentType: "video" };
-            }
-          });
-        }
-        setState(response.data);
-      } else {
-        console.error(`Request failed with status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error(`An error occurred: ${error}`);
-    }
-  };
 
   const fetchEvents = async (type, setState) => {
     try {

@@ -21,7 +21,6 @@ const {
   encodeCreds,
   decodeCreds,
   syncCatalog,
-  getItemToUserRecommendations,
   getSearchResult,
   addUserOnRecombee,
   setUserOnRecombee,
@@ -41,7 +40,6 @@ const {
   getAlbumById,
   deleteAlbum,
   postNewContentTypePropertyWithAttributes,
-  getAllContent,
   getUserProfileById,
   getFeaturedByArtist,
   addTrackToAlbum,
@@ -103,7 +101,6 @@ express()
   .post("/api/postNewUserWithAccountName", postNewUserWithAccountName)
   .get("/api/getContentByArtist", getContentByArtist)
   .get("/api/getFeaturedByArtist", getFeaturedByArtist)
-  .get("/api/getAllContent", getAllContent)
   .get("/api/getApprovedVideoContent", getApprovedVideoContent)
   .delete("/api/deleteContent", deleteContent)
   .post("/api/postNewAlbum", postNewAlbum)
@@ -143,7 +140,13 @@ express()
 
   //Recombee:
   .get("/api/syncCatalog", syncCatalog)
-  .get("/api/getItemToUserRecommendations/:userId", getItemToUserRecommendations)
+  .get("/api/getItemToUserRecommendations_Scenario_StudioRecording/:userId", getItemToUserRecommendations_Scenario_StudioRecording)
+  .get("/api/getItemToUserRecommendations_Scenario_MusicVideo/:userId", getItemToUserRecommendations_Scenario_MusicVideo)
+  .get("/api/getItemToUserRecommendations_Scenario_Meditation/:userId", getItemToUserRecommendations_Scenario_Meditation)
+  .get("/api/getItemToUserRecommendations_Scenario_DJSet/:userId", getItemToUserRecommendations_Scenario_DJSet)
+  .get("/api/getItemToUserRecommendations_Scenario_BehindTheScenes/:userId", getItemToUserRecommendations_Scenario_BehindTheScenes)
+  .get("/api/getItemToUserRecommendations_Scenario_Concert/:userId", getItemToUserRecommendations_Scenario_Concert)
+  .get("/api/getItemToUserRecommendations_Scenario_VideoLesson/:userId", getItemToUserRecommendations_Scenario_VideoLesson)
   .get("/api/getItemToItemRecommendations/:userId/:itemId", getItemToItemRecommendations)
   .get("/api/getSearchResult/:userId/:searchQuery", getSearchResult)
   .get("/api/getItemPropertiesFromRecombee/:itemId", getItemPropertiesFromRecombee)

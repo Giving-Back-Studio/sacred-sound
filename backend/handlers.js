@@ -1136,7 +1136,7 @@ const syncCatalog = async (req, res) => {
     }
 };
 
-const getItemToUserRecommendations = async (req, res) => {
+const getItemToUserRecommendations_Scenario_Meditation = async (req, res) => {
     const userId = req.params.userId;
     const { recombeeClient } = require("./utils/recombeeClient");
     
@@ -1146,7 +1146,175 @@ const getItemToUserRecommendations = async (req, res) => {
         console.log("getRecommendations's UserId is: " + userId);
 
         const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
-            'scenario': 'scenario_1',
+            'scenario': 'Scenario_Meditation',
+            'cascadeCreate': true,
+        });
+
+        const response = await recombeeClient.send(getRecommendationsRequest);
+        console.log(response);
+
+        return res.json(response);
+
+    } catch (err) {
+        console.log("Error in File-RecombeeController > Method-getRecommendations:", err);
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: err.message || "An error occurred.",
+        });
+    }
+};
+
+const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
+    const userId = req.params.userId;
+    const { recombeeClient } = require("./utils/recombeeClient");
+    
+    try {
+        const count = 10;
+
+        console.log("getRecommendations's UserId is: " + userId);
+
+        const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
+            'scenario': 'Scenario_MusicVideo',
+            'cascadeCreate': true,
+        });
+
+        const response = await recombeeClient.send(getRecommendationsRequest);
+        console.log(response);
+
+        return res.json(response);
+
+    } catch (err) {
+        console.log("Error in File-RecombeeController > Method-getRecommendations:", err);
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: err.message || "An error occurred.",
+        });
+    }
+};
+
+const getItemToUserRecommendations_Scenario_StudioRecording = async (req, res) => {
+    const userId = req.params.userId;
+    const { recombeeClient } = require("./utils/recombeeClient");
+    
+    try {
+        const count = 10;
+
+        console.log("getRecommendations's UserId is: " + userId);
+
+        const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
+            'scenario': 'Scenario_StudioRecording',
+            'cascadeCreate': true,
+        });
+
+        const response = await recombeeClient.send(getRecommendationsRequest);
+        console.log(response);
+
+        return res.json(response);
+
+    } catch (err) {
+        console.log("Error in File-RecombeeController > Method-getRecommendations:", err);
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: err.message || "An error occurred.",
+        });
+    }
+};
+
+const getItemToUserRecommendations_Scenario_DJSet = async (req, res) => {
+    const userId = req.params.userId;
+    const { recombeeClient } = require("./utils/recombeeClient");
+    
+    try {
+        const count = 10;
+
+        console.log("getRecommendations's UserId is: " + userId);
+
+        const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
+            'scenario': 'Scenario_DJSet',
+            'cascadeCreate': true,
+        });
+
+        const response = await recombeeClient.send(getRecommendationsRequest);
+        console.log(response);
+
+        return res.json(response);
+
+    } catch (err) {
+        console.log("Error in File-RecombeeController > Method-getRecommendations:", err);
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: err.message || "An error occurred.",
+        });
+    }
+};
+
+const getItemToUserRecommendations_Scenario_BehindTheScenes = async (req, res) => {
+    const userId = req.params.userId;
+    const { recombeeClient } = require("./utils/recombeeClient");
+    
+    try {
+        const count = 10;
+
+        console.log("getRecommendations's UserId is: " + userId);
+
+        const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
+            'scenario': 'Scenario_BehindTheScenes',
+            'cascadeCreate': true,
+        });
+
+        const response = await recombeeClient.send(getRecommendationsRequest);
+        console.log(response);
+
+        return res.json(response);
+
+    } catch (err) {
+        console.log("Error in File-RecombeeController > Method-getRecommendations:", err);
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: err.message || "An error occurred.",
+        });
+    }
+};
+
+const getItemToUserRecommendations_Scenario_Concert = async (req, res) => {
+    const userId = req.params.userId;
+    const { recombeeClient } = require("./utils/recombeeClient");
+    
+    try {
+        const count = 10;
+
+        console.log("getRecommendations's UserId is: " + userId);
+
+        const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
+            'scenario': 'Scenario_Concert',
+            'cascadeCreate': true,
+        });
+
+        const response = await recombeeClient.send(getRecommendationsRequest);
+        console.log(response);
+
+        return res.json(response);
+
+    } catch (err) {
+        console.log("Error in File-RecombeeController > Method-getRecommendations:", err);
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: err.message || "An error occurred.",
+        });
+    }
+};
+
+const getItemToUserRecommendations_Scenario_VideoLesson = async (req, res) => {
+    const userId = req.params.userId;
+    const { recombeeClient } = require("./utils/recombeeClient");
+    
+    try {
+        const count = 10;
+
+        console.log("getRecommendations's UserId is: " + userId);
+
+        const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
+            'scenario': 'Scenario_VideoLesson',
             'cascadeCreate': true,
         });
 
@@ -1508,39 +1676,39 @@ try {
     }
 };
 
+// getAllContent Endpoint disabled Sept 2024.
+// const getAllContent = async (req, res) => {
+//     const client = await new MongoClient(MONGO_URI, options);
+//     let {type} = req.query
+//     try {
+//         await client.connect();
+//         let match = {};
+//         if(type === 'audio'){
+//             match.isOnlyAudio = true
+//         }else if(type === 'video'){
+//             match.isOnlyAudio = false
+//         } 
+//         const collection = client.db('db-name').collection('ContentMetaData');
+//         // const contentDocuments = await collection.find({ isOnlyAudio: type === 'audio'? true : false }).toArray();
+//         const contentDocuments = await collection.aggregate([
+//             {$match: match},
+//             {$lookup: {
+//                 from: 'userAccounts',
+//                 localField: 'owner',
+//                 foreignField: 'email',
+//                 as: 'user'
+//             }},
+//             {$unwind: '$user'}
+//         ]).toArray()
 
-const getAllContent = async (req, res) => {
-    const client = await new MongoClient(MONGO_URI, options);
-    let {type} = req.query
-    try {
-        await client.connect();
-        let match = {};
-        if(type === 'audio'){
-            match.isOnlyAudio = true
-        }else if(type === 'video'){
-            match.isOnlyAudio = false
-        } 
-        const collection = client.db('db-name').collection('ContentMetaData');
-        // const contentDocuments = await collection.find({ isOnlyAudio: type === 'audio'? true : false }).toArray();
-        const contentDocuments = await collection.aggregate([
-            {$match: match},
-            {$lookup: {
-                from: 'userAccounts',
-                localField: 'owner',
-                foreignField: 'email',
-                as: 'user'
-            }},
-            {$unwind: '$user'}
-        ]).toArray()
-
-        res.json(contentDocuments);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Server error' });
-    } finally {
-        client.close();
-    }
-};
+//         res.json(contentDocuments);
+//     } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({ message: 'Server error' });
+//     } finally {
+//         client.close();
+//     }
+// };
 
  const addTrackToAlbum = async (req, res) => {
     const client = new MongoClient(MONGO_URI, options);
@@ -2527,9 +2695,16 @@ module.exports = {
     encodeCreds,
     decodeCreds,
     syncCatalog,
-    getItemToUserRecommendations,
+    getItemToUserRecommendations_Scenario_Meditation,
+    getItemToUserRecommendations_Scenario_MusicVideo,
+    getItemToUserRecommendations_Scenario_StudioRecording,
+    getItemToUserRecommendations_Scenario_DJSet,
+    getItemToUserRecommendations_Scenario_BehindTheScenes,
+    getItemToUserRecommendations_Scenario_Concert,
+    getItemToUserRecommendations_Scenario_VideoLesson,
     getSearchResult,
     addUserOnRecombee,
+
     setUserOnRecombee,
     getItemPropertiesFromRecombee,
     getItemToItemRecommendations,
@@ -2548,7 +2723,7 @@ module.exports = {
     deleteAlbum,
     postNewContentTypePropertyWithAttributes,
     getFeaturedByArtist,
-    getAllContent,
+    // getAllContent,
     getUserProfileById,
     addTrackToAlbum,
     getAlbum,
