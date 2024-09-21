@@ -35,6 +35,10 @@ import LandingPage from "./pageComponents/LandingPage";
 import Welcome from "./pageComponents/Welcome";
 import Topics from "./pageComponents/Topics"
 import PaymentDetail from "./pageComponents/PaymentDetails";
+import Login from './pageComponents/Login';
+import Signup from './pageComponents/Signup';
+import ForgotPassword from './pageComponents/ForgotPassword';
+import ResetPassword from './pageComponents/ResetPassword';
 
 const App = () => {
   const { isLoading, error } = useAuth0();
@@ -92,6 +96,10 @@ const App = () => {
               <Route exact path="concert" element={<Concert/>}/>
             </Route>
           </Route>
+        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/signup" element={<Signup />} />
+        <Route exact path="/forgot" element={<ForgotPassword />} />
+        <Route exact path="/reset" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );
