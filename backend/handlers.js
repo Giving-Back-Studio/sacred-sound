@@ -2644,14 +2644,11 @@ const PostUserOnboardingProgress = async (req, res) => {
   };
   
 const getArtistNames = async (req, res) => {
-  console.log("getArtistNames reached!");
-  console.log("req.query", req.query);
   const { emails } = req.query;
   if (!emails) {
     return res.status(400).json({ error: "No emails provided" });
   }
   const emailArray = emails.split(',');
-  console.log("emails", emailArray);
   const client = new MongoClient(MONGO_URI, options);
 
   try {
@@ -2660,7 +2657,6 @@ const getArtistNames = async (req, res) => {
     const userCollection = db.collection("userAccounts"); 
 
     const users = await userCollection.find({ email: { $in: emailArray } }).toArray();
-    console.log("users found:", users.length);
     const artistNames = {};
     users.forEach(user => {
       artistNames[user.email] = user.accountName;
@@ -2673,6 +2669,26 @@ const getArtistNames = async (req, res) => {
     await client.close();
   }
 };
+
+//this endpoint store email on mongodb into a waitlist collection
+const storeEmailOnWaitlist = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+  const client = new MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db("db-name");
+    const waitlistCollection = db.collection("waitlist");
+    await waitlistCollection.insertOne({ email });
+    res.status(200).json({ message: "Email stored successfully" });
+  } catch (error) {
+    console.error("Error storing email on waitlist:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
 
 module.exports = {
     getServerHomePage,
@@ -2752,5 +2768,6 @@ module.exports = {
     sendThanksCoinsViaAlbumPage,
     sendThanksCoinsViaContent,
     PostUserOnboardingProgress,
-    getArtistNames
+    getArtistNames,
+    storeEmailOnWaitlist
 };

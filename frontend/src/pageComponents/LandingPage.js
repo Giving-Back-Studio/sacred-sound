@@ -19,7 +19,7 @@ export default function LandingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/saveEmail`, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/storeEmailOnWaitlist`, {
         email,
         timestamp: new Date()
       });
