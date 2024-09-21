@@ -107,8 +107,8 @@ export default function Library() {
   };
 
   useEffect(() => {
-    console.log("Auth state changed:", { isAuthenticated, isLoading, user });
-    if (isAuthenticated && user && !isLoading) {
+    console.log("Auth state changed:", { isAuthenticated, user });
+    if (isAuthenticated && user) {
       console.log("User authenticated:", user.name);
       fetchRecommendations();
     } else if (!isLoading) {
