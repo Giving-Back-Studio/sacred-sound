@@ -105,7 +105,7 @@ const MainContainer = styled.div`
 
 const CoverSection = styled.div`
   width: 100%;
-  height: 350px;
+  height: calc(100vh - 120px); // Adjust height to fill space between player and viewport
   background-color: #d9d9d9;
   margin-bottom: 20px;
   overflow: hidden;
@@ -115,13 +115,13 @@ const CoverSection = styled.div`
 const CoverImage = styled.div`
   position: relative;
   z-index: 1; // Decrease z-index
-  height: 400px;
+  height: 100%; // Make height 100% to fill CoverSection
   background: linear-gradient(135deg, #434289 0%, #687550 100%);
   &::before {
     content: "";
     position: absolute;
     inset: 0;
-    height: 99%;
+    height: 100%; // Change to 100% to fill CoverImage
     width: 100%;
     background: linear-gradient(135deg, #434289 0%, #687550 100%);
     z-index: 1;
