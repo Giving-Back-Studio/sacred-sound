@@ -53,7 +53,7 @@ export default function Library() {
 
     fetchRecommendations("getItemToUserRecommendations_Scenario_MusicVideo", setRecommendations_MusicVideo);
     fetchRecommendations("getItemToUserRecommendations_Scenario_Meditation", setRecommendations_Meditation);
-    fetchRecommendations("getItemToUserRecommendations_Scenario_StudioRecording", setRecommendations_StudioRecording);
+    fetchRecommendations("StudioRecording", setRecommendations_StudioRecording);
 
     return () => {
       isMounted = false;
@@ -69,7 +69,7 @@ export default function Library() {
           <h2 className="sec-title">Meditation</h2>
           <SwipeComponet arr={recommendations_Meditation}></SwipeComponet>
           <h2 className="sec-title">Studio Recording</h2>
-          <SwipeComponet arr={recommendations_StudioRecording}></SwipeComponet>
+          <SwipeComponet style={{paddingBottom: "300px"}} arr={recommendations_StudioRecording}></SwipeComponet>
         </div>
       </Main>
     </MainContainer>
@@ -82,7 +82,7 @@ const MainContainer = styled.div`
   overflow-x: hidden;
   margin: 0; // Remove margins from MainContainer
   height: 100vh; // Fill the entire viewport height
-  background-color: #CCE6E6; // Change background to CCE6E6
+  background: linear-gradient(135deg, rgba(168, 224, 255, 0.5), rgba(208, 232, 208, 0.5), rgba(255, 224, 178, 0.5), rgba(255, 179, 179, 0.5)); // Softer gradient colors with reduced opacity
   // Remove animation properties
   // ... existing styles ...
 `;
@@ -91,7 +91,7 @@ const Main = styled.div`
   position: relative;
   z-index: 2; // Add z-index
   background-color: rgba(0, 0, 0, 0); // Keep the background transparent
-  margin: 55px; // Add margins to Main
+  margin: 20px; // Add margins to Main
   padding: 0 0 120px 0; // Keep padding for Main
   height: calc(100vh - 120px); // Adjust height for Main
 `;

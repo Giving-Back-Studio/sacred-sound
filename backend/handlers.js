@@ -899,8 +899,10 @@ const getVideoMetadataFromObjectId = async (req, res) => {
         const result = await db.collection("ContentMetaData").findOne({ _id: new ObjectId(id) });
 
         if (result) {
+            console.log("result: ", result);
             res.status(200).json(result);
         } else {
+            console.log("result is 404.");
             res.status(404).json({ message: "Video not found" });
         }
     } catch (error) {
