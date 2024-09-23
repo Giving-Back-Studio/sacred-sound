@@ -82,16 +82,20 @@ const MainContainer = styled.div`
   overflow-x: hidden;
   margin: 0; // Remove margins from MainContainer
   height: 100vh; // Fill the entire viewport height
-  background-color: #CCE6E6; // Change background to CCE6E6
-  // Remove animation properties
-  // ... existing styles ...
+  background: 
+    radial-gradient(closest-side at 50% 50%, 
+      rgba(67, 66, 137, 0.2) 0%, 
+      rgba(95, 104, 94, 0.2) 100%), 
+    white; // Gradient with 20% opacity on top of 100% white
+  padding-bottom: 360px; // Adjust padding to match MusicPlayer height
 `;
+
 
 const Main = styled.div`
   position: relative;
   z-index: 2; // Add z-index
   background-color: rgba(0, 0, 0, 0); // Keep the background transparent
   margin: 55px; // Add margins to Main
-  padding: 0 0 120px 0; // Keep padding for Main
-  height: calc(100vh - 120px); // Adjust height for Main
+  padding: 0; // Remove padding for Main
+  height: 110vh;
 `;

@@ -194,7 +194,7 @@ export default SidebarComponent;
 
 const Main = styled.div`
   display: flex;
-  background-color: #E6F2F2; // Change background to CCE6E6
+  background: #434289; 
   .sidebar {
     ...
   }

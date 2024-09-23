@@ -151,7 +151,11 @@ const MainContainer = styled.div`
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto; // Ensure vertical scrolling is enabled
-
+ background: 
+    radial-gradient(closest-side at 50% 50%, 
+      rgba(67, 66, 137, 0.2) 0%, 
+      rgba(95, 104, 94, 0.2) 100%), 
+    white; // Gradient with 20% opacity on top of 100% white
   @media (max-width: 767px) {
     min-height: calc(100vh - 200px); // Adjust for mobile view
     padding: 0 0 200px 0; // Adjust padding for mobile
