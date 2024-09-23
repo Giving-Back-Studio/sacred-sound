@@ -893,7 +893,7 @@ const getVideoMetadataFromObjectId = async (req, res) => {
     console.log("getVideoMetadataFromObjectId for: ", id);
     
     
-    try {try {
+    try {
         await client.connect();
         const db = client.db("db-name");
         const collection = db.collection("ContentMetaData");
