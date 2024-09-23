@@ -896,15 +896,33 @@ const getVideoMetadataFromObjectId = async (req, res) => {
     try {
         await client.connect();
         const db = client.db("db-name");
-        const result = await db.collection("ContentMetaData").findOne({ _id: new ObjectId(id) });
+        const collection = db.collection("ContentMetaData");
+        
+        // Log the query being executed
+        console.log(`Executing query: db.ContentMetaData.findOne({ _id: ObjectId("${id}") })`);
+        
+        // First, try to find the document using the ObjectId
+        let result = await collection.findOne({ _id: new ObjectId(id) });
+
+        // If not found, try searching by string representation of ObjectId
+        if (!result) {
+            console.log(`Document not found with ObjectId. Trying string representation...`);
+            result = await collection.findOne({ _id: id });
+        }
 
         if (result) {
+            console.log(`Video metadata found for id: ${id}`);
+            console.log(`Found document:`, JSON.stringify(result, null, 2));
             res.status(200).json(result);
         } else {
+            console.log(`No video metadata found for id: ${id}`);
+            // Log all documents in the collection (be careful with this in production!)
+            const allDocs = await collection.find({}).toArray();
+            console.log(`All documents in collection:`, JSON.stringify(allDocs, null, 2));
             res.status(404).json({ message: "Video not found" });
         }
     } catch (error) {
-        console.error("Error retrieving video metadata:", error);
+        console.error(`Error retrieving video metadata for id ${id}:`, error);
         res.status(500).json({ message: "Error retrieving video metadata", error: error.message });
     } finally {
         await client.close();

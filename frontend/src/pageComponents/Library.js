@@ -53,7 +53,7 @@ export default function Library() {
 
     fetchRecommendations("getItemToUserRecommendations_Scenario_MusicVideo", setRecommendations_MusicVideo);
     fetchRecommendations("getItemToUserRecommendations_Scenario_Meditation", setRecommendations_Meditation);
-    fetchRecommendations("getItemToUserRecommendations_Scenario_StudioRecording", setRecommendations_StudioRecording);
+    fetchRecommendations("StudioRecording", setRecommendations_StudioRecording);
 
     return () => {
       isMounted = false;
@@ -69,7 +69,7 @@ export default function Library() {
           <h2 className="sec-title">Meditation</h2>
           <SwipeComponet arr={recommendations_Meditation}></SwipeComponet>
           <h2 className="sec-title">Studio Recording</h2>
-          <SwipeComponet arr={recommendations_StudioRecording}></SwipeComponet>
+          <SwipeComponet style={{paddingBottom: "300px"}} arr={recommendations_StudioRecording}></SwipeComponet>
         </div>
       </Main>
     </MainContainer>
