@@ -83,6 +83,7 @@ const {
   getArtistNames,
   storeEmailOnWaitlist,
   signup,
+  login,
 } = require("./handlers");
 
 const {
@@ -146,6 +147,7 @@ express()
   .get("/api/getArtistNames", getArtistNames)
   .post("/api/storeEmailOnWaitlist", storeEmailOnWaitlist)
   .post("/api/signup", signup)
+  .post("/api/login", login)
   
 
   //Key encryption:

@@ -2738,6 +2738,43 @@ const storeEmailOnWaitlist = async (req, res) => {
         }
     };
 
+    const login = async (req, res) => {
+    const client = new MongoClient(MONGO_URI, options);
+    try {
+        await client.connect();
+        const db = client.db('db-name');
+        const userCollection = db.collection('userAccounts');
+
+        const { email, password } = req.body;
+
+        // Check if user exists
+        const user = await userCollection.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        // Compare password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        // Generate JWT
+        const sacredSound_authToken = jwt.sign({ _id: user._id.toString() }, JWT_SECRET);
+
+        res.status(200).json({ 
+            message: 'Login successful', 
+            sacredSound_authToken 
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Error during login' });
+    } finally {
+        await client.close();
+    }
+};
+
+
 
 
 module.exports = {
@@ -2821,4 +2858,5 @@ module.exports = {
     getArtistNames,
     storeEmailOnWaitlist,
     signup,
+    login,
 };
