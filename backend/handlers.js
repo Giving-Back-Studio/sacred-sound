@@ -7,6 +7,7 @@ const { decryptData } = require("./utils/cardDetailsEncryption");
 const axios = require("axios");
 const { Video } = require("@mux/mux-node");
 const bcrypt = require('bcryptjs');
+console.log('bcryptjs loaded successfully');
 const jwt = require('jsonwebtoken');
 const {
   findSubscriptionByEmail,
