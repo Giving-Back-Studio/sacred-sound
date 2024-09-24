@@ -1152,7 +1152,7 @@ const getItemToUserRecommendations_Scenario_Meditation = async (req, res) => {
 };
 
 const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
-    cconst userId = sanitizeUserId(req.params.userId);
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
