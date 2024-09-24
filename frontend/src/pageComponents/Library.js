@@ -90,12 +90,25 @@ const MainContainer = styled.div`
   padding-bottom: 360px; // Adjust padding to match MusicPlayer height
 `;
 
-
 const Main = styled.div`
   position: relative;
   z-index: 2; // Add z-index
   background-color: rgba(0, 0, 0, 0); // Keep the background transparent
-  margin: 55px; // Add margins to Main
+  margin: 55px; // Default margin
   padding: 0; // Remove padding for Main
   height: 110vh;
+
+  @media (max-width: 1440px) {
+    margin: 20px; // Margin for screens 1440px and below
+  }
+
+  @media (max-width: 991px) {
+    margin: 10px; // Margin for screens 768px and below
+    padding-top: 22px; // Added top padding for screens 991px and below
+  }
+
+  @media (max-width: 360px) {
+    margin: 5px; // Margin for screens 360px and below
+    padding-top: 22px; // Added top padding for screens 360px and below
+  }
 `;

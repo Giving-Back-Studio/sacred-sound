@@ -133,6 +133,7 @@ const SidebarComponent = () => {
           customBreakPoint="991px"
           onBreakPoint={setBroken}
           onBackdropClick={() => setToggled((prev) => !prev)}
+          style={{ backgroundColor: '#D9D9E7 !important' }} // Force background color
         >
           <Logo>
             <img src={SacredSoundLogo} alt="logo"></img>
@@ -153,6 +154,10 @@ const SidebarComponent = () => {
             className="side-menu"
             menuItemStyles={{
               button: {
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px',
+                height: 'auto', // Ensure height is flexible
                 [`&.active`]: {
                   backgroundColor: "#13395e",
                   color: "#b6c8d9",
@@ -160,20 +165,32 @@ const SidebarComponent = () => {
               },
             }}
           >
-            <MenuItem component={<Link to="library" />}>
-              <img src={LibraryIcon} alt="Upload" /> Library
+            <MenuItem>
+              <Link to="library" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
+                <img src={LibraryIcon} alt="Library" />
+                <span style={{ marginLeft: '10px' }}>Library</span>
+              </Link>
             </MenuItem>
-            <MenuItem component={<Link to="concert" />}>
-              <img src={Concert} alt="Upload" /> Concert Hall
+            <MenuItem>
+              <Link to="concert" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
+                <img src={Concert} alt="Concert Hall" />
+                <span style={{ marginLeft: '10px' }}>Concert Hall</span>
+              </Link>
             </MenuItem>
-            <MenuItem component={<Link to="#" />}>
-              <img src={Feed} alt="Upload" /> Feed
+            <MenuItem>
+              <Link to="#" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
+                <img src={Feed} alt="Feed" />
+                <span style={{ marginLeft: '10px' }}>Feed</span>
+              </Link>
             </MenuItem>
-
-            <MenuItem className="sidebar-bottom-menu" component={<Link to="/MyAccount" />}>
-              <img src={MyAcc} alt="Upload" /> My Account
-            </MenuItem>
-
+            <div style={{ paddingTop: '300px' }}>
+              <MenuItem>
+                <Link to="/MyAccount" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
+                  <img src={MyAcc} alt="My Account" />
+                  <span style={{ marginLeft: '10px' }}>My Account</span>
+                </Link>
+              </MenuItem>
+            </div>
           </Menu>
         </Sidebar>
 

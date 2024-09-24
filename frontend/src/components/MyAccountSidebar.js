@@ -30,7 +30,9 @@ const MyAccountSidebarComponent = () => {
           onBackdropClick={() => setToggled((prev) => !prev)}
         >
           <Logo>
-            <img src={SacredSoundLogo} alt="logo"></img>
+            <Link to="/main/library">
+              <img src={SacredSoundLogo} alt="logo"></img>
+            </Link>
           </Logo>
           <Menu
             menuItemStyles={{

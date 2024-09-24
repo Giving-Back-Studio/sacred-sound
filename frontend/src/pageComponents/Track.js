@@ -64,6 +64,7 @@ export default function Track() {
       <HeadPart>
 <BackButton/>
         <CoverImage>
+        <img src={require('../assets/Background.png')} alt="not loaded"></img>
           {/* <img src={artistCover} alt="not loaded"></img> */}
         </CoverImage>
         <HeadProfile>
