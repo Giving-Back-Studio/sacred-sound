@@ -39,6 +39,7 @@ import Login from './pageComponents/Login';
 import Signup from './pageComponents/Signup';
 import ForgotPassword from './pageComponents/Forgot';
 import ResetPassword from './pageComponents/Reset';
+import ArtistSignup from './pageComponents/ArtistSignup';
 
 const App = () => {
   const { isLoading, error } = useAuth0();
@@ -93,6 +94,7 @@ const App = () => {
           </Route>
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
+        <Route exact path="/artist-signup" element={<ArtistSignup />} />
         <Route exact path="/forgot" element={<ForgotPassword />} />
         <Route exact path="/reset" element={<ResetPassword />} />
       </Routes>

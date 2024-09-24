@@ -3,12 +3,13 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+const ArtistSignup = () => {
   const [accountName, setAccountName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [isArtist, setIsArtist] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +18,8 @@ const Signup = () => {
       const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/signup`, {
         accountName,
         email,
-        password
+        password,
+        isArtist
       });
       
       // Store the token in localStorage
@@ -63,7 +65,7 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default ArtistSignup;
 
 const ErrorMessage = styled.div`
   color: red;
