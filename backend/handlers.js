@@ -32,6 +32,10 @@ const options = {
     useUnifiedTopology: true,
 };
 
+const sanitizeUserId = (userId) => {
+    return userId.replace(/[+]/g, '_');
+};
+
 const getServerHomePage = async (req, res) => {
     res.status(200).json({status: 200, message:`Sacred Sound Studio Back End Server is currently up and running!`});
 };
@@ -88,7 +92,8 @@ const postNewUserWithAccountName = async (req, res) => {
                         
                     }
                 }
-                await recombeeClient.send(new AddUser(userId));
+                const sanitizedUserId = sanitizeUserId(userId);
+                await recombeeClient.send(new AddUser(sanitizedUserId));
                 res.status(200).json({ status: 200, result: result });
             } else {
                 console.log("Failed to create user in MongoDB.");
@@ -118,7 +123,8 @@ const postNewUserWithAccountName = async (req, res) => {
             };
 
             // Create a SetUserValues request with both the user ID and properties
-            const setUserValuesRequest = new SetUserValues(userId, userProperties);
+            const sanitizedUserId = sanitizeUserId(userId);
+            const setUserValuesRequest = new SetUserValues(sanitizedUserId, userProperties);
 
             // Send the request to set user values
             await recombeeClient.send(setUserValuesRequest);
@@ -260,9 +266,9 @@ const updateUserProfile = async (req, res) => {
             };
 
             // Create a SetUserValues request with both the user ID and properties
-            const userId = query.email;
+            const sanitizedUserId = sanitizeUserId(user.email);
             const setUserValuesRequest = new SetUserValues(
-                userId,
+                sanitizedUserId,
                 userProperties
             );
 
@@ -1120,7 +1126,7 @@ const syncCatalog = async (req, res) => {
 };
 
 const getItemToUserRecommendations_Scenario_Meditation = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
@@ -1146,7 +1152,7 @@ const getItemToUserRecommendations_Scenario_Meditation = async (req, res) => {
 };
 
 const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
-    const userId = req.params.userId;
+    cconst userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
@@ -1172,7 +1178,7 @@ const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
 };
 
 const getItemToUserRecommendations_Scenario_StudioRecording = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
@@ -1198,7 +1204,7 @@ const getItemToUserRecommendations_Scenario_StudioRecording = async (req, res) =
 };
 
 const getItemToUserRecommendations_Scenario_DJSet = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
@@ -1225,7 +1231,7 @@ const getItemToUserRecommendations_Scenario_DJSet = async (req, res) => {
 };
 
 const getItemToUserRecommendations_Scenario_BehindTheScenes = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
@@ -1252,7 +1258,7 @@ const getItemToUserRecommendations_Scenario_BehindTheScenes = async (req, res) =
 };
 
 const getItemToUserRecommendations_Scenario_Concert = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
@@ -1279,7 +1285,7 @@ const getItemToUserRecommendations_Scenario_Concert = async (req, res) => {
 };
 
 const getItemToUserRecommendations_Scenario_VideoLesson = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     
     try {
@@ -1328,7 +1334,7 @@ const addUserPropertyOnRecombee = async (req, res) => {
 
 //manual addUser on Recombee
 const addUserOnRecombee = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     try{
         const { recombeeClient } = require("./utils/recombeeClient");
         await recombeeClient.send(new AddUser(userId));
@@ -1342,7 +1348,7 @@ const addUserOnRecombee = async (req, res) => {
 
 //manual setUser on Recombee
 const setUserOnRecombee = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = sanitizeUserId(req.params.userId);
     try{
         const { recombeeClient } = require("./utils/recombeeClient");
             const userProperties = {
@@ -1387,7 +1393,8 @@ const getItemPropertiesFromRecombee = async (req, res) => {
 }
 
 const getItemToItemRecommendations = async (req, res) => {
-    const { itemId, userId } = req.params;
+    const { itemId } = req.params;
+    const userId = sanitizeUserId(req.params.userId);
     const { recombeeClient } = require("./utils/recombeeClient");
     const count = 3;
 
@@ -2701,6 +2708,7 @@ const storeEmailOnWaitlist = async (req, res) => {
     const db = client.db('db-name');
     const userCollection = db.collection('userAccounts');
 
+    const contentType = "userAccounts";
     const { accountName, email, password, isArtist } = req.body;
 
     // Check if user already exists
@@ -2713,7 +2721,7 @@ const storeEmailOnWaitlist = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 8);
 
     // Create new user
-    const newUser = { accountName, email, password: hashedPassword, isArtist, createdAt: new Date() };
+    const newUser = { accountName, email, password: hashedPassword, isArtist, createdAt: new Date(), contentType };
     const result = await userCollection.insertOne(newUser);
 
     // Generate JWT access token (short-lived)

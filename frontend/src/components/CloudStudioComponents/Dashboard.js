@@ -14,10 +14,10 @@ const Dashboard = ({ user }) => {
             try {
                 if (user) {
                     console.log('user :', user);
-                    const recoResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations/${user}`);
-                    // console.log("recoResponse: ", recoResponse )
+                    const recoResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getItemToUserRecommendations_Scenario_MusicVideo/${user}`);
+                    console.log("recoResponse: ", recoResponse )
                     const objectIds = recoResponse.data.recomms.map(recomm => recomm.id);
-                    // console.log("VideoIds: ", videoIds);
+                    console.log("objectIds: ", objectIds);
                     const list = []
                     const videosData = await Promise.allSettled(objectIds.map(async (id) => {
                         const videoResp = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`);
