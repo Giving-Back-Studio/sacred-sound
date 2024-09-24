@@ -7,6 +7,7 @@ const Signup = () => {
   const [accountName, setAccountName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isArtist, setIsArtist] = useState(false); // New state for isArtist
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -17,11 +18,12 @@ const Signup = () => {
       const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/signup`, {
         accountName,
         email,
-        password
+        password,
+        isArtist
       });
       
       // Store the token in localStorage
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('sacredSound_authToken', response.data.sacredSound_authToken);
       
       // Redirect to the home page or dashboard
       navigate('/');

@@ -1159,7 +1159,6 @@ const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
         });
 
         const response = await recombeeClient.send(getRecommendationsRequest);
-        console.log("getRecommendationsRequest"+ response);
 
         return res.json(response);
 
@@ -2702,7 +2701,7 @@ const storeEmailOnWaitlist = async (req, res) => {
             const db = client.db('db-name');
             const userCollection = db.collection('userAccounts');
 
-            const { accountName, email, password } = req.body;
+            const { accountName, email, password, isArtist } = req.body;
 
             // Check if user already exists
             const existingUser = await userCollection.findOne({ email });
@@ -2718,17 +2717,18 @@ const storeEmailOnWaitlist = async (req, res) => {
                 accountName,
                 email,
                 password: hashedPassword,
+                isArtist,
                 createdAt: new Date()
             };
 
             const result = await userCollection.insertOne(newUser);
             
             // Generate JWT
-            const token = jwt.sign({ _id: result.insertedId.toString() }, JWT_SECRET);
+            const sacredSound_authToken = jwt.sign({ _id: result.insertedId.toString() }, JWT_SECRET);
             res.status(201).json({
             message: 'User created successfully',
-            user: { id: result.insertedId, accountName, email },
-            token
+            user: { id: result.insertedId, accountName, email, isArtist },
+            sacredSound_authToken
             });
             } catch (error) {
             console.error('Signup error:', error);
