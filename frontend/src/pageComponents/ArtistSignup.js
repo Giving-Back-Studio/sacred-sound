@@ -32,31 +32,31 @@ const Signup = () => {
 
   return (
     <SignupContainer>
-      <Title>Create your account</Title>
+      <Title>Join The Artist Collective</Title>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <form onSubmit={handleSubmit}>
         <Input
           type="text"
-          placeholder="Choose a unique name for your account."
+          placeholder="Hey! What's your artist name?"
           value={accountName}
           onChange={(e) => setAccountName(e.target.value)}
           required
         />
         <Input
           type="email"
-          placeholder="What's your email address?"
+          placeholder="What's your email?"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <Input
           type="password"
-          placeholder="Set your a password."
+          placeholder="Set your password."
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <Button type="submit">Join Sacred Sound</Button>
+        <Button type="submit">Count Me In</Button>
       </form>
       <Subtitle>Already have an account? <a href="/login">Login Now</a></Subtitle>
     </SignupContainer>
