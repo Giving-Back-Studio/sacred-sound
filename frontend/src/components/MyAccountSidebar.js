@@ -1,6 +1,6 @@
 import React from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import SacredSoundLogo from "../assets/Logo.png";
 import LibraryIcon from "../assets/library-icon.png";
 import Feed from "../assets/Vector.png";
@@ -15,9 +15,17 @@ import like from "../assets/like.png";
 
 const MyAccountSidebarComponent = () => {
   const [toggled, setToggled] = React.useState(false);
+  
   const [broken, setBroken] = React.useState(
     window.matchMedia("(max-width: 991px)").matches
   );
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('sacredSound_accessToken');
+    navigate('/login');
+  };
 
   return (
     <>
@@ -56,7 +64,7 @@ const MyAccountSidebarComponent = () => {
               <MenuItem component={<Link to="favorite-artists" />}>
               <img src={like} alt="Upload" /> Favorite Artists</MenuItem>
             <div style={{ padding: '180px 0' }}></div>
-            <MenuItem component={<Link to="logout" />}>
+            <MenuItem onClick={handleLogout}>
               Logout
             </MenuItem>
           </Menu>
