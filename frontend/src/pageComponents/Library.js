@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import jwt_decode from "jwt-decode"; // Import jwt-decode
+import { jwtDecode } from "jwt-decode";
 import SwipeComponet from "../components/SwipeComponet";
 
 export default function Library() {
@@ -13,8 +13,9 @@ export default function Library() {
   const token = localStorage.getItem('sacredSound_accessToken');
   let userEmail = null;
   if (token) {
-    const decoded = jwt_decode(token); // Decode the JWT token
-    userEmail = decoded.email; // Extract email from the decoded token
+    const decoded = jwtDecode(token); // Decode the JWT token
+    userEmail = decoded.email;
+    console.log("userEmail" +userEmail) // Extract email from the decoded token
   }
   
   useEffect(() => {
