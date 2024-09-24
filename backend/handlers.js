@@ -1,11 +1,13 @@
 const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
-const { MONGO_URI } = process.env;
+const { MONGO_URI, JWT_SECRET } = process.env;
 const { SyncRecombee } = require("./utils/SyncRecombee");
 const storage = require("./utils/googleCloudStorage");
 const { decryptData } = require("./utils/cardDetailsEncryption");
 const axios = require("axios");
 const { Video } = require("@mux/mux-node");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const {
   findSubscriptionByEmail,
   createSubscription,
@@ -2707,6 +2709,50 @@ const storeEmailOnWaitlist = async (req, res) => {
   }
 };
 
+    const signup = async (req, res) => {
+        const client = new MongoClient(MONGO_URI, options);
+        try {
+            await client.connect();
+            const db = client.db('db-name');
+            const userCollection = db.collection('userAccounts');
+
+            const { accountName, email, password } = req.body;
+
+            // Check if user already exists
+            const existingUser = await userCollection.findOne({ email });
+            if (existingUser) {
+                return res.status(400).json({ message: 'User already exists' });
+            }
+
+            // Hash password
+            const hashedPassword = await bcrypt.hash(password, 8);
+
+            // Create new user
+            const newUser = {
+                accountName,
+                email,
+                password: hashedPassword,
+                createdAt: new Date()
+            };
+
+            const result = await userCollection.insertOne(newUser);
+            
+            // Generate JWT
+            const token = jwt.sign({ _id: result.insertedId.toString() }, JWT_SECRET);
+            res.status(201).json({
+            message: 'User created successfully',
+            user: { id: result.insertedId, accountName, email },
+            token
+            });
+            } catch (error) {
+            console.error('Signup error:', error);
+            res.status(500).json({ message: 'Error creating user' });
+            } finally {
+            await client.close();
+        }
+    };
+
+
 
 module.exports = {
     getServerHomePage,
@@ -2787,5 +2833,6 @@ module.exports = {
     sendThanksCoinsViaContent,
     PostUserOnboardingProgress,
     getArtistNames,
-    storeEmailOnWaitlist
+    storeEmailOnWaitlist,
+    signup,
 };
