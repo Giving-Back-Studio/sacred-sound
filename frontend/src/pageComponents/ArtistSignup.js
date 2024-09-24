@@ -25,8 +25,8 @@ const ArtistSignup = () => {
       // Store the token in localStorage
       localStorage.setItem('token', response.data.token);
       
-      // Redirect to the home page or dashboard
-      navigate('/');
+      // Redirect to the studio page
+      navigate('/studio'); // {{ edit_1 }}
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred during signup');
     }
