@@ -7,28 +7,32 @@ const Signup = () => {
   const [accountName, setAccountName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isArtist, setIsArtist] = useState(false); // New state for isArtist
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/signup`, {
-        accountName,
-        email,
-        password
-      });
-      
-      // Store the token in localStorage
-      localStorage.setItem('token', response.data.token);
-      
-      // Redirect to the home page or dashboard
-      navigate('/');
-    } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during signup');
-    }
-  };
+  e.preventDefault();
+  setError('');
+  try {
+    const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/signup`, {
+      accountName,
+      email,
+      password,
+      isArtist
+    });
+    
+    // Store the access token in localStorage
+    localStorage.setItem('sacredSound_accessToken', response.data.accessToken);
+
+    // The refresh token should be stored in an HTTP-only cookie on the backend.
+    // Redirect to the home page or dashboard
+    navigate('/main/library');
+  } catch (err) {
+    setError(err.response?.data?.message || 'An error occurred during signup');
+  }
+};
+
 
   return (
     <SignupContainer>

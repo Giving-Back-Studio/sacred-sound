@@ -1159,7 +1159,6 @@ const getItemToUserRecommendations_Scenario_MusicVideo = async (req, res) => {
         });
 
         const response = await recombeeClient.send(getRecommendationsRequest);
-        console.log("getRecommendationsRequest"+ response);
 
         return res.json(response);
 
@@ -2696,47 +2695,103 @@ const storeEmailOnWaitlist = async (req, res) => {
 };
 
     const signup = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db('db-name');
+    const userCollection = db.collection('userAccounts');
+
+    const { accountName, email, password, isArtist } = req.body;
+
+    // Check if user already exists
+    const existingUser = await userCollection.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 8);
+
+    // Create new user
+    const newUser = { accountName, email, password: hashedPassword, isArtist, createdAt: new Date() };
+    const result = await userCollection.insertOne(newUser);
+
+    // Generate JWT access token (short-lived)
+    const accessToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
+
+    // Generate refresh token (long-lived, e.g., 1 month)
+    const refreshToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '30d' });
+
+    res.status(201).json({
+      message: 'User created successfully',
+      accessToken,  // Send the short-lived token to the frontend
+      refreshToken, // Send the long-lived refresh token to be stored securely
+    });
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Error creating user' });
+  } finally {
+    await client.close();
+  }
+};
+
+
+    const login = async (req, res) => {
         const client = new MongoClient(MONGO_URI, options);
         try {
             await client.connect();
             const db = client.db('db-name');
             const userCollection = db.collection('userAccounts');
 
-            const { accountName, email, password } = req.body;
+            const { email, password } = req.body;
 
-            // Check if user already exists
-            const existingUser = await userCollection.findOne({ email });
-            if (existingUser) {
-                return res.status(400).json({ message: 'User already exists' });
+            // Check if user exists
+            const user = await userCollection.findOne({ email });
+            if (!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
             }
 
-            // Hash password
-            const hashedPassword = await bcrypt.hash(password, 8);
+            // Compare password
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+            }
 
-            // Create new user
-            const newUser = {
-                accountName,
-                email,
-                password: hashedPassword,
-                createdAt: new Date()
-            };
+            // Generate JWT access token (short-lived)
+            const accessToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
 
-            const result = await userCollection.insertOne(newUser);
-            
-            // Generate JWT
-            const token = jwt.sign({ _id: result.insertedId.toString() }, JWT_SECRET);
-            res.status(201).json({
-            message: 'User created successfully',
-            user: { id: result.insertedId, accountName, email },
-            token
+            // Generate refresh token (long-lived, e.g., 1 month)
+            const refreshToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '30d' });
+
+            res.status(200).json({
+            message: 'Login successful',
+            accessToken,  // Send the short-lived token to the frontend
+            refreshToken, // Send the long-lived refresh token to be stored securely
             });
-            } catch (error) {
-            console.error('Signup error:', error);
-            res.status(500).json({ message: 'Error creating user' });
-            } finally {
+        } catch (error) {
+            console.error('Login error:', error);
+            res.status(500).json({ message: 'Error during login' });
+        } finally {
             await client.close();
         }
     };
+
+
+const refreshToken = async (req, res) => {
+  const { refreshToken } = req.cookies; // Refresh token should be stored in a secure HTTP-only cookie
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'No refresh token, authorization denied' });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, JWT_SECRET);
+    const accessToken = jwt.sign({ email: decoded.email }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    console.error('Refresh token error:', error);
+    res.status(403).json({ message: 'Invalid refresh token' });
+  }
+};
 
 
 
@@ -2821,4 +2876,6 @@ module.exports = {
     getArtistNames,
     storeEmailOnWaitlist,
     signup,
+    login,
+    refreshToken
 };
