@@ -84,6 +84,7 @@ const {
   storeEmailOnWaitlist,
   signup,
   login,
+  refreshToken
 } = require("./handlers");
 
 const {
@@ -148,6 +149,7 @@ express()
   .post("/api/storeEmailOnWaitlist", storeEmailOnWaitlist)
   .post("/api/signup", signup)
   .post("/api/login", login)
+  .post("/api/refreshToken", refreshToken)
   
 
   //Key encryption:

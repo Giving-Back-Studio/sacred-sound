@@ -10,25 +10,24 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); // Clear previous errors
-    
-    try {
-      // Send login request to the backend
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
-        email,
-        password
-      });
+  e.preventDefault();
+  setError(''); // Clear previous errors
+  
+  try {
+    const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
+      email,
+      password
+    });
 
-      // Store the JWT token in localStorage
-      localStorage.setItem('sacredSound_authToken', response.data.sacredSound_authToken);
+    // Store the access token in localStorage
+    localStorage.setItem('sacredSound_accessToken', response.data.accessToken);
 
-      // Redirect the user to a protected route, like the dashboard or home page
-      navigate('/main/library');
-    } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during login');
-    }
-  };
+    // The refresh token should be stored in an HTTP-only cookie on the backend.
+    navigate('/main/library');
+  } catch (err) {
+    setError(err.response?.data?.message || 'An error occurred during login');
+  }
+};
 
   return (
     <LoginContainer>
