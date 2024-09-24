@@ -24,6 +24,7 @@ const MyAccountSidebarComponent = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('sacredSound_accessToken');
+    localStorage.removeItem('sacredSound_authToken');
     navigate('/login');
   };
 
