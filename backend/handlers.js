@@ -2708,10 +2708,9 @@ const storeEmailOnWaitlist = async (req, res) => {
     const db = client.db('db-name');
     const userCollection = db.collection('userAccounts');
 
-    const contentType = "userAccounts";
     const { accountName, email, password, isArtist } = req.body;
 
-    // Check if user already exists
+    // Check if the user already exists
     const existingUser = await userCollection.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
@@ -2721,20 +2720,25 @@ const storeEmailOnWaitlist = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 8);
 
     // Create new user
-    const newUser = { accountName, email, password: hashedPassword, isArtist, createdAt: new Date(), contentType };
-    const result = await userCollection.insertOne(newUser);
+    const newUser = { accountName, email, password: hashedPassword, isArtist, createdAt: new Date() };
+    await userCollection.insertOne(newUser);
 
-    // Generate JWT access token (short-lived)
-    const accessToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT access token (1 hour)
+    const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    // Generate refresh token (long-lived, e.g., 1 month)
-    const refreshToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '30d' });
+    // Generate JWT refresh token (90 days)
+    const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, { expiresIn: '90d' });
 
-    res.status(201).json({
-      message: 'User created successfully',
-      accessToken,  // Send the short-lived token to the frontend
-      refreshToken, // Send the long-lived refresh token to be stored securely
+    // Store refresh token in an HTTP-only cookie
+    res.cookie('sacredSound_refreshToken', refreshToken, {
+      httpOnly: true,
+       secure: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging', // Secure only in production or staging environments
+      sameSite: 'Strict',
+      maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
     });
+
+    // Return access token to the frontend
+    res.status(201).json({ accessToken });
   } catch (error) {
     console.error('Signup error:', error);
     res.status(500).json({ message: 'Error creating user' });
@@ -2744,56 +2748,66 @@ const storeEmailOnWaitlist = async (req, res) => {
 };
 
 
-    const login = async (req, res) => {
-        const client = new MongoClient(MONGO_URI, options);
-        try {
-            await client.connect();
-            const db = client.db('db-name');
-            const userCollection = db.collection('userAccounts');
+const login = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db('db-name');
+    const userCollection = db.collection('userAccounts');
 
-            const { email, password } = req.body;
+    const { email, password } = req.body;
 
-            // Check if user exists
-            const user = await userCollection.findOne({ email });
-            if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password' });
-            }
+    // Check if user exists
+    const user = await userCollection.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
 
-            // Compare password
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid email or password' });
-            }
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
 
-            // Generate JWT access token (short-lived)
-            const accessToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT access token (1 hour)
+    const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-            // Generate refresh token (long-lived, e.g., 1 month)
-            const refreshToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '30d' });
+    // Generate JWT refresh token (90 days)
+    const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, { expiresIn: '90d' });
 
-            res.status(200).json({
-            message: 'Login successful',
-            accessToken,  // Send the short-lived token to the frontend
-            refreshToken, // Send the long-lived refresh token to be stored securely
-            });
-        } catch (error) {
-            console.error('Login error:', error);
-            res.status(500).json({ message: 'Error during login' });
-        } finally {
-            await client.close();
-        }
-    };
+    // Store refresh token in an HTTP-only cookie
+    res.cookie('sacredSound_refreshToken', refreshToken, {
+      httpOnly: true,
+       secure: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging', // Secure only in production or staging environments
+      sameSite: 'Strict',
+      maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
+    });
+
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Error during login' });
+  } finally {
+    await client.close();
+  }
+};
 
 
-const refreshToken = async (req, res) => {
-  const { refreshToken } = req.cookies; // Refresh token should be stored in a secure HTTP-only cookie
-  if (!refreshToken) {
+const refreshAccessToken = async (req, res) => {
+  const { sacredSound_refreshToken } = req.cookies;
+
+  if (!sacredSound_refreshToken) {
     return res.status(401).json({ message: 'No refresh token, authorization denied' });
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, JWT_SECRET);
-    const accessToken = jwt.sign({ email: decoded.email }, JWT_SECRET, { expiresIn: '1h' });
+    // Verify the refresh token
+    const decoded = jwt.verify(sacredSound_refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    // Issue a new access token (1 hour)
+    const accessToken = jwt.sign({ email: decoded.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Return the new access token
     res.status(200).json({ accessToken });
   } catch (error) {
     console.error('Refresh token error:', error);
@@ -2801,6 +2815,17 @@ const refreshToken = async (req, res) => {
   }
 };
 
+const logout = (req, res) => {
+  // Clear the refresh token cookie
+  res.clearCookie('sacredSound_refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging', // Secure only in production or staging
+    sameSite: 'Strict'
+  });
+
+  // Send a success response
+  res.status(200).json({ message: 'Logged out successfully' });
+};
 
 
 module.exports = {
@@ -2885,5 +2910,6 @@ module.exports = {
     storeEmailOnWaitlist,
     signup,
     login,
-    refreshToken
+    refreshAccessToken,
+    logout,
 };

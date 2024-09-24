@@ -22,11 +22,27 @@ const MyAccountSidebarComponent = () => {
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+const handleLogout = async () => {
+  try {
+    // Call the backend API to clear the refresh token cookie
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/logout`, {
+      method: 'POST',
+      credentials: 'include', // Ensures cookies (like refreshToken) are sent with the request
+    });
+
+    // Clear tokens from localStorage
     localStorage.removeItem('sacredSound_accessToken');
     localStorage.removeItem('sacredSound_authToken');
+    
+    // Redirect to login page
     navigate('/login');
-  };
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
+
+
+  
 
   return (
     <>

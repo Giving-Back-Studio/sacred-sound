@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 8000;
 
 const {
@@ -84,7 +85,8 @@ const {
   storeEmailOnWaitlist,
   signup,
   login,
-  refreshToken
+  refreshAccessToken,
+  logout,
 } = require("./handlers");
 
 const {
@@ -99,6 +101,7 @@ express()
   }))
   .use(express.json())
   .use(bodyParser.json())
+  .use(cookieParser())
   .get("/", getServerHomePage)
   .post("/api/postContentMetaData", postContentMetaData)
   .get("/api/getPreReviewedVideoList", getPreReviewedVideoList)
@@ -147,9 +150,13 @@ express()
   .post("/api/PostUserOnboardingProgress", PostUserOnboardingProgress)
   .get("/api/getArtistNames", getArtistNames)
   .post("/api/storeEmailOnWaitlist", storeEmailOnWaitlist)
+
+  
+  //Authentication
   .post("/api/signup", signup)
   .post("/api/login", login)
-  .post("/api/refreshToken", refreshToken)
+  .post("/api/refreshToken", refreshAccessToken)
+  .post("/api/logout", logout)
   
 
   //Key encryption:
