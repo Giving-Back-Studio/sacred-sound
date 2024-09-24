@@ -98,6 +98,7 @@ express()
   .use(cors({
     origin: ['https://staging.ss-mono-repo.pages.dev', 'http://localhost:3000', '*'],
     methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+    credentials: true, // Allow credentials (cookies)
   }))
   .use(express.json())
   .use(bodyParser.json())
@@ -151,7 +152,7 @@ express()
   .get("/api/getArtistNames", getArtistNames)
   .post("/api/storeEmailOnWaitlist", storeEmailOnWaitlist)
 
-  
+
   //Authentication
   .post("/api/signup", signup)
   .post("/api/login", login)
