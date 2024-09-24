@@ -106,7 +106,7 @@ export default function Library() {
 
     fetchRecommendations("getItemToUserRecommendations_Scenario_MusicVideo", setRecommendations_MusicVideo);
     fetchRecommendations("getItemToUserRecommendations_Scenario_Meditation", setRecommendations_Meditation);
-    fetchRecommendations("StudioRecording", setRecommendations_StudioRecording);
+    fetchRecommendations("getItemToUserRecommendations_Scenario_StudioRecording", setRecommendations_StudioRecording);
 
     return () => {
       isMounted = false;
