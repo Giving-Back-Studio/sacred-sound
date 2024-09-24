@@ -123,6 +123,7 @@ export default function Library() {
           <SwipeComponet arr={recommendations_Meditation} />
           <h2 className="sec-title">Studio Recording</h2>
           <SwipeComponet arr={recommendations_StudioRecording} />
+          <div style={{ height: '360px', overflow: 'hidden' }}></div>
         </div>
       </Main>
     </MainContainer>
