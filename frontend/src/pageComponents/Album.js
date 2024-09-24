@@ -35,6 +35,7 @@ export default function Album() {
       <HeadPart>
         <BackButton/>
         <CoverImage>
+        <img src={require('../assets/Background.png')} alt="not loaded"></img>
           {/* <img src={artistCover} alt="not loaded"></img> */}
         </CoverImage>
         <HeadProfile>
@@ -119,11 +120,20 @@ export default function Album() {
 }
 
 const MainContainer = styled.div`
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
+  min-height: calc(100vh - 120px); // Adjust height to account for MusicPlayer
+  padding: 0 0 120px 0; // Add padding to the bottom to prevent cutoff
   width: 100%;
   overflow-x: hidden;
+  overflow-y: auto; // Ensure vertical scrolling is enabled
+ background: 
+    radial-gradient(closest-side at 50% 50%, 
+      rgba(67, 66, 137, 0.2) 0%, 
+      rgba(95, 104, 94, 0.2) 100%), 
+    white; // Gradient with 20% opacity on top of 100% white
+  @media (max-width: 767px) {
+    min-height: calc(100vh - 200px); // Adjust for mobile view
+    padding: 0 0 200px 0; // Adjust padding for mobile
+  }
 `;
 const HeadPart = styled.div`
   position: relative;

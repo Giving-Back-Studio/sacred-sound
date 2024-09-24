@@ -118,46 +118,43 @@ export default function Library() {
       <Main>
         <div className="top-section">
           <h2 className="sec-title">Music Video</h2>
-          <SwipeComponet arr={recommendations_MusicVideo}></SwipeComponet>
+          <SwipeComponet arr={recommendations_MusicVideo} />
           <h2 className="sec-title">Meditation</h2>
-          <SwipeComponet arr={recommendations_Meditation}></SwipeComponet>
+          <SwipeComponet arr={recommendations_Meditation} />
           <h2 className="sec-title">Studio Recording</h2>
-          <SwipeComponet style={{paddingBottom: "300px"}} arr={recommendations_StudioRecording}></SwipeComponet>
+          <SwipeComponet arr={recommendations_StudioRecording} />
         </div>
       </Main>
     </MainContainer>
   );
 }
 
+// Adjusted styles for seamless scrolling
 const MainContainer = styled.div`
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: auto; /* Ensuring vertical scroll */
+  overflow-x: hidden; /* No horizontal scroll for the whole page */
   margin: 0;
-  height: 100vh;
+  height: 100vh; /* Full viewport height */
   background: radial-gradient(closest-side at 50% 50%, rgba(67, 66, 137, 0.2) 0%, rgba(95, 104, 94, 0.2) 100%), white;
-  padding-bottom: 360px;
+  padding-bottom: 20px; /* Adjusted padding for bottom spacing */
 `;
 
 const Main = styled.div`
   position: relative;
   z-index: 2;
   background-color: rgba(0, 0, 0, 0);
-  margin: 55px;
-  padding: 0;
-  height: 110vh;
+  margin: 20px; /* Removed margin to avoid gaps */
+  padding: 20px 0; /* Added padding for top and bottom spacing */
+  display: flex;
+  flex-direction: column; /* Use column layout for seamless stacking */
+  gap: 20px; /* Space between sections */
 
   @media (max-width: 1440px) {
-    margin: 20px;
+    padding: 10px 0; /* Adjust padding for smaller screens */
   }
 
   @media (max-width: 991px) {
-    margin: 10px;
-    padding-top: 22px;
-  }
-
-  @media (max-width: 360px) {
-    margin: 5px;
-    padding-top: 22px;
+    padding: 5px 0; /* Further adjust for mobile */
   }
 `;
