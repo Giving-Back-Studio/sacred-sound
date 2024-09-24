@@ -16,17 +16,24 @@ import DashboardIcon from '../assets/DashboardIcon.png';
 import YourContentIcon from '../assets/ContentIcon.png'
 import YourChanneltIcon from '../assets/YourChannelIcon.png';
 import FeedbackIcon from '../assets/FeedbackIcon.png';
-import { useAuth0 } from '@auth0/auth0-react';
 import { Navigate, useNavigate } from 'react-router'; 
 import LoginButton from '../components/LoginButton';
 import VideoPlayer from '../components/CloudStudioComponents/VideoPlayer';
 import SacredSoundLogo from '../assets/SacredSoundLogo.png'
+import { jwtDecode } from 'jwt-decode';
+
+// Function to check if token is valid and not expired
+const isTokenValid = (token) => {
+  try {
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000; // Convert to seconds
+    return decoded.exp > currentTime;  // Check if token has expired
+  } catch (error) {
+    return false;
+  }
+};
 
 export default function NewCloudStudio() {
-    const { user, isAuthenticated } = useAuth0();
-    // const user = { name: "debug9@debug.com" };
-    // const isAuthenticated = true;
-
     //Navigation, viewStates and button flow:
     const [isUploadActive, setIsUploadActive] = useState(false);
     const [activeComponent, setActiveComponent] = useState('component1');
@@ -36,43 +43,59 @@ export default function NewCloudStudio() {
     const [allFilesUploaded, setAllFilesUploaded] = useState(false); //To prevent user to click the Publish button before file upload finishes
     const [uploadProgress, setUploadProgress] = useState({});
     const navigate = useNavigate();
-    
-    //Verify via the Auth0 Hook if the user has an account inside MongoDb, if not it redirect the user toward the AccountNameSelectionPage
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [userEmail, setUserEmail] = useState(null);
+
+    // On component mount, check if the user is authenticated via JWT
+    useEffect(() => {
+        const token = localStorage.getItem('sacredSound_accessToken');
+        
+        if (token && isTokenValid(token)) {
+        const decoded = jwtDecode(token);
+        setUserEmail(decoded.email);
+        setIsAuthenticated(true);
+        } else {
+        setIsAuthenticated(false);
+        localStorage.removeItem('sacredSound_accessToken');  // Clear any expired or invalid token
+        }
+    }, []);
+    //Verify if the user has an account inside MongoDb, if not, redirect to the login page
     useEffect(() => {
         const fetchUser = async () => {
         try {
-            if (user && user.name) {
-                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${user.name}`);
-                if(response.data.user.isOnboardingStepsPending){
-                    switch (response.data.user.currentOnBoardingStep) {
-                      case 0:
-                        navigate("/welcome");
-                        break;
-                      case 1:
-                        navigate("/welcome");
-                        break;
-                      case 2:
-                        navigate("/topics");
-                        break;
-                      case 3:
-                        navigate("/payment-details");
-                        break;
-
-                      default:
-                        break;
-                    }
+            if (userEmail) {
+            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${userEmail}`);
+            if (response.data.user.isOnboardingStepsPending) {
+                switch (response.data.user.currentOnBoardingStep) {
+                case 0:
+                    navigate("/login");
+                    break;
+                case 1:
+                    navigate("/welcome");
+                    break;
+                case 2:
+                    navigate("/topics");
+                    break;
+                case 3:
+                    navigate("/payment-details");
+                    break;
+                default:
+                    break;
                 }
+            }
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
-            navigate('/AccountNameSelection');
+            navigate('/login');
             } else {
             console.log('Error:', error.message);
             }
         }
-    };
-    fetchUser();
-    }, [user?.name]);
+        };
+        if (userEmail) {
+        fetchUser();
+        }
+    }, [userEmail, navigate]);
 
     const handleSectionChange = (componentName, isUploading) => {
         setIsUploadActive(isUploading);
@@ -307,10 +330,10 @@ const [trackDetails, setTrackDetails] = useState([]);
                     <BottomNavigationPanel/>
                 </NavigationPanel>
                 <ScrollableFlexThree isUploadActive={isUploadActive}>
-                    {activeComponent === "component1" && <Dashboard user={user?.name.toString()} />}
-                    {activeComponent === "component2" && (<ContentTab user={user?.name.toString()} />)}
-                    {activeComponent === "component3" && <YourChannel user={user?.name.toString()} />}
-                    {activeComponent === "component4" && <Feedback user={user?.name.toString()} />}
+                    {activeComponent === "component1" && <Dashboard user={userEmail.toString()} />}
+                    {activeComponent === "component2" && (<ContentTab user={userEmail.toString()} />)}
+                    {activeComponent === "component3" && <YourChannel user={userEmail.toString()} />}
+                    {activeComponent === "component4" && <Feedback user={userEmail.toString()} />}
                     <PopupComponentWithSlideIn slideIn={isSlideIn}>
                         <TopHeaderSection style={{height: '12vh'}}>
                             <CloseButton onClick={handleCloseClick}>Close</CloseButton>
