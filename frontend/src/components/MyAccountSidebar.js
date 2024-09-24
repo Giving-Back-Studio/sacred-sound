@@ -55,6 +55,10 @@ const MyAccountSidebarComponent = () => {
               <img src={time} alt="Upload" /> Playback History</MenuItem>
               <MenuItem component={<Link to="favorite-artists" />}>
               <img src={like} alt="Upload" /> Favorite Artists</MenuItem>
+            <div style={{ padding: '180px 0' }}></div>
+            <MenuItem component={<Link to="logout" />}>
+              Logout
+            </MenuItem>
           </Menu>
         </Sidebar>
 
