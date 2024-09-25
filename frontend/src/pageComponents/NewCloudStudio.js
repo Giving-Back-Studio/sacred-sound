@@ -59,43 +59,45 @@ export default function NewCloudStudio() {
         localStorage.removeItem('sacredSound_accessToken');  // Clear any expired or invalid token
         }
     }, []);
-    //Verify if the user has an account inside MongoDb, if not, redirect to the login page
+    // Function to refresh the access token
+const refreshAccessToken = async () => {
+    try {
+        const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/refreshToken`, {}, { withCredentials: true });
+        const newAccessToken = response.data.accessToken;
+        localStorage.setItem('sacredSound_accessToken', newAccessToken); // Store new access token
+        return newAccessToken;
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        return null;
+    }
+};
+
     useEffect(() => {
-        const fetchUser = async () => {
-        try {
-            if (userEmail) {
-            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${userEmail}`);
-            if (response.data.user.isOnboardingStepsPending) {
-                switch (response.data.user.currentOnBoardingStep) {
-                case 0:
-                    navigate("/login");
-                    break;
-                case 1:
-                    navigate("/welcome");
-                    break;
-                case 2:
-                    navigate("/topics");
-                    break;
-                case 3:
-                    navigate("/payment-details");
-                    break;
-                default:
-                    break;
+        const checkAuthStatus = async () => {
+            let token = localStorage.getItem('sacredSound_accessToken');
+
+            if (token && isTokenValid(token)) {
+                const decoded = jwtDecode(token);
+                setUserEmail(decoded.email);
+                setIsAuthenticated(true);
+            } else {
+                // Attempt to refresh the access token using the refresh token
+                token = await refreshAccessToken();
+
+                if (token) {
+                    const decoded = jwtDecode(token);
+                    setUserEmail(decoded.email);
+                    setIsAuthenticated(true);
+                } else {
+                    setIsAuthenticated(false);
+                    localStorage.removeItem('sacredSound_accessToken');
+                    navigate('/login');
                 }
             }
-            }
-        } catch (error) {
-            if (error.response && error.response.status === 404) {
-            navigate('/login');
-            } else {
-            console.log('Error:', error.message);
-            }
-        }
         };
-        if (userEmail) {
-        fetchUser();
-        }
-    }, [userEmail, navigate]);
+
+        checkAuthStatus();
+    }, [navigate]);
 
     const handleSectionChange = (componentName, isUploading) => {
         setIsUploadActive(isUploading);
