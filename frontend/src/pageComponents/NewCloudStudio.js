@@ -348,10 +348,10 @@ const [trackDetails, setTrackDetails] = useState([]);
                     <BottomNavigationPanel/>
                 </NavigationPanel>
                 <ScrollableFlexThree isUploadActive={isUploadActive}>
-                    {activeComponent === "component1" && <Dashboard user={userEmail.toString()} />}
-                    {activeComponent === "component2" && <ContentTab user={userEmail.toString()} />}
-                    {activeComponent === "component3" && <YourChannel user={userEmail.toString()} />}
-                    {activeComponent === "component4" && <Feedback user={userEmail.toString()} />}
+                    {activeComponent === "component1" && userEmail && <Dashboard user={userEmail.toString()} />}
+                    {activeComponent === "component2" && userEmail&& <ContentTab user={userEmail.toString()} />}
+                    {activeComponent === "component3" && userEmail&& <YourChannel user={userEmail.toString()} />}
+                    {activeComponent === "component4" && userEmail&& <Feedback user={userEmail.toString()} />}
                     <PopupComponentWithSlideIn slideIn={isSlideIn}>
                         <TopHeaderSection style={{height: '12vh'}}>
                             <CloseButton onClick={handleCloseClick}>Close</CloseButton>
