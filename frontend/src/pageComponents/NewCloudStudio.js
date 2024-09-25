@@ -24,13 +24,13 @@ import { jwtDecode } from 'jwt-decode';
 
 // Function to check if token is valid and not expired
 const isTokenValid = (token) => {
-  try {
-    const decoded = jwtDecode(token);
-    const currentTime = Date.now() / 1000; // Convert to seconds
-    return decoded.exp > currentTime;  // Check if token has expired
-  } catch (error) {
-    return false;
-  }
+    try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000; // Convert to seconds
+        return decoded.exp > currentTime;  // Check if token has expired
+    } catch (error) {
+        return false;
+    }
 };
 
 export default function NewCloudStudio() {

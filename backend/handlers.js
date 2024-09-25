@@ -2723,8 +2723,8 @@ const storeEmailOnWaitlist = async (req, res) => {
     const newUser = { accountName, email, password: hashedPassword, isArtist, createdAt: new Date() };
     await userCollection.insertOne(newUser);
 
-    // Generate JWT access token (1 hour)
-    const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT access token (6 hour)
+    const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '6h' });
 
     // Generate JWT refresh token (90 days)
     const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, { expiresIn: '90d' });
@@ -2769,8 +2769,8 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Generate JWT access token (1 hour)
-    const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT access token (6 hour)
+    const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '6h' });
 
     // Generate JWT refresh token (90 days)
     const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, { expiresIn: '90d' });
@@ -2804,8 +2804,8 @@ const refreshAccessToken = async (req, res) => {
     // Verify the refresh token
     const decoded = jwt.verify(sacredSound_refreshToken, process.env.JWT_REFRESH_SECRET);
 
-    // Issue a new access token (1 hour)
-    const accessToken = jwt.sign({ email: decoded.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Issue a new access token (6 hour)
+    const accessToken = jwt.sign({ email: decoded.email }, process.env.JWT_SECRET, { expiresIn: '6h' });
 
     // Return the new access token
     res.status(200).json({ accessToken });
