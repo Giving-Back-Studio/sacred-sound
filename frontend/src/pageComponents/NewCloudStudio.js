@@ -99,6 +99,32 @@ const refreshAccessToken = async () => {
         checkAuthStatus();
     }, [navigate]);
 
+    useEffect(() => {
+    // Set up Axios interceptor for refreshing access tokens
+    const interceptor = axios.interceptors.request.use(async (config) => {
+        let token = localStorage.getItem('sacredSound_accessToken');
+
+        if (token && !isTokenValid(token)) {
+            // Refresh token if expired
+            token = await refreshAccessToken();
+        }
+
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        return config;
+    }, (error) => {
+        return Promise.reject(error);
+    });
+
+    // Cleanup the interceptor when component unmounts
+    return () => {
+        axios.interceptors.request.eject(interceptor);
+    };
+}, []); // Empty dependency array to run only on mount
+
+
     const handleSectionChange = (componentName, isUploading) => {
         setIsUploadActive(isUploading);
         setActiveComponent(componentName);
