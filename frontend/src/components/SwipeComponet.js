@@ -20,6 +20,7 @@ export default function SwipeComponet({ arr }) {
     const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
+      console.log('queryParams', queryParams)
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/getUserProfilesByEmails?${queryParams}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
