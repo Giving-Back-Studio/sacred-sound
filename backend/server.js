@@ -152,7 +152,7 @@ express()
   .post("/api/PostUserOnboardingProgress", PostUserOnboardingProgress)
   .get("/api/getArtistNames", getArtistNames)
   .post("/api/storeEmailOnWaitlist", storeEmailOnWaitlist)
-  app.get('/api/getUserProfileByEmail/:email', getUserProfileByEmail);
+  .get('/api/getUserProfileByEmail/:email', getUserProfileByEmail)
 
 
   //Authentication
