@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 export default function SwipeComponet({ arr }) {
   const [artistNames, setArtistNames] = useState({});
   const navigate = useNavigate();
+  console.log('arr', arr )
 
   useEffect(() => {
   const fetchArtistName = async () => {

@@ -2827,6 +2827,45 @@ const logout = (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
+const getUserProfileByEmail = async (req, res) => {
+    const email = req.params.email;
+
+    if (!email || email === 'undefined') {
+        return res.status(200).json({
+            accountName: '',
+            bio: '',
+            artistLink: '',
+            profileImageUrl: '',
+            artistTitle: ''
+        });
+    }
+
+    const client = await new MongoClient(MONGO_URI, options);
+    try {
+        const db = client.db("db-name");
+        const collection = db.collection('userAccounts');
+        const user = await collection.findOne({ email: email });
+        
+        if (!user) {
+            return res.status(200).json({
+                accountName: '',
+                bio: '',
+                artistLink: '',
+                profileImageUrl: '',
+                artistTitle: ''
+            });
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error' });
+    } finally {
+        await client.close();
+    }
+};
+
+
 
 module.exports = {
     getServerHomePage,
@@ -2912,4 +2951,5 @@ module.exports = {
     login,
     refreshAccessToken,
     logout,
+    getUserProfileByEmail,
 };

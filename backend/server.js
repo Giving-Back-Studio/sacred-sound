@@ -87,6 +87,7 @@ const {
   login,
   refreshAccessToken,
   logout,
+  getUserProfileByEmail,
 } = require("./handlers");
 
 const {
@@ -151,6 +152,7 @@ express()
   .post("/api/PostUserOnboardingProgress", PostUserOnboardingProgress)
   .get("/api/getArtistNames", getArtistNames)
   .post("/api/storeEmailOnWaitlist", storeEmailOnWaitlist)
+  app.get('/api/getUserProfileByEmail/:email', getUserProfileByEmail);
 
 
   //Authentication
