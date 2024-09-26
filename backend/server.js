@@ -87,7 +87,7 @@ const {
   login,
   refreshAccessToken,
   logout,
-  getUserProfileByEmail,
+  getUserProfileByEmails,
 } = require("./handlers");
 
 const {

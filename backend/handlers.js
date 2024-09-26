@@ -2954,5 +2954,5 @@ module.exports = {
     login,
     refreshAccessToken,
     logout,
-    getUserProfileByEmail,
+    getUserProfileByEmails,
 };
