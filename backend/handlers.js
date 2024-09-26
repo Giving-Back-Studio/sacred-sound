@@ -2827,7 +2827,7 @@ const logout = (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
-const getUserProfileByEmail = async (req, res) => {
+const getUserProfileByEmails = async (req, res) => {
     const emails = req.query.emails.split(','); // Splitting emails query parameter into an array
 
     if (!emails || emails.length === 0) {
