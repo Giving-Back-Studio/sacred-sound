@@ -16,7 +16,7 @@ export default function SwipeComponet({ arr }) {
   console.log('arr', arr )
 
   useEffect(() => {
-  const fetchArtistName = async () => {
+  const fetchArtistData = async () => {
     const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
@@ -28,16 +28,33 @@ export default function SwipeComponet({ arr }) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setArtistNames(data);
+      
+      // Log the fetched data for debugging
+      console.log('Fetched artist data:', data);
+
+      const artistData = data.reduce((acc, artist) => {
+        acc[artist.email] = { 
+          name: artist.accountName || 'Unknown Artist', 
+          id: artist._id || null
+        };
+        return acc;
+      }, {});
+
+      // Log the artistData that will be set to state
+      console.log('Processed artist data:', artistData);
+
+      setArtistNames(artistData);
     } catch (error) {
       console.error('Error fetching artist names:', error);
     }
   };
 
   if (arr && arr.length > 0) {
-    fetchArtistName();
+    fetchArtistData();
   }
 }, [arr]);
+
+
 
   return (
     <Discography>
@@ -68,14 +85,17 @@ export default function SwipeComponet({ arr }) {
               ? content.selectedImageThumbnail
               : rect;
                 const handleClick = () => {
+                  const artistData = artistNames[content.owner]; // Use the email to get artist info
+
                   if (content.contentType === 'AlbumMetaData') {
-                      navigate(`/main/album?id=${content._id}`);
-                  }else if(content.contentType === 'userAccounts') {
-                    navigate(`/main/artist?id=${content.user._id}`);
-                  }else{
+                    navigate(`/main/album?id=${content._id}`);
+                  } else if (content.contentType === 'userAccounts' && artistData?.id) {
+                    navigate(`/main/artist?id=${artistData.id}`); // Use artist ID
+                  } else {
                     navigate(`/main/track?id=${content._id}`);
                   }
-              };
+                };
+
           return (
               <SwiperSlide key={content._id}>
                 <div className="item" id="content-card" onClick={() => handleClick()} style={{ cursor: 'pointer' }}>
@@ -85,15 +105,19 @@ export default function SwipeComponet({ arr }) {
                       <h1 className="slider-trackname">{content.contentType !== 'AlbumMetaData' ? content.title: content.albumName}</h1>
                       <h1 className="slider-artist">
                         <span
-                          onClick={(e) =>{
-                            e.stopPropagation()
-                            navigate(`/main/artist?id=${content.user._id}`)
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const artistData = artistNames[content.owner];
+                            if (artistData?.id) {
+                              navigate(`/main/artist?id=${artistData.id}`);
+                            }
                           }}
-                          style={{textDecoration: 'underline', cursor: 'pointer'}}
+                          style={{ textDecoration: 'underline', cursor: 'pointer' }}
                         >
-                          {artistNames[content.owner] || 'Loading...'}
+                          {artistNames[content.owner]?.name || 'Loading...'}
                         </span>
                       </h1>
+
                     </div>
                       <div style={{display: 'inline', marginRight: '20px'}}>
                         {content.contentType === 'audio' || content.contentType === 'video' || content.contentType === 'recommendation'? <PlayButton track={{id: content._id, songUrl: content.fileUrl,

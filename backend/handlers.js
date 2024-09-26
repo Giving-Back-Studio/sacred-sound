@@ -2832,6 +2832,7 @@ const getUserProfileByEmail = async (req, res) => {
 
     if (!email || email === 'undefined') {
         return res.status(200).json({
+            _id: '',
             accountName: '',
             bio: '',
             artistLink: '',
@@ -2844,10 +2845,11 @@ const getUserProfileByEmail = async (req, res) => {
     try {
         const db = client.db("db-name");
         const collection = db.collection('userAccounts');
-        const user = await collection.findOne({ email: email });
-        
+        const user = await collection.findOne({ email: email }, { projection: { _id: 1, accountName: 1, bio: 1, artistLink: 1, profileImageUrl: 1, artistTitle: 1 } });
+
         if (!user) {
             return res.status(200).json({
+                _id: '',
                 accountName: '',
                 bio: '',
                 artistLink: '',
@@ -2864,6 +2866,7 @@ const getUserProfileByEmail = async (req, res) => {
         await client.close();
     }
 };
+
 
 
 
