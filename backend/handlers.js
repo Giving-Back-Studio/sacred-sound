@@ -2828,43 +2828,36 @@ const logout = (req, res) => {
 };
 
 const getUserProfileByEmail = async (req, res) => {
-    const email = req.params.email;
+    const emails = req.query.emails.split(','); // Splitting emails query parameter into an array
 
-    if (!email || email === 'undefined') {
-        return res.status(200).json({
-            _id: '',
-            accountName: '',
-            bio: '',
-            artistLink: '',
-            profileImageUrl: '',
-            artistTitle: ''
-        });
+    if (!emails || emails.length === 0) {
+        return res.status(400).json({ message: 'No emails provided' });
     }
 
     const client = await new MongoClient(MONGO_URI, options);
     try {
         const db = client.db("db-name");
         const collection = db.collection('userAccounts');
-        const user = await collection.findOne(
-            { email: email }, 
+        
+        // Find all users whose email matches any of the provided emails
+        const users = await collection.find({ email: { $in: emails } }, 
             { projection: { _id: 1, accountName: 1, bio: 1, artistLink: 1, profileImageUrl: 1, artistTitle: 1 } }
-        );
+        ).toArray();
 
-        if (!user) {
-            return res.status(200).json({
-                _id: '',
-                accountName: '',
-                bio: '',
-                artistLink: '',
-                profileImageUrl: '',
-                artistTitle: ''
-            });
-        }
+        // Map users by email
+        const usersByEmail = users.reduce((acc, user) => {
+            acc[user.email] = {
+                _id: user._id,
+                accountName: user.accountName,
+                bio: user.bio,
+                artistLink: user.artistLink,
+                profileImageUrl: user.profileImageUrl,
+                artistTitle: user.artistTitle,
+            };
+            return acc;
+        }, {});
 
-        // Log the fetched user to inspect what's being returned
-        console.log('User fetched:', user);
-
-        return res.status(200).json(user);
+        return res.status(200).json(usersByEmail);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Server error' });

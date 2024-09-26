@@ -20,30 +20,19 @@ export default function SwipeComponet({ arr }) {
     const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/getArtistNames?${queryParams}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/getUserProfilesByEmails?${queryParams}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
       
-      // Log the fetched data for debugging
+      const data = await response.json();
       console.log('Fetched artist data:', data);
 
-      const artistData = data.reduce((acc, artist) => {
-        acc[artist.email] = { 
-          name: artist.accountName || 'Unknown Artist', 
-          id: artist._id || null
-        };
-        return acc;
-      }, {});
-
-      // Log the artistData that will be set to state
-      console.log('Processed artist data:', artistData);
-
-      setArtistNames(artistData);
+      // Assuming the data is an object with email as keys
+      setArtistNames(data);
     } catch (error) {
       console.error('Error fetching artist names:', error);
     }
@@ -53,8 +42,6 @@ export default function SwipeComponet({ arr }) {
     fetchArtistData();
   }
 }, [arr]);
-
-
 
   return (
     <Discography>
