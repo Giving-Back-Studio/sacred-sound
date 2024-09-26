@@ -2828,7 +2828,7 @@ const logout = (req, res) => {
 };
 
 const getUserProfileByEmails = async (req, res) => {
-    const emails = req.query.emails.split(','); // Splitting emails query parameter into an array
+    const emails = req.query.emails.split(',');
 
     if (!emails || emails.length === 0) {
         return res.status(400).json({ message: 'No emails provided' });
@@ -2841,7 +2841,7 @@ const getUserProfileByEmails = async (req, res) => {
         
         // Find all users whose email matches any of the provided emails
         const users = await collection.find({ email: { $in: emails } }, 
-            { projection: { _id: 1, accountName: 1, bio: 1, artistLink: 1, profileImageUrl: 1, artistTitle: 1 } }
+            { projection: { _id: 1, email: 1, accountName: 1, bio: 1, artistLink: 1, profileImageUrl: 1, artistTitle: 1 } }
         ).toArray();
 
         // Map users by email
@@ -2852,11 +2852,11 @@ const getUserProfileByEmails = async (req, res) => {
                 bio: user.bio,
                 artistLink: user.artistLink,
                 profileImageUrl: user.profileImageUrl,
-                artistTitle: user.artistTitle,
+                artistTitle: user.artistTitle
             };
             return acc;
         }, {});
-        console.log('usersByEmail', usersByEmail)
+
         return res.status(200).json(usersByEmail);
     } catch (error) {
         console.error(error);
