@@ -122,7 +122,7 @@ export default function SwipeComponet({ arr }) {
                       <div style={{display: 'inline', marginRight: '20px'}}>
                         {content.contentType === 'audio' || content.contentType === 'video' || content.contentType === 'recommendation'? <PlayButton track={{id: content._id, songUrl: content.fileUrl,
                                   songTitle: content.title,
-                                  isVideo: content.contentType == "video",
+                                  isVideo: content.contentType === "video",
                                   artistName: content.videoOwner,
                                   img: content.selectedImageThumbnail}}/> : ''}
 
