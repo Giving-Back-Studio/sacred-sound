@@ -2856,7 +2856,7 @@ const getUserProfileByEmails = async (req, res) => {
             };
             return acc;
         }, {});
-
+        console.log('usersByEmail', usersByEmail)
         return res.status(200).json(usersByEmail);
     } catch (error) {
         console.error(error);
