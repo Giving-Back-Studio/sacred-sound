@@ -34,6 +34,7 @@ const {
   getItemToUserRecommendations_Scenario_VideoLesson,
   getItemPropertiesFromRecombee,
   getItemToItemRecommendations,
+  getSingleRecommendationForMusicPlayer,
 
   postNewAlbum,
   postAlbumImage,
@@ -156,6 +157,7 @@ express()
 
 
 
+
   //Authentication
   .post("/api/signup", signup)
   .post("/api/login", login)
@@ -179,6 +181,7 @@ express()
   .get("/api/getItemToItemRecommendations/:userId/:itemId", getItemToItemRecommendations)
   .get("/api/getSearchResult/:userId/:searchQuery", getSearchResult)
   .get("/api/getItemPropertiesFromRecombee/:itemId", getItemPropertiesFromRecombee)
+  .get("/api/getSingleRecommendationForMusicPlayer/:userId", getSingleRecommendationForMusicPlayer)
   // .post("/api/addUserOnRecombee/:userId", addUserOnRecombee) //For Manual Insertion Only!
   // .post("/api/setUserOnRecombee/:userId", setUserOnRecombee) //For Manual Insertion Only!
   

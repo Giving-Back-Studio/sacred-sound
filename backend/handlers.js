@@ -1297,7 +1297,6 @@ const getItemToUserRecommendations_Scenario_VideoLesson = async (req, res) => {
         });
 
         const response = await recombeeClient.send(getRecommendationsRequest);
-        console.log(response);
 
         return res.json(response);
 
@@ -1310,6 +1309,31 @@ const getItemToUserRecommendations_Scenario_VideoLesson = async (req, res) => {
     }
 };
 
+
+const getSingleRecommendationForMusicPlayer = async (req, res) => {
+    const userId = sanitizeUserId(req.params.userId);
+    const { recombeeClient } = require("./utils/recombeeClient");
+    
+    try {
+        const count = 1; // We only need one recommendation with this request
+
+        const getRecommendationsRequest = new RecommendItemsToUser(userId, count, {
+            'scenario': 'Scenario_MusicVideo', //temporary
+            'cascadeCreate': true,
+        });
+
+        const response = await recombeeClient.send(getRecommendationsRequest);
+
+        return res.json(response);
+
+    } catch (err) {
+        console.log("Error in getSingleRecommendation:", err);
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: err.message || "An error occurred.",
+        });
+    }
+};
 
 //Archived for later use:
 const addUserPropertyOnRecombee = async (req, res) => {
@@ -2897,6 +2921,7 @@ module.exports = {
     getItemToUserRecommendations_Scenario_VideoLesson,
     getSearchResult,
     addUserOnRecombee,
+    getSingleRecommendationForMusicPlayer,
 
     setUserOnRecombee,
     getItemPropertiesFromRecombee,
