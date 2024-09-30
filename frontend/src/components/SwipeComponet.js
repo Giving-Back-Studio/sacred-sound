@@ -17,22 +17,42 @@ export default function SwipeComponet({ arr }) {
 
   useEffect(() => {
   const fetchArtistData = async () => {
-    const emails = arr.map(content => content.owner).filter((v, i, a) => a.indexOf(v) === i);
+    const emails = arr.map(content => content.owner.toLowerCase()).filter((v, i, a) => a.indexOf(v) === i);
+    console.log('Emails being fetched:', emails); // Check the emails being fetched
+
+    if (emails.length === 0) return; // Early exit if no emails
+
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
+      console.log('Query Params String:', queryParams.toString()); // Check the query string
+
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/getUserProfilesByEmails?${queryParams}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      const data = await response.json();
-      console.log('Fetched artist data:', data);
 
-      // Assuming the data is an object with email as keys
-      setArtistNames(data);
+      const data = await response.json();
+      console.log('Fetched artist data:', data); // Check the fetched data
+
+      // Map data by email and set the state
+      const mappedArtistNames = {};
+      emails.forEach(email => {
+        if (data[email]) {
+          mappedArtistNames[email] = {
+            accountName: data[email].accountName || 'Unknown Artist',
+            id: data[email]._id || null, // Ensure that the `id` is mapped from `_id`
+          };
+        } else {
+          mappedArtistNames[email] = { accountName: 'Unknown Artist', id: null };
+        }
+      });
+
+      console.log('Mapped artist data:', mappedArtistNames); // Log the mapped data
+      setArtistNames(mappedArtistNames); // Update state
     } catch (error) {
       console.error('Error fetching artist names:', error);
     }
@@ -42,6 +62,8 @@ export default function SwipeComponet({ arr }) {
     fetchArtistData();
   }
 }, [arr]);
+
+
 
   return (
     <Discography>
@@ -67,58 +89,70 @@ export default function SwipeComponet({ arr }) {
         }}
       >
         {arr.map((content) => {
-          let thumbnail =
-            content?.selectedImageThumbnail?.length > 0
-              ? content.selectedImageThumbnail
-              : rect;
-                const handleClick = () => {
-                  const artistData = artistNames[content.owner]; // Use the email to get artist info
+  console.log('content:', content); // Log the content object to inspect the email field
+  const thumbnail = content?.selectedImageThumbnail?.length > 0
+    ? content.selectedImageThumbnail
+    : rect;
 
-                  if (content.contentType === 'AlbumMetaData') {
-                    navigate(`/main/album?id=${content._id}`);
-                  } else if (content.contentType === 'userAccounts' && artistData?.id) {
-                    navigate(`/main/artist?id=${artistData.id}`); // Use artist ID
+  const handleClick = () => {
+    const artistEmail = content.owner?.toLowerCase(); // Ensure email is lowercased
+    const artistData = artistNames[artistEmail]; // Access artist data using the email
+
+    if (artistData?.id) {
+      console.log('Navigating to artist:', artistData); // Log the artist data before navigation
+      navigate(`/main/artist?id=${artistData.id}`); // Navigate to the artist page using the correct ID
+    } else {
+      console.log('Artist ID not found for email:', artistEmail); // Log if artist ID is missing
+    }
+  };
+
+  return (
+    <SwiperSlide key={content._id}>
+      <div className="item" id="content-card" onClick={handleClick} style={{ cursor: 'pointer' }}>
+        <img className="swiper-thumb-img" src={thumbnail} alt="Item Thumb" />
+        <div style={{ marginLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <div>
+            <h1 className="slider-trackname">{content.contentType !== 'AlbumMetaData' ? content.title : content.albumName}</h1>
+            <h1 className="slider-artist">
+              <span
+                onClick={(e) => {
+                  e.stopPropagation(); // Stop propagation to prevent parent click
+                  const artistEmail = content.owner?.toLowerCase();
+                  const artistData = artistNames[artistEmail];
+                  if (artistData?.id) {
+                    console.log('Navigating to artist:', artistData); // Log navigation event
+                    navigate(`/main/artist?id=${artistData.id}`); // Navigate to artist page
                   } else {
-                    navigate(`/main/track?id=${content._id}`);
+                    console.log('Artist ID not found for email:', artistEmail); // Log if artist ID is missing
                   }
-                };
+                }}
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+              >
+                {artistNames[content.owner?.toLowerCase()]?.accountName || 'Unknown Artist'}
+              </span>
+            </h1>
+          </div>
+          <div style={{ display: 'inline', marginRight: '20px' }}>
+            {(content.contentType === 'audio' || content.contentType === 'video' || content.contentType === 'recommendation') && (
+              <PlayButton
+                track={{
+                  id: content._id,
+                  songUrl: content.fileUrl,
+                  songTitle: content.title,
+                  isVideo: content.contentType === 'video',
+                  artistName: content.videoOwner,
+                  img: content.selectedImageThumbnail,
+                }}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    </SwiperSlide>
+  );
+})}
 
-          return (
-              <SwiperSlide key={content._id}>
-                <div className="item" id="content-card" onClick={() => handleClick()} style={{ cursor: 'pointer' }}>
-                  <img className="swiper-thumb-img" src={thumbnail} alt="Item Thumb"></img>
-                  <div style={{marginLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <div>
-                      <h1 className="slider-trackname">{content.contentType !== 'AlbumMetaData' ? content.title: content.albumName}</h1>
-                      <h1 className="slider-artist">
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const artistData = artistNames[content.owner];
-                            if (artistData?.id) {
-                              navigate(`/main/artist?id=${artistData.id}`);
-                            }
-                          }}
-                          style={{ textDecoration: 'underline', cursor: 'pointer' }}
-                        >
-                          {artistNames[content.owner]?.name || 'Loading...'}
-                        </span>
-                      </h1>
 
-                    </div>
-                      <div style={{display: 'inline', marginRight: '20px'}}>
-                        {content.contentType === 'audio' || content.contentType === 'video' || content.contentType === 'recommendation'? <PlayButton track={{id: content._id, songUrl: content.fileUrl,
-                                  songTitle: content.title,
-                                  isVideo: content.contentType === "video",
-                                  artistName: content.videoOwner,
-                                  img: content.selectedImageThumbnail}}/> : ''}
-
-                      </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-          );
-        })}
       </Swiper>
     </Discography>
   );
