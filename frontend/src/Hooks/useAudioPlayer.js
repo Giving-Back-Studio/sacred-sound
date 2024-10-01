@@ -94,12 +94,37 @@ const useAudioPlayer = () => {
       ...prevState,
       playing: !prevState.playing,
     }));
+
     if (state.playing) {
+      // Pause if already playing
       audioRef?.current?.pause();
     } else {
-      audioRef?.current?.play();
+      // Attempt to play the audio
+      const playPromise = audioRef?.current?.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Playback started successfully, update state
+            setState((prevState) => ({
+              ...prevState,
+              playing: true,
+            }));
+          })
+          .catch((error) => {
+            // Autoplay was prevented or playback failed, revert the playing state
+            console.error("Autoplay blocked or playback failed:", error);
+
+            // Reset the state to not playing if it fails
+            setState((prevState) => ({
+              ...prevState,
+              playing: false,
+            }));
+          });
+      }
     }
   };
+
 
   const toggleHeart = () => {
     setState((prevState) => ({

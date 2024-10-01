@@ -13,19 +13,16 @@ import { useState, useEffect } from "react";
 export default function SwipeComponet({ arr }) {
   const [artistNames, setArtistNames] = useState({});
   const navigate = useNavigate();
-  console.log('arr', arr )
 
   useEffect(() => {
   const fetchArtistData = async () => {
     const emails = arr.map(content => content.owner.toLowerCase()).filter((v, i, a) => a.indexOf(v) === i);
-    console.log('Emails being fetched:', emails); // Check the emails being fetched
-
+    
     if (emails.length === 0) return; // Early exit if no emails
 
     try {
       const queryParams = new URLSearchParams({ emails: emails.join(',') });
-      console.log('Query Params String:', queryParams.toString()); // Check the query string
-
+      
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/getUserProfilesByEmails?${queryParams}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -36,8 +33,7 @@ export default function SwipeComponet({ arr }) {
       }
 
       const data = await response.json();
-      console.log('Fetched artist data:', data); // Check the fetched data
-
+      
       // Map data by email and set the state
       const mappedArtistNames = {};
       emails.forEach(email => {
@@ -51,7 +47,6 @@ export default function SwipeComponet({ arr }) {
         }
       });
 
-      console.log('Mapped artist data:', mappedArtistNames); // Log the mapped data
       setArtistNames(mappedArtistNames); // Update state
     } catch (error) {
       console.error('Error fetching artist names:', error);
@@ -89,7 +84,6 @@ export default function SwipeComponet({ arr }) {
         }}
       >
         {arr.map((content) => {
-  console.log('content:', content); // Log the content object to inspect the email field
   const thumbnail = content?.selectedImageThumbnail?.length > 0
     ? content.selectedImageThumbnail
     : rect;
@@ -99,10 +93,9 @@ export default function SwipeComponet({ arr }) {
     const artistData = artistNames[artistEmail]; // Access artist data using the email
 
     if (artistData?.id) {
-      console.log('Navigating to artist:', artistData); // Log the artist data before navigation
       navigate(`/main/artist?id=${artistData.id}`); // Navigate to the artist page using the correct ID
     } else {
-      console.log('Artist ID not found for email:', artistEmail); // Log if artist ID is missing
+      console.log('Artist ID not found.');
     }
   };
 
@@ -120,10 +113,9 @@ export default function SwipeComponet({ arr }) {
                   const artistEmail = content.owner?.toLowerCase();
                   const artistData = artistNames[artistEmail];
                   if (artistData?.id) {
-                    console.log('Navigating to artist:', artistData); // Log navigation event
                     navigate(`/main/artist?id=${artistData.id}`); // Navigate to artist page
                   } else {
-                    console.log('Artist ID not found for email:', artistEmail); // Log if artist ID is missing
+                    console.log('Artist ID not found.');
                   }
                 }}
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}

@@ -8,8 +8,6 @@ import axios from "axios";
 import MediaControl from "../components/MediaControl";
 import { useAuth0 } from '@auth0/auth0-react';
 
-// const isAuthenticated = true;
-// const user = { name: "debug9@debug.com" };
 
 const NowPlayingContext = createContext({});
 
@@ -18,7 +16,7 @@ const MemoizedComponent = React.memo(({ children }) => {
 });
 
 function NowPlaying({ children }) {
-const { user, isAuthenticated } = useAuth0();
+const user  = "debug9@debug9.com";
 
   const [smallScreen, setSmallScreen] = useState(true);
   const [toggle, setToggle] = useState(false);
@@ -82,6 +80,38 @@ const { user, isAuthenticated } = useAuth0();
       };
     }
   }, [state.playing]);
+
+  useEffect(() => {
+  const fetchInitialRecommendation = async () => {
+    try {
+      const userId = "debug9@debug9.com"; // Replace with actual user ID
+
+      // Step 1: Fetch recommendation ID using axios
+      const recoResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getSingleRecommendationForMusicPlayer/${userId}`);
+      const recoData = recoResponse.data;  // Extract data from axios response
+
+      if (recoData.recomms && recoData.recomms.length > 0) {
+        const recommendedId = recoData.recomms[0].id;
+
+        // Step 2: Fetch full song details using the recommended ID
+        const songResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${recommendedId}`);
+        const songData = songResponse.data;
+        console.log("songData: ", songData);
+        // Step 3: Use setSongs from useAudioPlayer hook to set the recommended song
+        setSongs([songData]);
+        
+      } else {
+        console.log("No recommendations received");
+      }
+    } catch (error) {
+      console.error("Error fetching recommendation:", error);
+    }
+  };
+
+  console.log('fetching initial recommendation');
+    fetchInitialRecommendation();
+}, [user, audioRef]);
+
 
   return (
   <>

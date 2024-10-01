@@ -61,12 +61,12 @@ function MusicPlayer({
           <div className="left-img-icon">
             <img
               className="album-cover"
-              src={state.song[state.currentSongIndex]?.img}
+              src={state.song[state.currentSongIndex]?.selectedImageThumbnail}
               alt="Album Cover"
             />
             <div className="song-info">
-              <span className="song-name">{state.song[state.currentSongIndex]?.songTitle}</span>
-              <span className="artist-name">{state.song[state.currentSongIndex]?.artistName}</span>
+              <span className="song-name">{state.song[state.currentSongIndex]?.title}</span>
+              {/* <span className="artist-name">{state.song[state.currentSongIndex]?.artistName}</span> */}
             </div>
           </div>
           <ActionIcons>
@@ -140,9 +140,9 @@ function MusicPlayer({
         </VolumeBar>
         <audio
           ref={audioRef}
-          src={state.song[state.currentSongIndex]?.songUrl}
+          src={state.song[state.currentSongIndex]?.fileUrl}
           id="song"
-          preload="metadata"
+          preload="auto"
           onEnded={playNext}
           onPlay={handlePlay}
           onTimeUpdate={getCurrentTime}

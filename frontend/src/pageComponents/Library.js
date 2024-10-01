@@ -65,7 +65,7 @@ export default function Library() {
   if (token) {
     const decoded = jwtDecode(token); // Decode the JWT token
     userEmail = decoded.email;
-    console.log("userEmail: " + userEmail); // Extract email from the decoded token
+    console.log("decoded userEmail: " + userEmail); // Extract email from the decoded token
   }
 
   useEffect(() => {
@@ -77,10 +77,9 @@ export default function Library() {
           const recoResponse = await axios.get(
             `${process.env.REACT_APP_API_BASE_URL}/api/${scenario}/${userEmail}`
           );
-          const videoIds = recoResponse.data.recomms.map((recomm) => recomm.id);
-          
+          const contentIds = recoResponse.data.recomms.map((recomm) => recomm.id);
           const list = await Promise.all(
-            videoIds.map(async (id) => {
+            contentIds.map(async (id) => {
               try {
                 const videoResp = await axios.get(
                   `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
@@ -93,7 +92,6 @@ export default function Library() {
           );
 
           const filteredList = list.filter(item => item !== null);
-          console.log(`Final ${scenario} recommendations list:`, filteredList);
           
           if (isMounted) {
             setRecommendations(filteredList);
