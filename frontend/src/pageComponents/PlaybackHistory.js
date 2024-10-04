@@ -7,30 +7,29 @@ import Time from "../assets/time.png";
 import Thanks from "../assets/thanks.svg";
 import Play from "../assets/playicon.svg";
 import Shuffle from "../assets/Shuffle-blue.svg";
-import { useAuth0 } from '@auth0/auth0-react';
 import Clock from "../assets/clock-outline.svg";
 import Sort from "../assets/sort.svg";
 import LikeIcon from "../assets/track-like.svg";
 import LikedIcon from "../assets/track-likeed.svg";
 import Album from "../assets/picture.png";
 import ThanksGivingPopup from "../components/common/ThanksGivingPopup";
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 export default function PlayBackHistory() {
-  const { user, isAuthenticated } = useAuth0();
-  // const isAuthenticated = true; 
-  // const user = { name: "debug9@debug.com" };
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
   const [playbackList, setList] = useState([]);
   const [likedList, setLiked] = useState([]);
 
-  async function fetchLike(){
+  async function fetchLike() {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/api/getUserLoves?user=${user.name}`
+      `${process.env.REACT_APP_API_BASE_URL}/api/getUserLoves?user=${userEmail}`
     );
-      setLiked(response.data.loves)
+    setLiked(response.data.loves);
   }
+
   async function fetchLovedContent() {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/api/getUserPlaybackHistory?user=${user.name}`
+      `${process.env.REACT_APP_API_BASE_URL}/api/getUserPlaybackHistory?user=${userEmail}`
     );
     let videoIds = response.data.playbackHistory;
     const list = [];
@@ -53,8 +52,9 @@ export default function PlayBackHistory() {
 
   useEffect(() => {
     fetchLovedContent();
-    fetchLike()
+    fetchLike();
   }, []);
+
   return (
     <PageWrapper className="concert-wrapper">
       <ProfileHead>
@@ -100,7 +100,7 @@ export default function PlayBackHistory() {
             <tbody>
               {playbackList?.map((content, index) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td>{index + 1}</td>
                     <td>
                       <div className="album-td">
@@ -118,7 +118,7 @@ export default function PlayBackHistory() {
                     </td>
                     <td>5:26</td>
                     <td>
-                      <img className="like-album" src={likedList?.includes(content._id) ? LikedIcon: LikeIcon} alt="icon" />
+                      <img className="like-album" src={likedList?.includes(content._id) ? LikedIcon : LikeIcon} alt="icon" />
                     </td>
                   </tr>
                 );

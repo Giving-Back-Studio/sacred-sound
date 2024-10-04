@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Signup = () => {
   const [accountName, setAccountName] = useState('');
@@ -10,6 +10,15 @@ const Signup = () => {
   const [isArtist, setIsArtist] = useState(false); // New state for isArtist
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const artistFlag = queryParams.get('artist');
+    if (artistFlag === 'true') {
+      setIsArtist(true);
+    }
+  }, [location.search]);
 
   const handleSubmit = async (e) => {
   e.preventDefault();

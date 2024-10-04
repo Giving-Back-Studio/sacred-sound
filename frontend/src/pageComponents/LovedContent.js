@@ -1,64 +1,64 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import axios from 'axios'
+import axios from 'axios';
 import ProfileIcon from "../assets/Profile-Icon.svg";
 import Loved from "../assets/love.svg";
-import Thanks from "../assets/thanks.svg";
 import Play from "../assets/playicon.svg";
-import { useAuth0 } from '@auth0/auth0-react';
 import Shuffle from "../assets/Shuffle-blue.svg";
 import Clock from "../assets/clock-outline.svg";
 import Sort from "../assets/sort.svg";
 import Like from "../assets/track-likeed.svg";
 import Album from "../assets/picture.png";
 import ThanksGivingPopup from "../components/common/ThanksGivingPopup";
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 export default function LovedContent() {
-    const { user, isAuthenticated } = useAuth0();
-  // const isAuthenticated = true;
-  // const user = { name: "debug9@debug.com" };
-  const [lovedContents, setLovedContents] = useState([])
-  async function dislike(trackId){
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
+  const [lovedContents, setLovedContents] = useState([]);
+
+  async function dislike(trackId) {
     fetch(`${process.env.REACT_APP_API_BASE_URL}/api/updateUserLoves`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ //Maybe improve this part
-        user: user.name,
+      body: JSON.stringify({
+        user: userEmail,
         videoId: trackId,
         b_isLoving: false
       }),
     })
       .then((res) => res.json())
-      .then((data) => fetchLovedContent());
-    
+      .then(() => fetchLovedContent());
   }
-  async function fetchLovedContent(){
+
+  async function fetchLovedContent() {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/api/getUserLoves?user=${user.name}`
+      `${process.env.REACT_APP_API_BASE_URL}/api/getUserLoves?user=${userEmail}`
     );
-    let videoIds = response.data.loves
+    let videoIds = response.data.loves;
     const list = [];
-        await Promise.allSettled(
-          videoIds.map(async (id) => {
-            const videoResp = await axios.get(
-              `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetadataFromObjectId/${id}`
-            );
-            const videoData = videoResp.data;
-            if (videoData) {
-              list.push({
-                ...videoData,
-              });
-            }
-          })
+    await Promise.allSettled(
+      videoIds.map(async (id) => {
+        const videoResp = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetadataFromObjectId/${id}`
         );
-        setLovedContents(list)
+        const videoData = videoResp.data;
+        if (videoData) {
+          list.push({
+            ...videoData,
+          });
+        }
+      })
+    );
+    setLovedContents(list);
   }
+
   useEffect(() => {
-    fetchLovedContent()
-  }, [])
+    fetchLovedContent();
+  }, [userEmail]);
+
   return (
     <PageWrapper className="concert-wrapper">
       <ProfileHead>
@@ -81,7 +81,7 @@ export default function LovedContent() {
             </div>
           </div>
 
-         <ThanksGivingPopup/>
+          <ThanksGivingPopup />
         </ActionBar>
         <Table>
           <table className="table">
@@ -102,25 +102,23 @@ export default function LovedContent() {
               </tr>
             </thead>
             <tbody>
-              {lovedContents?.map((content, index) => {
-               return <tr>
-                <td>{index + 1}</td>
-                <td>
-                  <div className="album-td">
-                    <img className="album-img" src={Album} alt="icon" />
-                    <p>{content.title}</p>
-                  </div>
-                </td>
-                <td>Album</td>
-                <td>Dec. 29, 2023</td>
-                <td>5:26</td>
-                <td>
-                  <img className="like-album" src={Like} alt="icon" onClick={() => dislike(content._id)}/>
-                </td>
-              </tr>
-              })}
-              
-
+              {lovedContents?.map((content, index) => (
+                <tr key={content._id}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <div className="album-td">
+                      <img className="album-img" src={Album} alt="icon" />
+                      <p>{content.title}</p>
+                    </div>
+                  </td>
+                  <td>Album</td>
+                  <td>Dec. 29, 2023</td>
+                  <td>5:26</td>
+                  <td>
+                    <img className="like-album" src={Like} alt="icon" onClick={() => dislike(content._id)} />
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </Table>
@@ -291,7 +289,7 @@ const Table = styled.div`
         &:last-child {
           text-align: center;
         }
-        img{
+        img {
           cursor: pointer;
         }
         .album-td {

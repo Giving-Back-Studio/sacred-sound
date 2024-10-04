@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import SacredSoundLogo from "../assets/WelcomeLogo.svg";
 import Visa from "../assets/visa.svg";
@@ -9,13 +8,15 @@ import American from "../assets/american-express.svg";
 import MasterCard from "../assets/mastercard.svg";
 import { encryptData } from "../utils/encryption";
 import Polygon from "../assets/Polygon-9.svg";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import { useNavigate } from "react-router";
 import axios from "axios";
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 export default function PaymentDetail() {
   const [toggle, setToggle] = useState(false);
   const [cards, setCards] = useState([]);
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
   const [formData, setFormData] = useState({
     card: "",
     expire: "",
@@ -31,6 +32,7 @@ export default function PaymentDetail() {
       .then((res) => res.json())
       .then((data) => setCards(data.cards));
   }
+
   useEffect(() => {
     const tilopayObj = window.Tilopay;
     tilopay.current = tilopayObj;
@@ -38,18 +40,15 @@ export default function PaymentDetail() {
   }, []);
 
   const navigate = useNavigate();
-  // const user = { name: "debug9@debug.com" };
-  // const isAuthenticated = true;
-  const {user, isAuthenticated } = useAuth0
 
   const onSubmit = async (event) => {
     event.preventDefault();
     const progressTrack = async () => {
       try {
-        const response = await axios.post(
+        await axios.post(
           `${process.env.REACT_APP_API_BASE_URL}/api/PostUserOnboardingProgress`,
           {
-            userId: user.name,
+            userId: userEmail,
             currentStep: 3,
             isOnboardingStepsPending: false,
           }
@@ -100,9 +99,9 @@ export default function PaymentDetail() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        if (user && user.name) {
+        if (userEmail) {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${user.name}`
+            `${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${userEmail}`
           );
           if (
             response.data.user.isOnboardingStepsPending &&
@@ -111,7 +110,7 @@ export default function PaymentDetail() {
             await axios.post(
               `${process.env.REACT_APP_API_BASE_URL}/api/PostUserOnboardingProgress`,
               {
-                userId: user.name,
+                userId: userEmail,
                 currentStep: 3,
                 isOnboardingStepsPending: true,
               }
@@ -293,6 +292,7 @@ const TopicWrapper = styled.div`
     }
   }
 `;
+
 const MyCards = styled.div`
   margin-top: 78px;
   h1 {
@@ -335,6 +335,7 @@ const MyCards = styled.div`
     }
   }
 `;
+
 const TopicFooter = styled.div`
   width: 100%;
   display: flex;
@@ -350,6 +351,7 @@ const TopicFooter = styled.div`
     font-weight: 500;
   }
 `;
+
 const AddCardTab = styled.div`
   padding: 17px 10px;
   width: 640px;
@@ -385,6 +387,7 @@ const AddCardTab = styled.div`
     }
   }
 `;
+
 const AddCardDetails = styled.div`
   padding: 17px 10px;
   width: 640px;
@@ -394,6 +397,7 @@ const AddCardDetails = styled.div`
     max-width: calc(100% - 20px);
   }
 `;
+
 const PaymentDetails = styled.div`
   h2 {
     font-family: "Playfair Display", serif;
@@ -541,6 +545,7 @@ const PaymentDetails = styled.div`
     }
   }
 `;
+
 const CardLogo = styled.div``;
 
 const CardType = styled.div`

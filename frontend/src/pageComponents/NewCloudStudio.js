@@ -17,7 +17,6 @@ import YourContentIcon from '../assets/ContentIcon.png'
 import YourChanneltIcon from '../assets/YourChannelIcon.png';
 import FeedbackIcon from '../assets/FeedbackIcon.png';
 import { Navigate, useNavigate } from 'react-router'; 
-import LoginButton from '../components/LoginButton';
 import VideoPlayer from '../components/CloudStudioComponents/VideoPlayer';
 import SacredSoundLogo from '../assets/SacredSoundLogo.png'
 import { jwtDecode } from 'jwt-decode';

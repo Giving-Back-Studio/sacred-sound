@@ -3,68 +3,66 @@ import styled from "styled-components";
 import Share from "../assets/share-android.svg";
 import PersonAdd from "../assets/person-add-outline.svg";
 import Shuffle from "../assets/Shuffle-blue.svg";
-import Thanks from "../assets/thanks.svg";
 import TrackLike from "../assets/track-like.svg";
 import TrackLikeed from "../assets/track-likeed.svg";
-import axios from 'axios'
-import { useAuth0 } from '@auth0/auth0-react';
-import picture from '../assets/picture.png'
+import axios from 'axios';
+import picture from '../assets/picture.png';
 import BackButton from "../components/common/BackButton";
 import PlayButton from "../components/common/PlayButton";
 import ThanksGivingPopup from "../components/common/ThanksGivingPopup";
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 export default function Track() {
-   const { user, isAuthenticated } = useAuth0();
-  // const isAuthenticated = true;
-  // const user = { name: "test@test.com" };
-  // const userId = "660cf5ca9fb6fc7838cc611e"
-  const [track, setTrack] = useState({})
-  const [isLiked, setLiked] = useState(false)
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
+  const [track, setTrack] = useState({});
+  const [isLiked, setLiked] = useState(false);
   const queryParams = new URLSearchParams(window.location.search);
   const trackId = queryParams.get("id");
+
   async function fetchTrack() {
     const response = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/api/getTrack/${trackId}`
     );
     setTrack(response.data.track);
   }
-  async function fetchLike(){
+
+  async function fetchLike() {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/api/getUserLoves?user=${user.name}`
+      `${process.env.REACT_APP_API_BASE_URL}/api/getUserLoves?user=${userEmail}`
     );
-    if(response.data.loves.includes(trackId)){
-      setLiked(true)
+    if (response.data.loves.includes(trackId)) {
+      setLiked(true);
     }
   }
 
-  async function likeOrDislike(){
+  async function likeOrDislike() {
     fetch(`${process.env.REACT_APP_API_BASE_URL}/api/updateUserLoves`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ //Maybe improve this part
-        user: user.name,
+      body: JSON.stringify({
+        user: userEmail,
         videoId: trackId,
         b_isLoving: !isLiked
       }),
     })
       .then((res) => res.json())
-      .then((data) => setLiked(!isLiked));
-    
+      .then(() => setLiked(!isLiked));
   }
+
   useEffect(() => {
-    fetchTrack()
-    fetchLike()
-  }, [])
+    fetchTrack();
+    fetchLike();
+  }, []);
 
   return (
     <MainContainer>
       <HeadPart>
-<BackButton/>
+        <BackButton />
         <CoverImage>
-        <img src={require('../assets/Background.png')} alt="not loaded"></img>
+          <img src={require('../assets/Background.png')} alt="not loaded"></img>
           {/* <img src={artistCover} alt="not loaded"></img> */}
         </CoverImage>
         <HeadProfile>
@@ -95,13 +93,14 @@ export default function Track() {
             {/* <div className="play"> */}
               {/* <img class
               Name="album-cover" src={playButton=== true ? Play : Pause} alt="Album Cover" onClick={onPlay}/> */}
-               <PlayButton track={{id: 1,
-              songUrl:
-              track.fileUrl,
+            <PlayButton track={{
+              id: 1,
+              songUrl: track.fileUrl,
               songTitle: track.title,
               isVideo: false,
               artistName: track?.user?.accountName,
-              img: track.selectedImageThumbnail,}} large={true}/>
+              img: track.selectedImageThumbnail,
+            }} large={true} />
             {/* </div> */}
             {/* <div className="pause">
             <img className="album-cover" src={Pause} alt="Album Cover" />
@@ -110,25 +109,25 @@ export default function Track() {
               <img className="album-cover" src={Shuffle} alt="Album Cover" />
             </div>
           </div>
-         <ThanksGivingPopup track={track} userId={user?._Id} user={user?.name}/>
+          <ThanksGivingPopup track={track} userId={userEmail} user={userEmail} />
         </div>
       </MusicInfo>
 
       <FeaturedTracks>
-
         <div className="track-bar active">
           <div className="track-left">
             {/* <div className="icon-number">
               <img src={playButton=== true ? Play : Pause} onClick={onPlay} className="track-icon" alt="track-icon"></img>
             </div> */}
-            <PlayButton track={{id: 1,
-              songUrl:
-              track.fileUrl,
+            <PlayButton track={{
+              id: 1,
+              songUrl: track.fileUrl,
               songTitle: track.title,
               isVideo: false,
               artistName: track?.user?.accountName,
-              img: track.selectedImageThumbnail,}}/>
-            <img className="track-thumb"  src={track.selectedImageThumbnail ? track.selectedImageThumbnail : picture} alt="track-thumb"></img>
+              img: track.selectedImageThumbnail,
+            }} />
+            <img className="track-thumb" src={track.selectedImageThumbnail ? track.selectedImageThumbnail : picture} alt="track-thumb"></img>
             <div className="flex-line">
               <h5 className="track-title">{track.title}</h5>
             </div>
@@ -138,37 +137,34 @@ export default function Track() {
             <img src={isLiked ? TrackLikeed : TrackLike} alt="" onClick={likeOrDislike}></img>
           </div>
         </div>
-      
       </FeaturedTracks>
-
-     
     </MainContainer>
   );
 }
 
 const MainContainer = styled.div`
-  min-height: calc(100vh - 120px); // Adjust height to account for MusicPlayer
-  padding: 0 0 120px 0; // Add padding to the bottom to prevent cutoff
+  min-height: calc(100vh - 120px);
+  padding: 0 0 120px 0;
   width: 100%;
   overflow-x: hidden;
-  overflow-y: auto; // Ensure vertical scrolling is enabled
- background: 
+  overflow-y: auto;
+  background: 
     radial-gradient(closest-side at 50% 50%, 
       rgba(67, 66, 137, 0.2) 0%, 
       rgba(95, 104, 94, 0.2) 100%), 
-    white; // Gradient with 20% opacity on top of 100% white
+    white;
   @media (max-width: 767px) {
-    min-height: calc(100vh - 200px); // Adjust for mobile view
-    padding: 0 0 200px 0; // Adjust padding for mobile
+    min-height: calc(100vh - 200px);
+    padding: 0 0 200px 0;
   }
 `;
+
 const HeadPart = styled.div`
   position: relative;
   * {
     background-color: transparent;
   }
 `;
-
 
 const CoverImage = styled.div`
   position: relative;
@@ -356,7 +352,6 @@ const MusicInfo = styled.div`
   }
 `;
 
-
 const FeaturedTracks = styled.div`
   padding: 20px;
   .track-bar {
@@ -419,11 +414,10 @@ const FeaturedTracks = styled.div`
       gap: 40px;
       @media (max-width: 767px) {
         gap: 20px;
-        }
+      }
       img {
         cursor: pointer;
       }
     }
   }
 `;
-

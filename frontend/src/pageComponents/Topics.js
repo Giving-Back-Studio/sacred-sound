@@ -1,49 +1,18 @@
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import SacredSoundLogo from "../assets/WelcomeLogo.svg";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 export default function TopicsPage() {
-  const { user, isAuthenticated } = useAuth0();
-  // const user = { name: "debug9@debug.com" };
-  // const isAuthenticated = true;
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
   const [topics, setTopics] = useState([
-    "Rock",
-    "Pop",
-    "Hip-hop",
-    "Jazz",
-    "Blues",
-    "Country",
-    "Classical",
-    "R&B",
-    "Reggae",
-    "Electronic",
-    "Folk",
-    "Metal",
-    "Punk",
-    "Disco",
-    "Alternative",
-    "Indie",
-    "Rap",
-    "Techno",
-    "Dance",
-    "Gospel",
-    "House",
-    "Trance",
-    "EDM",
-    "Latin",
-    "Dubstep",
-    "Chill",
-    "Ambient",
-    "Trap",
-    "K-Pop",
-    "RapRock",
-    "Grudge",
-    "Hardrock",
-    "Acoustic",
+    "Rock", "Pop", "Hip-hop", "Jazz", "Blues", "Country", "Classical", "R&B",
+    "Reggae", "Electronic", "Folk", "Metal", "Punk", "Disco", "Alternative",
+    "Indie", "Rap", "Techno", "Dance", "Gospel", "House", "Trance", "EDM",
+    "Latin", "Dubstep", "Chill", "Ambient", "Trap", "K-Pop", "RapRock",
+    "Grudge", "Hardrock", "Acoustic",
   ]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const navigate = useNavigate();
@@ -58,10 +27,10 @@ export default function TopicsPage() {
 
   const handleContinueClick = async () => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/api/PostUserOnboardingProgress`,
         {
-          userId: user?.name,
+          userId: userEmail,
           currentStep: 2,
           topicChoices: selectedTopics,
           isOnboardingStepsPending: true,
@@ -80,9 +49,9 @@ export default function TopicsPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        if (user && user.name) {
+        if (userEmail) {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${user.name}`
+            `${process.env.REACT_APP_API_BASE_URL}/api/b_getUserExist/${userEmail}`
           );
           if (
             response.data.user.isOnboardingStepsPending &&
@@ -91,7 +60,7 @@ export default function TopicsPage() {
             await axios.post(
               `${process.env.REACT_APP_API_BASE_URL}/api/PostUserOnboardingProgress`,
               {
-                userId: user.name,
+                userId: userEmail,
                 currentStep: 2,
                 isOnboardingStepsPending: true,
               }
@@ -109,7 +78,7 @@ export default function TopicsPage() {
       }
     };
     fetchUser();
-  }, []);
+  }, [userEmail]);
 
   return (
     <TopicWrapper>

@@ -1,31 +1,27 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-
 import ProfileIcon from "../assets/Profile-Icon.svg";
 import Thumb from "../assets/thumb-up.svg";
-import Thanks from "../assets/thanks.svg";
 import axios from "axios";
 import AlbumImg from "../assets/picture.png";
-// import ThanksGivingPopup from "../components/common/ThanksGivingPopup";
 import { useNavigate } from "react-router";
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 export default function FavoriteArtists() {
   const [favoriteArtistsDetails, setFavoriteArtistsDetails] = useState([]);
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth0();
-  // const user = {name: "debug9@debug.com"};
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
 
   const fetchFavorite = async () => {
     const favorites = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/api/getUserFavorites?user=${user.name}`
+      `${process.env.REACT_APP_API_BASE_URL}/api/getUserFavorites?user=${userEmail}`
     );
     const favoritesDetails = favorites.data?.favorites;
     const artists = [];
     await Promise.all(
       favoritesDetails.map(async (artistId) => {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/getUserProfileById/${artistId}`  
+          `${process.env.REACT_APP_API_BASE_URL}/api/getUserProfileById/${artistId}`
         );
         artists.push({ ...response.data });
       })
@@ -34,9 +30,8 @@ export default function FavoriteArtists() {
   };
 
   useEffect(() => {
-    // Make an Axios GET request to your backend API
     fetchFavorite();
-  }, []);
+  }, [userEmail]);
 
   return (
     <PageWrapper className="concert-wrapper">
@@ -142,6 +137,7 @@ const FavoriteArtist = styled.div`
     margin: 0 0 0 auto;
   }
 `;
+
 const ArtistList = styled.div`
   margin-top: 30px;
   display: grid;
@@ -161,6 +157,7 @@ const ArtistList = styled.div`
     grid-template-columns: repeat(2, 1fr);
   }
 `;
+
 const Box = styled.div`
   text-align: center;
   max-width: 170px;

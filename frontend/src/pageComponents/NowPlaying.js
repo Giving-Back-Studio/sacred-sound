@@ -6,17 +6,16 @@ import useAudioPlayer from "../Hooks/useAudioPlayer";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 import MediaControl from "../components/MediaControl";
-import { useAuth0 } from '@auth0/auth0-react';
-
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 const NowPlayingContext = createContext({});
 
 const MemoizedComponent = React.memo(({ children }) => {
-  return <>{children}</>
+  return <>{children}</>;
 });
 
 function NowPlaying({ children }) {
-const user  = "debug9@debug9.com";
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
 
   const [smallScreen, setSmallScreen] = useState(true);
   const [toggle, setToggle] = useState(false);
@@ -40,6 +39,7 @@ const user  = "debug9@debug9.com";
     getCurrentSong,
     getCurrentRunningStatus
   } = useAudioPlayer();
+
   useEffect(() => {
     const updateTimeline = () => {
       if (audioRef.current) {
@@ -57,14 +57,13 @@ const user  = "debug9@debug9.com";
     };
   }, [audioRef, setState, state.currentSongIndex, state.song]);
 
-  useEffect(() => {    
-
+  useEffect(() => {
     const userLog = async () => {
       try {
-        const response  = await axios.post(
+        await axios.post(
           `${process.env.REACT_APP_API_BASE_URL}/api/logContentUsage/`,
           {
-            user: user.name,  
+            user: userEmail,
             videoId: state.song[0].id,
           }
         );
@@ -73,173 +72,167 @@ const user  = "debug9@debug9.com";
       }
     };
 
-    if(state.playing){
-      const intervalId = setInterval(userLog, 60000)
+    if (state.playing) {
+      const intervalId = setInterval(userLog, 60000);
       return () => {
-        clearInterval(intervalId)
+        clearInterval(intervalId);
       };
     }
-  }, [state.playing]);
+  }, [state.playing, userEmail]);
 
   useEffect(() => {
-  const fetchInitialRecommendation = async () => {
-    try {
-      const userId = "debug9@debug9.com"; // Replace with actual user ID
+    const fetchInitialRecommendation = async () => {
+      try {
+        const recoResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getSingleRecommendationForMusicPlayer/${userEmail}`);
+        const recoData = recoResponse.data;
 
-      // Step 1: Fetch recommendation ID using axios
-      const recoResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getSingleRecommendationForMusicPlayer/${userId}`);
-      const recoData = recoResponse.data;  // Extract data from axios response
+        if (recoData.recomms && recoData.recomms.length > 0) {
+          const recommendedId = recoData.recomms[0].id;
 
-      if (recoData.recomms && recoData.recomms.length > 0) {
-        const recommendedId = recoData.recomms[0].id;
+          const songResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${recommendedId}`);
+          const songData = songResponse.data;
+          console.log("songData: ", songData);
 
-        // Step 2: Fetch full song details using the recommended ID
-        const songResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${recommendedId}`);
-        const songData = songResponse.data;
-        console.log("songData: ", songData);
-        // Step 3: Use setSongs from useAudioPlayer hook to set the recommended song
-        setSongs([songData]);
-        
-      } else {
-        console.log("No recommendations received");
+          setSongs([songData]);
+        } else {
+          console.log("No recommendations received");
+        }
+      } catch (error) {
+        console.error("Error fetching recommendation:", error);
       }
-    } catch (error) {
-      console.error("Error fetching recommendation:", error);
-    }
-  };
+    };
 
-  console.log('fetching initial recommendation');
+    console.log('fetching initial recommendation');
     fetchInitialRecommendation();
-}, [user, audioRef]);
-
+  }, [userEmail, audioRef]);
 
   return (
-  <>
-    {state.song[state.currentSongIndex].isVideo ?  
-      <NowPlayingContext.Provider
-     value={{
-      state,
-      setState,
-      audioRef,
-      getCurrentTime,
-      playNext,
-      togglePlay,
-      toggleHeart,
-      handleVolume,
-      handleTimeline,
-      getSongDuration,
-      handleLoop,
-      playPrev,
-      handleShuffle,
-      handlePlay,
-      setSongs,
-      getCurrentSong,
-      getCurrentRunningStatus
-     }}
-   >   
-      <FullScreenOuter className={smallScreen ? "mini-screen library-mini-screen" : " library-full-screen"}>
-      <FullScreen handle={handle}>
-      <>
-      <MusicPlayer
-      audioRef={audioRef}
-      setSmallScreen={setSmallScreen}
-      smallScreen={smallScreen}
-      setState={setState}
-      state={state}
-      playNext={playNext}
-      getCurrentTime={getCurrentTime}
-      togglePlay={togglePlay}
-      toggleHeart={toggleHeart}
-      handleVolume={handleVolume}
-      handleTimeline={handleTimeline}
-      getSongDuration={getSongDuration}
-      handleLoop={handleLoop}
-      playPrev={playPrev}
-      handlePlay={handlePlay}
-      handleShuffle={handleShuffle}
-    />
-      <MediaControl
-          state={state}
-          audioRef={audioRef}
-          handle={handle}
-          setToggle={setToggle}
-          toggle={toggle}
-          smallScreen={smallScreen}
-          setSmallScreen={setSmallScreen}
-          playNext={playNext}
-          getCurrentTime={getCurrentTime}
-          setState={setState}
-          handlePlay={handlePlay}
-        />
-        </>
-      </FullScreen>
-    </FullScreenOuter>
-      <Outlet/>
-    </NowPlayingContext.Provider>
-      : 
-    <NowPlayingContext.Provider
-      value={{
-        state,
-        setState,
-        audioRef,
-        getCurrentTime,
-        playNext,
-        togglePlay,
-        toggleHeart,
-        handleVolume,
-        handleTimeline,
-        getSongDuration,
-        handleLoop,
-        playPrev,
-        handleShuffle,
-        handlePlay,
-        setSongs,
-        getCurrentSong,
-        getCurrentRunningStatus
-      }}
-    >
-      <MemoizedComponent>
-        {children}
-      </MemoizedComponent>
-      <MainContainer>
-     <MusicPlayer
-          audioRef={audioRef}
-          setSmallScreen={setSmallScreen}
-          smallScreen={smallScreen}
-          setState={setState}
-          state={state}
-          playNext={playNext}
-          getCurrentTime={getCurrentTime}
-          togglePlay={togglePlay}
-          toggleHeart={toggleHeart}
-          handleVolume={handleVolume}
-          handleTimeline={handleTimeline}
-          getSongDuration={getSongDuration}
-          handleLoop={handleLoop}
-          playPrev={playPrev}
-          handlePlay={handlePlay}
-          handleShuffle={handleShuffle}
-        />
-        </MainContainer>
-        <Outlet/>
-    </NowPlayingContext.Provider>
-}
- </> );
+    <>
+      {state.song[state.currentSongIndex].isVideo ?
+        <NowPlayingContext.Provider
+          value={{
+            state,
+            setState,
+            audioRef,
+            getCurrentTime,
+            playNext,
+            togglePlay,
+            toggleHeart,
+            handleVolume,
+            handleTimeline,
+            getSongDuration,
+            handleLoop,
+            playPrev,
+            handleShuffle,
+            handlePlay,
+            setSongs,
+            getCurrentSong,
+            getCurrentRunningStatus
+          }}
+        >
+          <FullScreenOuter className={smallScreen ? "mini-screen library-mini-screen" : " library-full-screen"}>
+            <FullScreen handle={handle}>
+              <>
+                <MusicPlayer
+                  audioRef={audioRef}
+                  setSmallScreen={setSmallScreen}
+                  smallScreen={smallScreen}
+                  setState={setState}
+                  state={state}
+                  playNext={playNext}
+                  getCurrentTime={getCurrentTime}
+                  togglePlay={togglePlay}
+                  toggleHeart={toggleHeart}
+                  handleVolume={handleVolume}
+                  handleTimeline={handleTimeline}
+                  getSongDuration={getSongDuration}
+                  handleLoop={handleLoop}
+                  playPrev={playPrev}
+                  handlePlay={handlePlay}
+                  handleShuffle={handleShuffle}
+                />
+                <MediaControl
+                  state={state}
+                  audioRef={audioRef}
+                  handle={handle}
+                  setToggle={setToggle}
+                  toggle={toggle}
+                  smallScreen={smallScreen}
+                  setSmallScreen={setSmallScreen}
+                  playNext={playNext}
+                  getCurrentTime={getCurrentTime}
+                  setState={setState}
+                  handlePlay={handlePlay}
+                />
+              </>
+            </FullScreen>
+          </FullScreenOuter>
+          <Outlet />
+        </NowPlayingContext.Provider>
+        :
+        <NowPlayingContext.Provider
+          value={{
+            state,
+            setState,
+            audioRef,
+            getCurrentTime,
+            playNext,
+            togglePlay,
+            toggleHeart,
+            handleVolume,
+            handleTimeline,
+            getSongDuration,
+            handleLoop,
+            playPrev,
+            handleShuffle,
+            handlePlay,
+            setSongs,
+            getCurrentSong,
+            getCurrentRunningStatus
+          }}
+        >
+          <MemoizedComponent>
+            {children}
+          </MemoizedComponent>
+          <MainContainer>
+            <MusicPlayer
+              audioRef={audioRef}
+              setSmallScreen={setSmallScreen}
+              smallScreen={smallScreen}
+              setState={setState}
+              state={state}
+              playNext={playNext}
+              getCurrentTime={getCurrentTime}
+              togglePlay={togglePlay}
+              toggleHeart={toggleHeart}
+              handleVolume={handleVolume}
+              handleTimeline={handleTimeline}
+              getSongDuration={getSongDuration}
+              handleLoop={handleLoop}
+              playPrev={playPrev}
+              handlePlay={handlePlay}
+              handleShuffle={handleShuffle}
+            />
+          </MainContainer>
+          <Outlet />
+        </NowPlayingContext.Provider>
+      }
+    </>
+  );
 }
 
 export const usePlayingContext = (cb) => {
- let val =  useContext(NowPlayingContext);
- if(cb) val = cb(val);
- return val
+  let val = useContext(NowPlayingContext);
+  if (cb) val = cb(val);
+  return val;
 }
 
 export default NowPlaying;
 
-
-
 const MainContainer = styled.div`
   position: absolute;
-`
+`;
+
 const FullScreenOuter = styled.div`
   display: flex;
   align-items: center;
@@ -249,15 +242,15 @@ const FullScreenOuter = styled.div`
     height: calc(100vh - 206px);
     width: 100%;
   }
-  &.library-full-screen{
+  &.library-full-screen {
     position: absolute;
-    width:100%;
-    z-index:999;
+    width: 100%;
+    z-index: 999;
   }
   &.mini-screen {
     height: 200px;
     width: 200px;
-    &.library-mini-screen{
+    &.library-mini-screen {
       height: 0px;
     }
     .fullscreen {
@@ -346,4 +339,3 @@ const FullScreenOuter = styled.div`
     }
   }
 `;
-

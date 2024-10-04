@@ -1,54 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Link, Outlet } from "react-router-dom";
 import SacredSoundLogo from "../assets/Logo.png";
 import LibraryIcon from "../assets/library-icon.png";
 import Feed from "../assets/Vector.png";
 import MyAcc from "../assets/profile.png";
-import { useAuth0 } from "@auth0/auth0-react";
 import Concert from "../assets/Group 189.png";
 import MenuBar from "../assets/menubar.svg";
 import styled from "styled-components";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 import MyAccount from "../pageComponents/MyAccount";
 
 const SidebarComponent = () => {
-  const { user, isAuthenticated } = useAuth0();
-  // const isAuthenticated = true;
-   // const user = { name: "debug9@debug.com" };
-  const [toggled, setToggled] = React.useState(false);
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
+  const [toggled, setToggled] = useState(false);
   const location = useLocation();
-  const [broken, setBroken] = React.useState(
+  const [broken, setBroken] = useState(
     window.matchMedia("(max-width: 991px)").matches
   );
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearched, setIsSearched] = useState(false);
-  const [result, setResult] = useState({tracks: [],
-                                        albums: [],
-                                        artists: []})
+  const [result, setResult] = useState({
+    tracks: [],
+    albums: [],
+    artists: []
+  });
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    if(e.target.value.length < 1){
-      setIsSearched(false)
+    if (e.target.value.length < 1) {
+      setIsSearched(false);
     }
   };
 
   const fetchSearchResult = async (searchQuery) => {
     try {
-      let url = `${process.env.REACT_APP_API_BASE_URL}/api/getSearchResult/${user.name}/${searchQuery}`;
+      let url = `${process.env.REACT_APP_API_BASE_URL}/api/getSearchResult/${userEmail}/${searchQuery}`;
 
       const response = await axios.get(url);
       if (response.status === 200) {
-        // let data = {
-        //   tracks: ['65e86b2fc36e577d0ad7dcc8', '65eab5186300c6e4285f0ae1'],
-        //   albums: ['65eac9a5aaa244ed32c5229a', '65eb078fb499bd61022878a2'],
-        //   artists: ['65e81221faffe0217f791b44']
-        // };
-        let data = response.data
-        if(data.tracks.length > 0){
-          let list = []
+        let data = response.data;
+        if (data.tracks.length > 0) {
+          let list = [];
           await Promise.allSettled(
             data.tracks.map(async (id) => {
               const videoResp = await axios.get(
@@ -62,12 +58,12 @@ const SidebarComponent = () => {
               }
             })
           );
-          data.tracks = list; 
-        }else{
-          data.tracks = []
+          data.tracks = list;
+        } else {
+          data.tracks = [];
         }
-        if(data.albums.length > 0){
-          let list = []
+        if (data.albums.length > 0) {
+          let list = [];
           await Promise.allSettled(
             data.albums.map(async (id) => {
               const albumResp = await axios.get(
@@ -76,17 +72,17 @@ const SidebarComponent = () => {
               const albumData = albumResp.data.album;
               if (albumData) {
                 list.push({
-                  ...albumData,contentType: 'album'
+                  ...albumData, contentType: 'album'
                 });
               }
             })
           );
-          data.albums = list; 
-        }else{
-          data.albums = []
+          data.albums = list;
+        } else {
+          data.albums = [];
         }
-        if(data.artists.length > 0){
-          let list = []
+        if (data.artists.length > 0) {
+          let list = [];
           await Promise.allSettled(
             data.artists.map(async (id) => {
               const artistResp = await axios.get(
@@ -100,12 +96,12 @@ const SidebarComponent = () => {
               }
             })
           );
-          data.artists = list; 
-        }else{
-          data.artists = []
+          data.artists = list;
+        } else {
+          data.artists = [];
         }
-        
-        setResult(data)
+
+        setResult(data);
       } else {
         console.error(`Request failed with status: ${response.status}`);
       }
@@ -116,14 +112,15 @@ const SidebarComponent = () => {
 
   const handleKeyDown = async (e) => {
     if (e.key === 'Enter') {
-      if(searchTerm.length > 0){
-        await fetchSearchResult(searchTerm)
-        setIsSearched(true)
-      }else{
-        setIsSearched(false)
+      if (searchTerm.length > 0) {
+        await fetchSearchResult(searchTerm);
+        setIsSearched(true);
+      } else {
+        setIsSearched(false);
       }
     }
   };
+
   return (
     <>
       <Main className="main-wrapper">
@@ -138,8 +135,7 @@ const SidebarComponent = () => {
           <Logo>
             <img src={SacredSoundLogo} alt="logo"></img>
           </Logo>
-          {/* {location.pathname === "/main/library" && ( */}
-            <SearchContainer>
+          <SearchContainer>
             <SearchInput
               type="text"
               placeholder="Search"
@@ -147,9 +143,8 @@ const SidebarComponent = () => {
               onChange={handleSearch}
               onKeyDown={handleKeyDown}
             />
-            </SearchContainer>
-          {/* )} */}
-          
+          </SearchContainer>
+
           <Menu
             className="side-menu"
             menuItemStyles={{
@@ -213,29 +208,29 @@ const Main = styled.div`
   display: flex;
   background: #434289; 
   .sidebar {
-    ...
+    
   }
 `;
 
 const Logo = styled.div`
-padding: 18px;
+  padding: 18px;
   img {
-  width: 100%;
-}
+    width: 100%;
+  }
 `;
 
 const MenuButton = styled.div`
-position: absolute;
-z-index: 99;
-background-color: transparent !important;
-  * {
+  position: absolute;
+  z-index: 99;
   background-color: transparent !important;
-}
+  * {
+    background-color: transparent !important;
+  }
   img {
-  padding: 10px;
-  margin: 10px;
-  cursor: pointer;
-}
+    padding: 10px;
+    margin: 10px;
+    cursor: pointer;
+  }
 `;
 
 const SearchContainer = styled.div`

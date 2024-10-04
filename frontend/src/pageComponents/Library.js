@@ -9,8 +9,8 @@ export default function Library() {
   const [recommendations_MusicVideo, setRecommendations_MusicVideo] = useState([]);
   const [recommendations_Meditation, setRecommendations_Meditation] = useState([]);
   const [recommendations_StudioRecording, setRecommendations_StudioRecording] = useState([]);
-  const [userEmail, setUserEmail] = useState(null);
-  const navigate = useNavigate();
+  const [userEmail, setUserEmail] = useState(null); // State to hold userEmail
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     setupAxiosInterceptors(); // Setup Axios interceptors on component mount

@@ -10,24 +10,21 @@ import Thanks from "../assets/thanks.svg";
 import Thumb from "../assets/playlist.jpg";
 import TrackLike from "../assets/track-like.svg";
 import axios from "axios";
-import { useAuth0 } from '@auth0/auth0-react';
 import SwipeComponet from "../components/SwipeComponet";
 import SwipeEventComponet from "../components/lirbary/SwipeEventComponet";
 import BackButton from "../components/common/BackButton";
 import PlayButton from "../components/common/PlayButton";
 import ThanksGivingPopup from "../components/common/ThanksGivingPopup";
+import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
 
 export default function Artist() {
   const [artist, setArtist] = useState({});
-  // const navigate = useNavigate()
   const [featured, setFeatured] = useState([]);
   const [tab, setTab] = useState(0);
   const [contents, setContent] = useState([]);
   const [events, setEvents] = useState([]);
-  // const user = { name: "debug9@debug.com" };
-  const userId = "660cf4f69fb6fc7838cc611d"
-  const { user, isAuthenticated } = useAuth0();
-  // const isAuthenticated = true;
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
+
   async function fetchArtist() {
     const queryParams = new URLSearchParams(window.location.search);
     const artistId = queryParams.get("id");
@@ -36,13 +33,16 @@ export default function Artist() {
     );
     setArtist(response.data);
   }
+
   useEffect(() => {
     fetchArtist();
   }, []);
+
   useEffect(() => {
     fetchEvents();
     fetchFeatured();
   }, [artist]);
+
   useEffect(() => {
     fetchContent();
   }, [tab, artist]);
@@ -82,6 +82,7 @@ export default function Artist() {
       console.error(`An error occurred: ${error}`);
     }
   };
+
   const fetchFeatured = async () => {
     try {
       let url = `${process.env.REACT_APP_API_BASE_URL}/api/getFeaturedByArtist?artistId=${artist.email}`;
@@ -152,7 +153,7 @@ export default function Artist() {
               <img className="album-cover" src={Shuffle} alt="Album Cover" />
             </div>
           </div>
-          <ThanksGivingPopup artist={artist} userId={userId} user={user?.name} />
+          <ThanksGivingPopup artist={artist} userId={userEmail} user={userEmail} />
         </div>
       </MusicInfo>
 
@@ -165,7 +166,6 @@ export default function Artist() {
             <div className="track-bar active" key={element._id}>
               <div className="track-left">
                 <div className="icon-number">
-                  {/* <img src={Play} className="track-icon" alt="track-icon"></img> */}
                   <PlayButton
                     track={{
                       id: element._id,
@@ -176,7 +176,6 @@ export default function Artist() {
                       img: element.selectedImageThumbnail,
                     }}
                   />
-                  {/* <h5>{index + 1}</h5> */}
                 </div>
                 <img
                   className="track-thumb"

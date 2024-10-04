@@ -6,19 +6,17 @@ import PersonAdd from "../assets/person-add-outline.svg";
 import Play from "../assets/playicon.svg";
 import Shuffle from "../assets/Shuffle-blue.svg";
 import Thanks from "../assets/thanks.svg";
-import { useAuth0 } from '@auth0/auth0-react';
 import Thumb from "../assets/playlist.jpg";
 import TrackLike from "../assets/track-like.svg";
 import PlayButton from "../components/common/PlayButton";
 import BackButton from "../components/common/BackButton";
 import ThanksGivingPopup from "../components/common/ThanksGivingPopup";
+import { useAuth } from '../context/AuthContext'; 
 
 export default function Album() {
-  const [album, setAlbum] = useState({})
-  // const user = { name: "test@test.com" };
-  // const userId = "660cf5ca9fb6fc7838cc611e"
-   const { user, isAuthenticated } = useAuth0();
-  // const isAuthenticated = true;
+  const [album, setAlbum] = useState({});
+  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
+
   async function fetchAlbum() {
     const queryParams = new URLSearchParams(window.location.search);
     const albumId = queryParams.get("id");
@@ -27,16 +25,17 @@ export default function Album() {
     );
     setAlbum(response.data.album);
   }
+
   useEffect(() => {
-    fetchAlbum()
-  }, [])
+    fetchAlbum();
+  }, []);
+
   return (
     <MainContainer>
       <HeadPart>
-        <BackButton/>
+        <BackButton />
         <CoverImage>
-        <img src={require('../assets/Background.png')} alt="not loaded"></img>
-          {/* <img src={artistCover} alt="not loaded"></img> */}
+          <img src={require('../assets/Background.png')} alt="not loaded"></img>
         </CoverImage>
         <HeadProfile>
           <ProfileImage>
@@ -57,7 +56,7 @@ export default function Album() {
       <MusicInfo>
         <div>
           <h5 className="music-disc">
-           {album.description}
+            {album.description}
           </h5>
         </div>
         <div className="music-play">
@@ -65,14 +64,11 @@ export default function Album() {
             <div className="play">
               <img className="album-cover" src={Play} alt="Album Cover" />
             </div>
-            {/* <div className="pause">
-            <img className="album-cover" src={Pause} alt="Album Cover" />
-          </div> */}
             <div className="repeat-play">
               <img className="album-cover" src={Shuffle} alt="Album Cover" />
             </div>
           </div>
-          <ThanksGivingPopup album={album} userId={user?._id} user={user?.name}/>
+          <ThanksGivingPopup album={album} userId={userEmail} user={userEmail} />
         </div>
       </MusicInfo>
 
@@ -85,12 +81,14 @@ export default function Album() {
           <div className="track-bar active" key={element._id}>
             <div className="track-left">
               <div className="icon-number">
-
-                <PlayButton track={{id: 1, songUrl: element.fileUrl,
-                                  songTitle: element.title,
-                                  isVideo: false,
-                                  artistName: element.user?.accountName,
-                                  img: element.selectedImageThumbnail}}/>
+                <PlayButton track={{
+                  id: 1,
+                  songUrl: element.fileUrl,
+                  songTitle: element.title,
+                  isVideo: false,
+                  artistName: element.user?.accountName,
+                  img: element.selectedImageThumbnail
+                }} />
               </div>
               <img
                 className="track-thumb"
@@ -111,10 +109,8 @@ export default function Album() {
               <img src={TrackLike} alt="track-like"></img>
             </div>
           </div>
-        )): <p>This album has not any track</p>}
+        )) : <p>This album has not any track</p>}
       </FeaturedTracks>
-
-     
     </MainContainer>
   );
 }
