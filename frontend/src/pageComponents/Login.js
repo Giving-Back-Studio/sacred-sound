@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -8,51 +7,6 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-// const handleSubmit = async (e) => {
-//   e.preventDefault();
-//   setError(''); // Clear previous errors
-//   console.log('Form submitted with:', { email, password });
-
-//   try {
-
-//     const response = await axios.post('https://lobster-app-ngpuz.ondigitalocean.app/api/login', {
-//     email,
-//     password,
-//   }, {
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//   });
-
-
-//     // const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
-//     //   email,
-//     //   password,
-//     // });
-
-//     console.log("API Response:", response.data);
-
-//     if (response.data && response.data.accessToken) {
-//       console.log("Access token received:", response.data.accessToken);
-
-//       if (!localStorage.getItem('sacredSound_accessToken')) {
-//         localStorage.setItem('sacredSound_accessToken', response.data.accessToken);
-//         console.log("Access token stored in localStorage");
-
-//         navigate('/main/library');
-//       } else {
-//         console.log("Token already exists in localStorage");
-//       }
-//     } else {
-//       console.log("Login failed, no access token");
-//       setError('Login failed. Please try again.');
-//     }
-//   } catch (err) {
-//     console.error("Login error:", err.response || err.message);
-//     setError(err.response?.data?.message || 'An error occurred during login');
-//   }
-// };
 
 const handleSubmit = async (e) => {
   e.preventDefault();
