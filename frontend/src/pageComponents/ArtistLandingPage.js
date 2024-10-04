@@ -1,53 +1,128 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React from 'react'
+import styled from "styled-components";
+import { useNavigate } from 'react-router-dom'; // Update this import
+import logo from '../assets/logo-white.png'
+import userGroup from '../assets/userGroup.png';
+import musicNote from '../assets/musicNote.png';
+import heart from '../assets/heart-new.png'
+import FAQsContainer from '../components/CloudStudioComponents/FAQsContainer';
 
-export default function PreRegisterForm() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState(null); // To display errors
-  const [success, setSuccess] = useState(null); // To display success message
+export default function ArtistLandingPage() {
+    const navigate = useNavigate(); // Update to useNavigate
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null); // Clear previous errors
-    setSuccess(null); // Clear success message
-    
-    try {
-      const response = await axios.post(
-        'https://lobster-app-ngpuz.ondigitalocean.app/api/storeEmailOnWaitlist',
-        { email }, // Request body with email
-        {
-          headers: {
-            'Content-Type': 'application/json', // Ensure correct headers
-          },
-        }
-      );
-      if (response.status === 200) {
-        setSuccess('You have successfully registered!'); // Success message
-      } else {
-        setError('Failed to register. Please try again.'); // Handle non-200 responses
-      }
-    } catch (err) {
-      setError('Error saving email: ' + err.message); // Display network errors
-      console.error('Error saving email:', err);
-    }
-  };
+    return (
+        <MainContainer>
+            <Banner>
+                <BannerImage>
+                    <img src='https://firebasestorage.googleapis.com/v0/b/staging-sacred-sound-f472b.appspot.com/o/Assets%2FArtistLandingPageBackgroundImage.png?alt=media&token=6896cce6-8c4a-44f3-91e6-7ef2fc2f51a7' alt='not loaded'></img>
+                </BannerImage>
+                <BannerBackground></BannerBackground>
+                <Content>
+                    <img src={logo} alt='not loaded'></img>
+                    <div id='text-section'>
+                        <p>
+                        Join the Collective
+                        </p>
+                        <p id='second-text'>
+                        Connect intimately with listeners that go deep
+                        </p>
+                        <button onClick={() => navigate('/artist-signup')}>GET STARTED</button>
 
-  return (
-    <RegisterForm onSubmit={handleSubmit}>
-      <p>Pre-register your email</p>
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
-      {success && <p style={{ color: 'green' }}>{success}</p>} {/* Display success message */}
-      <button type="submit">Pre-register</button>
-    </RegisterForm>
-  );
+                    </div>
+                </Content>
+            </Banner>
+        
+            <CommunitySection>
+                <SecondarySection>
+                    <p className='title'><b>A platform designed for your journey as a sacred music artist.</b></p>
+                    <p className='content'>We pay artists directly and provide professional support to enhance the value of what you create.</p>
+
+                </SecondarySection>
+                <SecondarySection>
+                    <video controls muted src={'https://storage.googleapis.com/staging-sacred-sound-f472b.appspot.com/introduction-video/Sacred-Sound-Explainer-Video.mp4'} type="video/mp4"></video>
+                </SecondarySection>    
+            </CommunitySection>
+            <hr style={{color: '#D9D9D9', marginTop: '50px'}}></hr>
+
+            <UserSection>
+                <InnerSection>
+                    <SecondarySection>
+                        <UserContent>
+                            <div id='inner-content'>
+                                <p className='header'>Welcome to Your <br></br>Cloud Studio</p>
+                                <p className='sub-header'>A platform for new cash flow steams, direct connection to listeners, and professional studio support from Sacred Sound Studios.</p>
+                            </div>
+                        </UserContent>
+                    </SecondarySection>
+                    <SecondarySection>
+                        <Seekers>
+                            <Seeker>
+                                <div>
+                                    <p style={{fontSize: '32px', margin: '0'}}><b>Create new revenue streams with your content.</b></p>
+                                    <p style={{fontSize: '18px'}}>Upload your magic into our sacred music library, and get paid for every minute of content that gets viewed.</p> 
+
+                                </div>
+                            </Seeker>
+                            <Seeker>
+                                <div>
+                                    <p style={{fontSize: '32px', margin: '0'}}><b>Expand through more intimate connection.</b></p>
+                                    <p style={{fontSize: '18px'}}>Invite your listeners along deeper into your creative process through video lessons, events, behind the scenes, and more!</p> 
+
+                                </div>
+                            </Seeker>
+                            <Seeker>
+                                <div>
+                                    <p style={{fontSize: '32px', margin: '0'}}><b>Earn professional studio support through your music.</b></p>
+                                    <p style={{fontSize: '18px'}}>Gain tokens, ‘thanks coins,’ directly from listeners as they gain inspiration, which you can redeem for studio services.</p> 
+
+                                </div>
+                            </Seeker>
+                        </Seekers>
+                    </SecondarySection>
+
+                </InnerSection>
+            </UserSection>
+            <hr style={{color: '#D9D9D9', marginBottom: '40px'}}></hr>
+
+            <FeatureSection>
+                <Title><b>Let’s Create Magic Together</b></Title>
+                <p>Share sacred music and receive support from listeners you inspire.</p>
+                <Features>
+                    <Feature>
+                        <img src={userGroup} alt='not loaded'></img>
+                        <p className='feature-title'>Join the Artist Collective</p>    
+                        <p className='discription'>Be one of up to 100 artists selected to join the Sacred Sound Artist Collective.</p>
+                    </Feature>
+                    <Feature>
+                    <img src={musicNote} alt='not loaded'></img>
+
+                        <p className='feature-title'>Publish Your Magic</p>
+                        <p className='discription'>Reach the right audience for you and get paid for every minute of content that gets viewed.</p>
+                  
+                    </Feature>
+                    <Feature>
+                    <img src={heart} alt='not loaded'></img>
+
+                        <p className='feature-title'>Get Support</p>
+                        <p className='discription'>Unlock studio time and services to continue enhancing the potency of every item that you publish.</p>
+
+                    </Feature>
+                    <button onClick={() => navigate('/signup?artist=true')}>GET STARTED</button> // Update button action
+        
+                </Features>
+            </FeatureSection>
+            <hr style={{color: '#D9D9D9', marginTop: '40px'}}></hr>
+
+            <FaqSection>
+                <Title>FAQ</Title>
+                <br/>
+                <br/>
+                <br/>
+                <FAQsContainer/>
+
+            </FaqSection>
+        </MainContainer>
+    )
 }
 
 const MainContainer = styled.div`
