@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -10,24 +10,33 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(''); // Clear previous errors
-  
-  try {
-    const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
-      email,
-      password
-    });
+    e.preventDefault();
+    setError(''); // Clear previous errors
 
-    // Store the access token in localStorage
-    localStorage.setItem('sacredSound_accessToken', response.data.accessToken);
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
+        email,
+        password
+      });
 
-    // The refresh token should be stored in an HTTP-only cookie on the backend.
-    navigate('/main/library');
-  } catch (err) {
-    setError(err.response?.data?.message || 'An error occurred during login');
-  }
-};
+      // Check if the response contains the access token
+      if (response.data && response.data.accessToken) {
+        // Store the access token in localStorage
+        localStorage.setItem('sacredSound_accessToken', response.data.accessToken);
+        // Navigate to the main library
+        navigate('/main/library');
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    } catch (err) {
+      // Handle error response
+      if (err.response) {
+        setError(err.response.data.message || 'An error occurred during login');
+      } else {
+        setError('Network error. Please try again later.');
+      }
+    }
+  };
 
   return (
     <LoginContainer>
