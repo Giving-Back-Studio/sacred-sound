@@ -98,7 +98,7 @@ const {
 
 express()
   .use(cors({
-    origin: ['https://staging.ss-mono-repo.pages.dev', 'http://localhost:3000', '*'],
+    origin: ['https://sacredsound.app'],
     methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
     credentials: true, // Allow credentials (cookies)
   }))
