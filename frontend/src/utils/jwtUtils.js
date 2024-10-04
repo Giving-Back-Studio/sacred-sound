@@ -19,8 +19,7 @@ const isTokenExpiringSoon = (token) => {
         return response.data.accessToken;
     } catch (err) {
         console.error('Error refreshing access token:', err);
-        // Handle token refresh failure (e.g., redirect to login)
-        window.location.href = '/login'; // Redirect to login if refresh fails
+        // No direct redirection here, just return null if refresh fails
         return null;
     }
     };
