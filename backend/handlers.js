@@ -2776,45 +2776,56 @@ const login = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
   try {
     await client.connect();
+    console.log("Connected to DB");
     const db = client.db('db-name');
     const userCollection = db.collection('userAccounts');
 
     const { email, password } = req.body;
+    console.log("Login request for:", email);
 
     // Check if user exists
     const user = await userCollection.findOne({ email });
     if (!user) {
+      console.log("User not found");
       return res.status(400).json({ message: 'Invalid email or password' });
     }
+    console.log("User found:", user.email);
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log("Password mismatch");
       return res.status(400).json({ message: 'Invalid email or password' });
     }
+    console.log("Password matched");
 
     // Generate JWT access token (6 hour)
     const accessToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '6h' });
+    console.log("Access token generated");
 
     // Generate JWT refresh token (90 days)
     const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_SECRET, { expiresIn: '90d' });
+    console.log("Refresh token generated");
 
     // Store refresh token in an HTTP-only cookie
     res.cookie('sacredSound_refreshToken', refreshToken, {
       httpOnly: true,
-       secure: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging', // Secure only in production or staging environments
+      secure: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging', // Secure only in production or staging environments
       sameSite: 'Strict',
       maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
     });
 
     res.status(200).json({ accessToken });
+    console.log("Response sent with access token");
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Error during login' });
   } finally {
     await client.close();
+    console.log("DB connection closed");
   }
 };
+
 
 
 const refreshAccessToken = async (req, res) => {
