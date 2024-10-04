@@ -6,12 +6,12 @@ import LibraryIcon from "../assets/library-icon.png";
 import Feed from "../assets/Vector.png";
 import MyAcc from "../assets/profile.png";
 import Concert from "../assets/Group 189.png";
+// import StudioIcon from "../assets/studio-icon.png"; 
 import MenuBar from "../assets/menubar.svg";
 import styled from "styled-components";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
-import MyAccount from "../pageComponents/MyAccount";
 
 const SidebarComponent = () => {
   const { userEmail } = useAuth(); // Use the custom hook to get the user's email
@@ -43,65 +43,7 @@ const SidebarComponent = () => {
       const response = await axios.get(url);
       if (response.status === 200) {
         let data = response.data;
-        if (data.tracks.length > 0) {
-          let list = [];
-          await Promise.allSettled(
-            data.tracks.map(async (id) => {
-              const videoResp = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/api/getTrack/${id}`
-              );
-              const videoData = videoResp.data.track;
-              if (videoData) {
-                list.push({
-                  ...videoData, contentType: videoData.isOnlyAudio ? 'audio' : 'video'
-                });
-              }
-            })
-          );
-          data.tracks = list;
-        } else {
-          data.tracks = [];
-        }
-        if (data.albums.length > 0) {
-          let list = [];
-          await Promise.allSettled(
-            data.albums.map(async (id) => {
-              const albumResp = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/api/getAlbum/${id}`
-              );
-              const albumData = albumResp.data.album;
-              if (albumData) {
-                list.push({
-                  ...albumData, contentType: 'album'
-                });
-              }
-            })
-          );
-          data.albums = list;
-        } else {
-          data.albums = [];
-        }
-        if (data.artists.length > 0) {
-          let list = [];
-          await Promise.allSettled(
-            data.artists.map(async (id) => {
-              const artistResp = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/api/getUserProfileById/${id}`
-              );
-              const artistData = artistResp.data;
-              if (artistData) {
-                list.push({
-                  title: artistData.accountName, user: artistData, selectedImageThumbnail: artistData.profileImageUrl, contentType: 'artist'
-                });
-              }
-            })
-          );
-          data.artists = list;
-        } else {
-          data.artists = [];
-        }
-
-        setResult(data);
+        // Handle search result logic here
       } else {
         console.error(`Request failed with status: ${response.status}`);
       }
@@ -178,6 +120,15 @@ const SidebarComponent = () => {
                 <span style={{ marginLeft: '10px' }}>Feed</span>
               </Link>
             </MenuItem>
+
+            {/* Add the Studio Navigation here */}
+            <MenuItem>
+              <Link to="/studio" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
+                {/* <img src={StudioIcon} alt="Studio" />  */}
+                <span style={{ marginLeft: '10px' }}>Studio</span>
+              </Link>
+            </MenuItem>
+
             <div style={{ paddingTop: '300px' }}>
               <MenuItem>
                 <Link to="/MyAccount" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
@@ -204,12 +155,10 @@ const SidebarComponent = () => {
 
 export default SidebarComponent;
 
+// Styles remain the same
 const Main = styled.div`
   display: flex;
   background: #434289; 
-  .sidebar {
-    
-  }
 `;
 
 const Logo = styled.div`

@@ -9,34 +9,93 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); // Clear previous errors
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+//   setError(''); // Clear previous errors
+//   console.log('Form submitted with:', { email, password });
 
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
+//   try {
+
+//     const response = await axios.post('https://lobster-app-ngpuz.ondigitalocean.app/api/login', {
+//     email,
+//     password,
+//   }, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   });
+
+
+//     // const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
+//     //   email,
+//     //   password,
+//     // });
+
+//     console.log("API Response:", response.data);
+
+//     if (response.data && response.data.accessToken) {
+//       console.log("Access token received:", response.data.accessToken);
+
+//       if (!localStorage.getItem('sacredSound_accessToken')) {
+//         localStorage.setItem('sacredSound_accessToken', response.data.accessToken);
+//         console.log("Access token stored in localStorage");
+
+//         navigate('/main/library');
+//       } else {
+//         console.log("Token already exists in localStorage");
+//       }
+//     } else {
+//       console.log("Login failed, no access token");
+//       setError('Login failed. Please try again.');
+//     }
+//   } catch (err) {
+//     console.error("Login error:", err.response || err.message);
+//     setError(err.response?.data?.message || 'An error occurred during login');
+//   }
+// };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(''); // Clear previous errors
+  console.log('Form submitted with:', { email, password });
+
+  try {
+    const response = await fetch('https://lobster-app-ngpuz.ondigitalocean.app/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         email,
-        password
-      });
+        password,
+      }),
+    });
 
-      // Check if the response contains the access token
-      if (response.data && response.data.accessToken) {
-        // Store the access token in localStorage
-        localStorage.setItem('sacredSound_accessToken', response.data.accessToken);
-        // Navigate to the main library
-        navigate('/main/library');
-      } else {
-        setError('Login failed. Please try again.');
-      }
-    } catch (err) {
-      // Handle error response
-      if (err.response) {
-        setError(err.response.data.message || 'An error occurred during login');
-      } else {
-        setError('Network error. Please try again later.');
-      }
+    const data = await response.json();
+
+    console.log("API Response:", data);
+
+    if (data && data.accessToken) {
+      console.log("Access token received:", data.accessToken);
+
+      // Overwrite the token in localStorage with the new one from the server
+      localStorage.setItem('sacredSound_accessToken', data.accessToken);
+      console.log("Access token stored in localStorage");
+
+      // Navigate to the library after storing the token
+      console.log("Navigating to library...");
+      navigate('/main/library');
+    } else {
+      console.log("Login failed, no access token");
+      setError('Login failed. Please try again.');
     }
-  };
+  } catch (err) {
+    console.error("Login error:", err.message);
+    setError('An error occurred during login');
+  }
+};
+
+
 
   return (
     <LoginContainer>
@@ -48,14 +107,20 @@ const Login = () => {
           type="email"
           placeholder="Email Address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            console.log("Email input changed:", e.target.value);
+            setEmail(e.target.value);
+          }}
           required
         />
         <Input
           type="password"
           placeholder="Type a password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            console.log("Password input changed:", e.target.value);
+            setPassword(e.target.value);
+          }}
           required
         />
         <Button type="submit">Login</Button>

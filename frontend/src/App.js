@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
 import { GlobalStyle } from './components/GlobalStyle';
 import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
+
+// Import all your components
 import ArtistProfilePage from './pageComponents/ArtistProfilePage';
 import NewCloudStudio from './pageComponents/NewCloudStudio';
 import ModifySingleTrackComponent from './components/CloudStudioComponents/ModifySingleTrackComponent';
@@ -42,57 +44,127 @@ import ArtistSignup from './pageComponents/ArtistSignup';
 
 const App = () => {
   return (
-    
-      <BrowserRouter>
-        <AuthProvider>
-          <GlobalStyle />
-          <Routes>
-            {/* Public Routes */}
-            <Route exact path="/" element={<LandingPage />} />
-            <Route exact path="/welcome" element={<Welcome />} />
-            <Route exact path="/topics" element={<Topics />} />
-            <Route exact path="/payment-details" element={<PaymentDetail />} />
-            <Route exact path="/login" element={<Login />} />
-            <Route exact path="/signup" element={<Signup />} />
-            <Route exact path="/artist-signup" element={<ArtistSignup />} />
-            <Route exact path="/forgot" element={<ForgotPassword />} />
-            <Route exact path="/reset" element={<ResetPassword />} />
+    <BrowserRouter>
+      <AuthProvider>
+        <GlobalStyle />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/topics" element={<Topics />} />
+          <Route path="/payment-details" element={<PaymentDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/artist-signup" element={<ArtistSignup />} />
+          <Route path="/forgot" element={<ForgotPassword />} />
+          <Route path="/reset" element={<ResetPassword />} />
+          <Route path="/create" element={<ArtistLandingPage />}/>
 
-            {/* Protected Routes */}
-            <Route exact path="/profile/:artistId" element={<PrivateRoute element={ArtistProfilePage} />} />
-            <Route exact path="/prepareForQA/:videoId" element={<PrivateRoute element={ModifySingleTrackComponent} />} />
-            <Route exact path="/studio" element={<PrivateRoute element={NewCloudStudio} />} />
-            <Route exact path="/create" element={<PrivateRoute element={ArtistLandingPage} />} />
-            <Route exact path="/play/:videoId" element={<PrivateRoute element={VideoPlayer} />} />
-            <Route exact path="/ModifyAlbum/:albumId" element={<PrivateRoute element={ModifyAlbum} />} />
-            <Route exact path="/myAccount" element={<PrivateRoute element={MyAccountSidebarComponent} />}>
-              <Route exact path="" element={<MyAccount />} />
-              <Route exact path="orders" element={<OrderHistory />} />
-              <Route exact path="make-order" element={<Subscribe />} />
-              <Route exact path="manage-plan" element={<MangePlan />} />
-              <Route exact path="save-card" element={<SaveCard />} />
-              <Route exact path="checkout" element={<Checkout />} />
-              <Route exact path="playback-history" element={<PlayBackHistory />} />
-              <Route exact path="checkout-result" element={<CheckoutResult />} />
-              <Route exact path="favorite-artists" element={<FavoriteArtists />} />
-              <Route exact path="loved-content" element={<LovedContent />} />
+          {/* Protected Routes */}
+          <Route
+            path="/profile/:artistId"
+            element={
+              <PrivateRoute>
+                <ArtistProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/prepareForQA/:videoId"
+            element={
+              <PrivateRoute>
+                <ModifySingleTrackComponent />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/studio"
+            element={
+              <PrivateRoute>
+                <NewCloudStudio />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/play/:videoId"
+            element={
+              <PrivateRoute>
+                <VideoPlayer />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/ModifyAlbum/:albumId"
+            element={
+              <PrivateRoute>
+                <ModifyAlbum />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/myAccount"
+            element={
+              <PrivateRoute>
+                <MyAccountSidebarComponent />
+              </PrivateRoute>
+            }
+          >
+            {/* Nested Routes for MyAccount */}
+            <Route path="" element={<MyAccount />} />
+            <Route path="orders" element={<OrderHistory />} />
+            <Route path="make-order" element={<Subscribe />} />
+            <Route path="manage-plan" element={<MangePlan />} />
+            <Route path="save-card" element={<SaveCard />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="playback-history" element={<PlayBackHistory />} />
+            <Route path="checkout-result" element={<CheckoutResult />} />
+            <Route path="favorite-artists" element={<FavoriteArtists />} />
+            <Route path="loved-content" element={<LovedContent />} />
+          </Route>
+          <Route
+            path="/play-screen"
+            element={
+              <PrivateRoute>
+                <PlayScreen />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/search/:searchQuery"
+            element={
+              <PrivateRoute>
+                <Search />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/stream"
+            element={
+              <PrivateRoute>
+                <VideoStreaming />
+              </PrivateRoute>
+            }
+          />
+          {/* Nested Routes under "NowPlaying" */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <NowPlaying />
+              </PrivateRoute>
+            }
+          >
+            <Route path="main" element={<SidebarComponent />}>
+              <Route path="library" element={<PrivateRoute><Library /></PrivateRoute>} />
+              <Route path="artist" element={<PrivateRoute><Artist /></PrivateRoute>} />
+              <Route path="track" element={<PrivateRoute><TrackPage /></PrivateRoute>} />
+              <Route path="album" element={<PrivateRoute><Album /></PrivateRoute>} />
+              <Route path="concert" element={<PrivateRoute><Concert /></PrivateRoute>} />
             </Route>
-            <Route exact path="/play-screen" element={<PrivateRoute element={PlayScreen} />} />
-            <Route exact path="/search/:searchQuery" element={<PrivateRoute element={Search} />} />
-            <Route exact path="/stream" element={<PrivateRoute element={VideoStreaming} />} />
-            <Route exact path="/" element={<PrivateRoute element={NowPlaying} />}>
-              <Route exact path="/main" element={<SidebarComponent />}>
-                <Route exact path="library" element={<PrivateRoute element={Library} />} />
-                <Route exact path="artist" element={<PrivateRoute element={Artist} />} />
-                <Route exact path="track" element={<PrivateRoute element={TrackPage} />} />
-                <Route exact path="album" element={<PrivateRoute element={Album} />} />
-                <Route exact path="concert" element={<PrivateRoute element={Concert} />} />
-              </Route>
-            </Route>
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    
+          </Route>
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 };
 

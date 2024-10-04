@@ -5,16 +5,15 @@ import { getUserEmailFromToken, refreshAccessToken, setupAxiosInterceptors } fro
 // Create a Context
 const AuthContext = createContext();
 
-// Create a Provider component
 export const AuthProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState(null);
+  const [loading, setLoading] = useState(true);  // Add loading state
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("AuthProvider mounted");
-    setupAxiosInterceptors();
-
     const checkAuthStatus = async () => {
+      setupAxiosInterceptors();
+
       let { email, isValid } = getUserEmailFromToken();
       console.log("Token validation result:", { email, isValid });
 
@@ -33,17 +32,18 @@ export const AuthProvider = ({ children }) => {
         console.log("Token is not valid, navigating to login");
         navigate('/login');
       }
+
+      setLoading(false);  // Finish loading once the check is done
     };
 
     checkAuthStatus();
   }, [navigate]);
 
   return (
-    <AuthContext.Provider value={{ userEmail, setUserEmail }}>
+    <AuthContext.Provider value={{ userEmail, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);

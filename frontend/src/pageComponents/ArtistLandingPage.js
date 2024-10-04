@@ -107,8 +107,8 @@ export default function ArtistLandingPage() {
                         <p className='discription'>Unlock studio time and services to continue enhancing the potency of every item that you publish.</p>
 
                     </Feature>
-                    <button onClick={() => navigate('/artist-signup')}>GET STARTED</button> // Update button action
-
+                    <button onClick={() => navigate('/signup?artist=true')}>GET STARTED</button> // Update button action
+        
                 </Features>
             </FeatureSection>
             <hr style={{color: '#D9D9D9', marginTop: '40px'}}></hr>

@@ -1,64 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import styled from "styled-components";
 import axios from "axios";
 import SwipeComponet from "../components/SwipeComponet";
-import { setupAxiosInterceptors, getUserEmailFromToken } from "../utils/jwtUtils";
+import { useAuth } from "../context/AuthContext";
 
 export default function Library() {
   const [recommendations_MusicVideo, setRecommendations_MusicVideo] = useState([]);
   const [recommendations_Meditation, setRecommendations_Meditation] = useState([]);
   const [recommendations_StudioRecording, setRecommendations_StudioRecording] = useState([]);
-  const [userEmail, setUserEmail] = useState(null); // State to hold userEmail
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [error, setError] = useState(null); // Error state to handle API errors
+  const { userEmail, loading } = useAuth();  // Get the userEmail and loading state from the AuthProvider
 
+  // Add logging to verify component rendering
+  console.log("Library component rendered");
+  console.log("userEmail:", userEmail);
+  console.log("loading:", loading);
+
+  // Fetch recommendations when userEmail is available
   useEffect(() => {
-    setupAxiosInterceptors(); // Setup Axios interceptors on component mount
-  }, []);
-
-  useEffect(() => {
-    const { email, isValid } = getUserEmailFromToken();
-    console.log("decoded userEmail: " + email);
-    setUserEmail(email);
-
-    if (!isValid) {
-      navigate('/login'); // Redirect to login if token is not valid
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!userEmail) return;
+    console.log("useEffect triggered in Library component");
 
     let isMounted = true;
 
     const fetchRecommendations = async (scenario, setRecommendations) => {
+      if (loading || !userEmail) {
+        console.log("Loading or no userEmail, skipping fetch");
+        return; // Moved the condition inside the effect
+      }
       try {
-        if (userEmail) {
-          const recoResponse = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/api/${scenario}/${userEmail}`
-          );
-          const contentIds = recoResponse.data.recomms.map((recomm) => recomm.id);
-          const list = await Promise.all(
-            contentIds.map(async (id) => {
-              try {
-                const videoResp = await axios.get(
-                  `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
-                );
-                return { ...videoResp.data };
-              } catch (error) {
-                return null;
-              }
-            })
-          );
+        console.log(`Fetching recommendations for: ${scenario}, userEmail: ${userEmail}`);
+        const recoResponse = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/api/${scenario}/${userEmail}`
+        );
+        console.log(`Fetched data for ${scenario}:`, recoResponse.data);
 
-          const filteredList = list.filter(item => item !== null);
-          
-          if (isMounted) {
-            setRecommendations(filteredList);
-          }
+        const contentIds = recoResponse.data.recomms.map((recomm) => recomm.id);
+        const list = await Promise.all(
+          contentIds.map(async (id) => {
+            try {
+              const videoResp = await axios.get(
+                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
+              );
+              return { ...videoResp.data };
+            } catch (error) {
+              console.error(`Error fetching video metadata for id ${id}`, error);
+              return null;
+            }
+          })
+        );
+
+        const filteredList = list.filter(item => item !== null);
+        console.log(`Filtered list for ${scenario}:`, filteredList);
+        
+        if (isMounted) {
+          setRecommendations(filteredList);
         }
       } catch (error) {
         console.error(`Error fetching ${scenario} recommendations:`, error);
+        setError('Failed to load recommendations.');  // Set error message
       }
     };
 
@@ -69,18 +68,44 @@ export default function Library() {
     return () => {
       isMounted = false;
     };
-  }, [userEmail]);
+  }, [userEmail, loading]);  // Removed the conditional around useEffect
+
+  // Wait for authentication to finish before rendering the component
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  console.log("Recommendations - Music Video:", recommendations_MusicVideo);
+  console.log("Recommendations - Meditation:", recommendations_Meditation);
+  console.log("Recommendations - Studio Recording:", recommendations_StudioRecording);
 
   return (
     <MainContainer>
       <Main>
+        {error && <p>{error}</p>} {/* Display error if there is one */}
+
         <div className="top-section">
           <h2 className="sec-title">Music Video</h2>
-          <SwipeComponet arr={recommendations_MusicVideo} />
+          {recommendations_MusicVideo.length > 0 ? (
+            <SwipeComponet arr={recommendations_MusicVideo} />
+          ) : (
+            <p>No recommendations available</p>
+          )}
+
           <h2 className="sec-title">Meditation</h2>
-          <SwipeComponet arr={recommendations_Meditation} />
+          {recommendations_Meditation.length > 0 ? (
+            <SwipeComponet arr={recommendations_Meditation} />
+          ) : (
+            <p>No recommendations available</p>
+          )}
+
           <h2 className="sec-title">Studio Recording</h2>
-          <SwipeComponet arr={recommendations_StudioRecording} />
+          {recommendations_StudioRecording.length > 0 ? (
+            <SwipeComponet arr={recommendations_StudioRecording} />
+          ) : (
+            <p>No recommendations available</p>
+          )}
+
           <div style={{ height: '360px', overflow: 'hidden' }}></div>
         </div>
       </Main>
