@@ -60,7 +60,7 @@ const handleSubmit = async (e) => {
   console.log('Form submitted with:', { email, password });
 
   try {
-    const response = await fetch('https://lobster-app-ngpuz.ondigitalocean.app/api/login', {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
