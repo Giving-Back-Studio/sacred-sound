@@ -304,7 +304,6 @@ const getUserProfile = async (req, res) => {
     try {
         const db = client.db("db-name");
         const collection = db.collection('userAccounts');
-        console.log("getUserProfile:", req.params.userId);
         const user = await collection.findOne({ email: req.params.userId });
         
         if (!user) {
@@ -479,7 +478,6 @@ const getContentByArtist = async (req, res) => {
         await client.connect();
         const collection = client.db('db-name').collection('ContentMetaData');
         const contentDocuments = await collection.find({ owner: artistId }).toArray();
-        // console.log('contentDocuments :', contentDocuments)
         res.json(contentDocuments);
     } catch (error) {
         console.error(error);
@@ -528,7 +526,6 @@ const getApprovedVideoContent = async (req, res) => {
         
         // Find documents where both isOnlyAudio is false and b_isApproved is true
         const contentDocuments = await collection.find({ isOnlyAudio: false, b_isApproved: true }).toArray();
-        console.log(contentDocuments);
         res.json(contentDocuments);
     } catch (error) {
         console.error(error);
