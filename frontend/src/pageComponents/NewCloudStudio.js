@@ -58,13 +58,6 @@ export default function NewCloudStudio() {
         localStorage.removeItem('sacredSound_accessToken');  // Clear any expired or invalid token
         }
     }, []);
-
-    // Set the albumId to the pre-rolled albumId
-    useEffect(() => {
-        const PreRolledAlbumId = v4();
-        setAlbumId(PreRolledAlbumId);
-    }, []);
-
     // Function to refresh the access token
 const refreshAccessToken = async () => {
     try {
@@ -162,7 +155,7 @@ const refreshAccessToken = async () => {
     setActiveComponent('component1');
     };
     const handleUploadClick = () => {
-        setAlbumId(PreRolledAlbumId);
+        setAlbumId(v4());
         setIsSlideIn(false);
         //After a short delay, set isSlideIn to true to trigger the animation
         setTimeout(() => {
