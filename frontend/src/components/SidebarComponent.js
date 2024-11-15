@@ -102,39 +102,40 @@ const SidebarComponent = () => {
               },
             }}
           >
-            <MenuItem>
-              <Link to="library" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
-                <img src={LibraryIcon} alt="Library" />
-                <span style={{ marginLeft: '10px' }}>Library</span>
-              </Link>
-            </MenuItem>
-            <MenuItem>
-              <Link to="concert" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
-                <img src={Concert} alt="Concert Hall" />
-                <span style={{ marginLeft: '10px' }}>Concert Hall</span>
-              </Link>
-            </MenuItem>
-            <MenuItem>
-              <Link to="#" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
-                <img src={Feed} alt="Feed" />
-                <span style={{ marginLeft: '10px' }}>Feed</span>
-              </Link>
+            <MenuItem
+            component={<Link to="library" />}
+            icon={<img src={LibraryIcon} alt="Library" />}
+            >
+              Library
             </MenuItem>
 
+            <MenuItem
+            component={<Link to="concert"/>}
+            icon={<img src={Concert} alt="Concert Hall" />}
+            >
+              Concert Hall
+            </MenuItem>
+
+            <MenuItem
+            component={<Link to="#"/>}
+            icon={<img src={Feed} alt="Feed" />}
+            >
+              Feed
+            </MenuItem>
+            
             {/* Add the Studio Navigation here */}
-            <MenuItem>
-              <Link to="/studio" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
-                {/* <img src={StudioIcon} alt="Studio" />  */}
-                <span style={{ marginLeft: '10px' }}>Studio</span>
-              </Link>
+            <MenuItem
+            component={<Link to="/studio"/>}
+            >
+              Studio
             </MenuItem>
 
             <div style={{ paddingTop: '300px' }}>
-              <MenuItem>
-                <Link to="/MyAccount" style={{ display: 'flex', alignItems: 'center', width: '100%', textDecoration: 'none' }}>
-                  <img src={MyAcc} alt="My Account" />
-                  <span style={{ marginLeft: '10px' }}>My Account</span>
-                </Link>
+              <MenuItem
+              component={<Link to="/MyAccount"/>}
+              icon={<img src={MyAcc} alt="My Account" />}
+              >
+                My Account
               </MenuItem>
             </div>
           </Menu>

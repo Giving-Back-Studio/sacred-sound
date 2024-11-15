@@ -178,11 +178,13 @@ const Discography = styled.div`
       }
       img {
         width: 100%;
+        height: 100%;
         text-align: center;
       }
       .swiper-thumb-img{
         object-fit:cover;
-        height: 250px;
+        width: 100%;
+        height: 100%;
       }
     }
     .swiper-container {
