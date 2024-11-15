@@ -594,9 +594,10 @@ const deleteContent = async (req, res) => {
 };
 
 const postNewAlbum = async (req, res) => {
-const { owner, albumName, selectedImageThumbnail, description } = req.body;
+const { owner, albumId, albumName, selectedImageThumbnail, description } = req.body;
     const AlbumMetaData = {
         owner,
+        albumId,
         timestamp: new Date(),
         albumName,
         selectedImageThumbnail,
