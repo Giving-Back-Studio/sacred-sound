@@ -2,14 +2,14 @@ const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 const { MONGO_URI, JWT_SECRET } = process.env;
 const { SyncRecombee } = require("./utils/SyncRecombee");
-// const storage = require("./utils/googleCloudStorage");
+const storage = require("./utils/googleCloudStorage");
 const { decryptData } = require("./utils/cardDetailsEncryption");
 const axios = require("axios");
 const { Video } = require("@mux/mux-node");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Storage } = require('@google-cloud/storage');
-const storage = new Storage();
+// const { Storage } = require('@google-cloud/storage');
+// const storage = new Storage();
 const {
   findSubscriptionByEmail,
   createSubscription,

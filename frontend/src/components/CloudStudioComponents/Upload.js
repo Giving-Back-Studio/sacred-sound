@@ -29,7 +29,6 @@ const Upload = ({
     updateFileProgress,   
 }) => {
 
-    console.log("Upload props: ", albumId);
     const { userEmail } = useAuth(); // Use the custom hook to get the user's email
 
     // Upload tracking:
