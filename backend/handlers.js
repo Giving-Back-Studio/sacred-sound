@@ -2,12 +2,14 @@ const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 const { MONGO_URI, JWT_SECRET } = process.env;
 const { SyncRecombee } = require("./utils/SyncRecombee");
-const storage = require("./utils/googleCloudStorage");
+// const storage = require("./utils/googleCloudStorage");
 const { decryptData } = require("./utils/cardDetailsEncryption");
 const axios = require("axios");
 const { Video } = require("@mux/mux-node");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage();
 const {
   findSubscriptionByEmail,
   createSubscription,
@@ -542,8 +544,8 @@ const deleteContent = async (req, res) => {
         await client.connect();
         const collection = client.db('db-name').collection('ContentMetaData');
         const videoId = req.query.videoId;
-        const userId = req.headers['user-id']; // Extract user ID from the custom header
-
+        const userId = req.headers['user-id'];
+        console.log('deleteContent-userId :', userId); 
         // Check if the user making the request is the owner of the content
         const contentDocument = await collection.findOne({ videoId, owner: userId });
 
