@@ -545,7 +545,7 @@ const deleteContent = async (req, res) => {
         const collection = client.db('db-name').collection('ContentMetaData');
         const videoId = req.query.videoId;
         const userId = req.headers['user-id'];
-        console.log('deleteContent-userId :', userId); 
+        console.log('delete-videoId :', videoId);
         // Check if the user making the request is the owner of the content
         const contentDocument = await collection.findOne({ videoId, owner: userId });
 
