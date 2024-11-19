@@ -545,10 +545,9 @@ const deleteContent = async (req, res) => {
         const collection = client.db('db-name').collection('ContentMetaData');
         const videoId = req.query.videoId;
         const userId = req.headers['user-id'];
-        console.log('delete-videoId :', videoId);
         // Check if the user making the request is the owner of the content
         const contentDocument = await collection.findOne({ videoId, owner: userId });
-
+        console.log('Document found before deletion:', contentDocument);
         if (!contentDocument) {
             return res.status(404).json({ message: 'Video not found or unauthorized' });
         }
