@@ -545,18 +545,24 @@ const deleteContent = async (req, res) => {
         const collection = client.db('db-name').collection('ContentMetaData');
         const videoId = req.query.videoId;
         const userId = req.headers['user-id'];
+        console.log('Incoming videoId:', videoId);
+        console.log('Incoming userId:', userId);
+
         // Check if the user making the request is the owner of the content
         const contentDocument = await collection.findOne({ videoId, owner: userId });
-        console.log('Document found before deletion:', contentDocument);
+        console.log('Content document:', contentDocument);
+
         if (!contentDocument) {
+            console.log('Document not found or unauthorized access');
             return res.status(404).json({ message: 'Video not found or unauthorized' });
         }
+
         try {
             const itemProperties = { deleted: true };
             const recombeeItemId = contentDocument._id.toString();
-            console.log('recombeeItemId :', recombeeItemId);
+            console.log('Recombee item ID:', recombeeItemId);
             const setItemValuesRequest = new SetItemValues(recombeeItemId, itemProperties);
-            console.log('setItemValuesRequest', setItemValuesRequest);
+            console.log('Recombee request:', setItemValuesRequest);
             await recombeeClient.send(setItemValuesRequest);
         } catch (recombeeError) {
             console.error('Recombee error, proceeding with MongoDB deletion:', recombeeError);
@@ -564,22 +570,26 @@ const deleteContent = async (req, res) => {
 
         // Delete the file from Google Cloud Storage
         const fileUrl = contentDocument.fileUrl;
-        // Extract bucket name and file path from fileUrl
         const matches = fileUrl.match(/https:\/\/firebasestorage.googleapis.com\/v0\/b\/([^\/]+)\/o\/([^?]+)/);
+        console.log('File URL:', fileUrl, 'Matches:', matches);
+
         if (matches && matches.length >= 3) {
             const bucketName = matches[1];
             const filePath = decodeURIComponent(matches[2]);
+            console.log(`Deleting file from bucket: ${bucketName}, path: ${filePath}`);
             await storage.bucket(bucketName).file(filePath).delete();
             console.log(`File ${filePath} deleted from bucket ${bucketName}.`);
         } else {
             console.warn('Could not extract bucket name and file path from URL:', fileUrl);
-            // Consider how to handle this case. Maybe log an error or even halt the deletion process, depending on your requirements.
         }
 
         // Proceed to delete the document with the specified videoId in MongoDB
+        console.log('Attempting to delete MongoDB document...');
         const result = await collection.deleteOne({ videoId });
+        console.log('Delete result:', result);
 
         if (result.deletedCount === 0) {
+            console.log('Document not found for deletion');
             return res.status(404).json({ message: 'Video not found' });
         }
 
@@ -589,10 +599,12 @@ const deleteContent = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     } finally {
         if (client) {
+            console.log('Closing MongoDB client');
             await client.close();
         }
     }
 };
+
 
 const postNewAlbum = async (req, res) => {
 const { owner, albumId, albumName, description } = req.body;
