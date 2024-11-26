@@ -8,8 +8,8 @@ const axios = require("axios");
 const { Video } = require("@mux/mux-node");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const { Storage } = require('@google-cloud/storage');
-// const storage = new Storage();
+const nodemailer = require('nodemailer');
+
 const {
   findSubscriptionByEmail,
   createSubscription,
@@ -2872,6 +2872,114 @@ const logout = (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
+const requestPasswordReset = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db('db-name');
+    const userCollection = db.collection('userAccounts');
+    const resetTokenCollection = db.collection('passwordResetTokens');
+
+    const { email } = req.body;
+
+    // Check if user exists
+    const user = await userCollection.findOne({ email });
+    if (!user) {
+      // For security, don't reveal if email exists or not
+      return res.status(200).json({ message: 'If an account exists with this email, you will receive a password reset link' });
+    }
+
+    // Generate reset token (using bcrypt's salt generation)
+    const resetToken = await bcrypt.genSalt(8);
+    const resetTokenHash = await bcrypt.hash(resetToken, 8);
+
+    // Store reset token with expiration (1 hour)
+    await resetTokenCollection.insertOne({
+      email,
+      token: resetTokenHash,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 3600000) // 1 hour from now
+    });
+
+    // Create transporter (configure for your email service)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    // Send reset email
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&email=${email}`;
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Request',
+      html: `
+        <p>Hey this is Sacred Sound, we have heard you requested a password reset.</p>
+        <p>Click <a href="${resetLink}">here</a> to reset your password.</p>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `
+    });
+
+    res.status(200).json({ message: 'If an account exists with this email, you will receive a password reset link' });
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    res.status(500).json({ message: 'Error processing password reset request' });
+  } finally {
+    await client.close();
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db('db-name');
+    const userCollection = db.collection('userAccounts');
+    const resetTokenCollection = db.collection('passwordResetTokens');
+
+    const { token, email, newPassword } = req.body;
+
+    // Find reset token
+    const resetRequest = await resetTokenCollection.findOne({
+      email,
+      expiresAt: { $gt: new Date() }
+    });
+
+    if (!resetRequest) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Verify token
+    const isValidToken = await bcrypt.compare(token, resetRequest.token);
+    if (!isValidToken) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 8);
+
+    // Update password
+    await userCollection.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
+
+    // Delete used reset token
+    await resetTokenCollection.deleteOne({ _id: resetRequest._id });
+
+    res.status(200).json({ message: 'Password successfully reset' });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ message: 'Error resetting password' });
+  } finally {
+    await client.close();
+  }
+};
+
 const getUserProfileByEmails = async (req, res) => {
     const emails = req.query.emails.split(',');
 
@@ -3001,4 +3109,6 @@ module.exports = {
     refreshAccessToken,
     logout,
     getUserProfileByEmails,
+    requestPasswordReset,
+    resetPassword,
 };

@@ -47,12 +47,45 @@ const Button = styled.button`
   }
 `;
 
+const Message = styled.p`
+  color: ${props => props.error ? '#ff0000' : '#4CAF50'};
+  margin: 10px 0;
+`;
+
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle forgot password logic here
+    setIsLoading(true);
+    setMessage('');
+    setError('');
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/request-password-reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage('If an account exists with this email, you will receive a password reset link');
+        setEmail(''); // Clear the input
+      } else {
+        setError(data.message || 'Something went wrong');
+      }
+    } catch (err) {
+      setError('Failed to send reset request. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -66,9 +99,14 @@ const ForgotPassword = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={isLoading}
         />
-        <Button type="submit">Send Reset Link</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Sending...' : 'Send Reset Link'}
+        </Button>
       </form>
+      {message && <Message>{message}</Message>}
+      {error && <Message error>{error}</Message>}
       <Subtitle>Remembered your password? <a href="/login">Login Now</a></Subtitle>
     </ForgotPasswordContainer>
   );

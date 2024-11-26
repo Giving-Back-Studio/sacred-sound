@@ -89,6 +89,8 @@ const {
   refreshAccessToken,
   logout,
   getUserProfileByEmails,
+  requestPasswordReset,
+  resetPassword,
 } = require("./handlers");
 
 const {
@@ -163,6 +165,8 @@ express()
   .post("/api/login", login)
   .post("/api/refreshToken", refreshAccessToken)
   .post("/api/logout", logout)
+  .post("/api/request-password-reset", requestPasswordReset)
+  .post("/api/reset-password", resetPassword)
   
 
   //Key encryption:
