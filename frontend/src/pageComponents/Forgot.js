@@ -65,7 +65,7 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/request-password-reset`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/request-password-reset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
