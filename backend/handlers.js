@@ -8,6 +8,8 @@ const axios = require("axios");
 const { Video } = require("@mux/mux-node");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
 const {
   findSubscriptionByEmail,
   createSubscription,
@@ -304,7 +306,6 @@ const getUserProfile = async (req, res) => {
     try {
         const db = client.db("db-name");
         const collection = db.collection('userAccounts');
-        console.log("getUserProfile:", req.params.userId);
         const user = await collection.findOne({ email: req.params.userId });
         
         if (!user) {
@@ -479,7 +480,6 @@ const getContentByArtist = async (req, res) => {
         await client.connect();
         const collection = client.db('db-name').collection('ContentMetaData');
         const contentDocuments = await collection.find({ owner: artistId }).toArray();
-        // console.log('contentDocuments :', contentDocuments)
         res.json(contentDocuments);
     } catch (error) {
         console.error(error);
@@ -528,7 +528,6 @@ const getApprovedVideoContent = async (req, res) => {
         
         // Find documents where both isOnlyAudio is false and b_isApproved is true
         const contentDocuments = await collection.find({ isOnlyAudio: false, b_isApproved: true }).toArray();
-        console.log(contentDocuments);
         res.json(contentDocuments);
     } catch (error) {
         console.error(error);
@@ -545,20 +544,25 @@ const deleteContent = async (req, res) => {
         await client.connect();
         const collection = client.db('db-name').collection('ContentMetaData');
         const videoId = req.query.videoId;
-        const userId = req.headers['user-id']; // Extract user ID from the custom header
+        const userId = req.headers['user-id'];
+        console.log('Incoming videoId:', videoId);
+        console.log('Incoming userId:', userId);
 
         // Check if the user making the request is the owner of the content
         const contentDocument = await collection.findOne({ videoId, owner: userId });
+        console.log('Content document:', contentDocument);
 
         if (!contentDocument) {
+            console.log('Document not found or unauthorized access');
             return res.status(404).json({ message: 'Video not found or unauthorized' });
         }
+
         try {
             const itemProperties = { deleted: true };
             const recombeeItemId = contentDocument._id.toString();
-            console.log('recombeeItemId :', recombeeItemId);
+            console.log('Recombee item ID:', recombeeItemId);
             const setItemValuesRequest = new SetItemValues(recombeeItemId, itemProperties);
-            console.log('setItemValuesRequest', setItemValuesRequest);
+            console.log('Recombee request:', setItemValuesRequest);
             await recombeeClient.send(setItemValuesRequest);
         } catch (recombeeError) {
             console.error('Recombee error, proceeding with MongoDB deletion:', recombeeError);
@@ -566,22 +570,26 @@ const deleteContent = async (req, res) => {
 
         // Delete the file from Google Cloud Storage
         const fileUrl = contentDocument.fileUrl;
-        // Extract bucket name and file path from fileUrl
         const matches = fileUrl.match(/https:\/\/firebasestorage.googleapis.com\/v0\/b\/([^\/]+)\/o\/([^?]+)/);
+        console.log('File URL:', fileUrl, 'Matches:', matches);
+
         if (matches && matches.length >= 3) {
             const bucketName = matches[1];
             const filePath = decodeURIComponent(matches[2]);
+            console.log(`Deleting file from bucket: ${bucketName}, path: ${filePath}`);
             await storage.bucket(bucketName).file(filePath).delete();
             console.log(`File ${filePath} deleted from bucket ${bucketName}.`);
         } else {
             console.warn('Could not extract bucket name and file path from URL:', fileUrl);
-            // Consider how to handle this case. Maybe log an error or even halt the deletion process, depending on your requirements.
         }
 
         // Proceed to delete the document with the specified videoId in MongoDB
+        console.log('Attempting to delete MongoDB document...');
         const result = await collection.deleteOne({ videoId });
+        console.log('Delete result:', result);
 
         if (result.deletedCount === 0) {
+            console.log('Document not found for deletion');
             return res.status(404).json({ message: 'Video not found' });
         }
 
@@ -591,18 +599,20 @@ const deleteContent = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     } finally {
         if (client) {
+            console.log('Closing MongoDB client');
             await client.close();
         }
     }
 };
 
+
 const postNewAlbum = async (req, res) => {
-const { owner, albumName, selectedImageThumbnail, description } = req.body;
+const { owner, albumId, albumName, description } = req.body;
     const AlbumMetaData = {
         owner,
+        albumId,
         timestamp: new Date(),
         albumName,
-        selectedImageThumbnail,
         description,
         contentType: 'AlbumMetaData',
     };
@@ -2862,6 +2872,115 @@ const logout = (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
+const requestPasswordReset = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db('db-name');
+    const userCollection = db.collection('userAccounts');
+    const resetTokenCollection = db.collection('passwordResetTokens');
+
+    const { email } = req.body;
+
+    // Check if user exists
+    const user = await userCollection.findOne({ email });
+    if (!user) {
+      // For security, don't reveal if email exists or not
+      return res.status(200).json({ message: 'If an account exists with this email, you will receive a password reset link' });
+    }
+
+    // Generate reset token (using bcrypt's salt generation)
+    const resetToken = await bcrypt.genSalt(8);
+    const resetTokenHash = await bcrypt.hash(resetToken, 8);
+
+    // Store reset token with expiration (1 hour)
+    await resetTokenCollection.insertOne({
+      email,
+      token: resetTokenHash,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 3600000) // 1 hour from now
+    });
+
+    // Create transporter (configure for your email service)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    // Send reset email
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&email=${email}`;
+    console.log("Reset link:", resetLink);
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Request',
+      html: `
+        <p>Hey this is Sacred Sound, we have heard you requested a password reset.</p>
+        <p>Click <a href="${resetLink}">here</a> to reset your password.</p>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `
+    });
+
+    res.status(200).json({ message: 'If an account exists with this email, you will receive a password reset link' });
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    res.status(500).json({ message: 'Error processing password reset request' });
+  } finally {
+    await client.close();
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db('db-name');
+    const userCollection = db.collection('userAccounts');
+    const resetTokenCollection = db.collection('passwordResetTokens');
+
+    const { token, email, newPassword } = req.body;
+
+    // Find reset token
+    const resetRequest = await resetTokenCollection.findOne({
+      email,
+      expiresAt: { $gt: new Date() }
+    });
+
+    if (!resetRequest) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Verify token
+    const isValidToken = await bcrypt.compare(token, resetRequest.token);
+    if (!isValidToken) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 8);
+
+    // Update password
+    await userCollection.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
+
+    // Delete used reset token
+    await resetTokenCollection.deleteOne({ _id: resetRequest._id });
+
+    res.status(200).json({ message: 'Password successfully reset' });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ message: 'Error resetting password' });
+  } finally {
+    await client.close();
+  }
+};
+
 const getUserProfileByEmails = async (req, res) => {
     const emails = req.query.emails.split(',');
 
@@ -2991,4 +3110,6 @@ module.exports = {
     refreshAccessToken,
     logout,
     getUserProfileByEmails,
+    requestPasswordReset,
+    resetPassword,
 };

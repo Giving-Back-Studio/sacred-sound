@@ -28,6 +28,7 @@ const Upload = ({
     trackDetails,
     updateFileProgress,   
 }) => {
+
     const { userEmail } = useAuth(); // Use the custom hook to get the user's email
 
     // Upload tracking:

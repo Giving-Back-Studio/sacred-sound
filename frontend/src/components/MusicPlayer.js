@@ -39,8 +39,8 @@ function MusicPlayer({
           name="timeline"
           min="0"
           step="0.01"
-          max={audioRef.current ? audioRef.current.duration : 0}
-          value={audioRef.current ? audioRef.current.currentTime : 0}
+          max={audioRef.current?.duration || 0}
+          value={audioRef.current?.currentTime || 0}
           onChange={handleTimeline}
           onInput={handleTimeline}
           onMouseDown={() => {
