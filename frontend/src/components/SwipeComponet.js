@@ -63,7 +63,7 @@ export default function SwipeComponet({ arr, recommId }) {
   }
 }, [arr]);
 
-const trackDetailView = async (itemId) => {
+const trackDetailView = async (itemId, recommId) => {
   try {
     const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/trackInteraction`, {
       method: 'POST',
@@ -87,7 +87,7 @@ const trackDetailView = async (itemId) => {
 };
 
 const handleClick = async (content) => {
-  await trackDetailView(content._id);
+  await trackDetailView(content._id, content.recommId);
 
   const artistEmail = content.owner?.toLowerCase();
   const artistData = artistNames[artistEmail];

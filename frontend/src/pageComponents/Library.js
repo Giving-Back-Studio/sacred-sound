@@ -31,16 +31,22 @@ export default function Library() {
           `${process.env.REACT_APP_API_BASE_URL}/api/${scenario}/${userEmail}`
         );
 
-        const contentIds = recoResponse.data.recomms.map((recomm) => recomm.id);
+        // Store the recommId from the response
+        const recommId = recoResponse.data.recommId;
+        
         const list = await Promise.all(
-          contentIds.map(async (id) => {
+          recoResponse.data.recomms.map(async (recomm) => {
             try {
               const videoResp = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
+                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${recomm.id}`
               );
-              return { ...videoResp.data };
+              // Include the recommId with each item
+              return { 
+                ...videoResp.data,
+                recommId: recommId // Add recommId to each item
+              };
             } catch (error) {
-              console.error(`Error fetching video metadata for id ${id}`, error);
+              console.error(`Error fetching video metadata for id ${recomm.id}`, error);
               return null;
             }
           })
@@ -48,13 +54,14 @@ export default function Library() {
 
         const filteredList = list.filter(item => item !== null);
         console.log(`Filtered list for ${scenario}:`, filteredList);
+        console.log('RecommId from Recombee:', recommId); // Debug log
         
         if (isMounted) {
           setRecommendations(filteredList);
         }
       } catch (error) {
         console.error(`Error fetching ${scenario} recommendations:`, error);
-        setError('Failed to load recommendations.');  // Set error message
+        setError('Failed to load recommendations.');
       }
     };
 
