@@ -9,10 +9,15 @@ import { useNavigate } from "react-router-dom";
 import rect from '../assets/rect.png'
 import PlayButton from "./common/PlayButton";
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
-export default function SwipeComponet({ arr }) {
+export default function SwipeComponet({ arr, recommId }) {
+
+  console.log("RecommId:", recommId);
+  
   const [artistNames, setArtistNames] = useState({});
   const navigate = useNavigate();
+  const { userEmail } = useAuth();
 
   useEffect(() => {
   const fetchArtistData = async () => {
@@ -58,7 +63,41 @@ export default function SwipeComponet({ arr }) {
   }
 }, [arr]);
 
+const trackDetailView = async (itemId) => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/trackInteraction`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: userEmail,
+        itemId: itemId,
+        type: 'detailView',
+        recommId: recommId
+      })
+    });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Error tracking detail view:', error);
+  }
+};
+
+const handleClick = async (content) => {
+  await trackDetailView(content._id);
+
+  const artistEmail = content.owner?.toLowerCase();
+  const artistData = artistNames[artistEmail];
+
+  if (artistData?.id) {
+    navigate(`/main/artist?id=${artistData.id}`);
+  } else {
+    console.log('Artist ID not found.');
+  }
+};
 
   return (
     <Discography>
@@ -88,20 +127,9 @@ export default function SwipeComponet({ arr }) {
     ? content.selectedImageThumbnail
     : rect;
 
-  const handleClick = () => {
-    const artistEmail = content.owner?.toLowerCase(); // Ensure email is lowercased
-    const artistData = artistNames[artistEmail]; // Access artist data using the email
-
-    if (artistData?.id) {
-      navigate(`/main/artist?id=${artistData.id}`); // Navigate to the artist page using the correct ID
-    } else {
-      console.log('Artist ID not found.');
-    }
-  };
-
   return (
     <SwiperSlide key={content._id}>
-      <div className="item" id="content-card" onClick={handleClick} style={{ cursor: 'pointer' }}>
+      <div className="item" id="content-card" onClick={() => handleClick(content)} style={{ cursor: 'pointer' }}>
         <img className="swiper-thumb-img" src={thumbnail} alt="Item Thumb" />
         <div style={{ marginLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
           <div>

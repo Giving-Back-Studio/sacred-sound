@@ -24,15 +24,12 @@ export default function Library() {
 
     const fetchRecommendations = async (scenario, setRecommendations) => {
       if (loading || !userEmail) {
-        console.log("Loading or no userEmail, skipping fetch");
         return; // Moved the condition inside the effect
       }
       try {
-        console.log(`Fetching recommendations for: ${scenario}, userEmail: ${userEmail}`);
         const recoResponse = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/api/${scenario}/${userEmail}`
         );
-        console.log(`Fetched data for ${scenario}:`, recoResponse.data);
 
         const contentIds = recoResponse.data.recomms.map((recomm) => recomm.id);
         const list = await Promise.all(
@@ -74,10 +71,8 @@ export default function Library() {
   if (loading) {
     return <p>Loading...</p>;
   }
-
-  console.log("Recommendations - Music Video:", recommendations_MusicVideo);
-  console.log("Recommendations - Meditation:", recommendations_Meditation);
-  console.log("Recommendations - Studio Recording:", recommendations_StudioRecording);
+  
+  
 
   return (
     <MainContainer>
@@ -87,21 +82,30 @@ export default function Library() {
         <div className="top-section">
           <h2 className="sec-title">Music Video</h2>
           {recommendations_MusicVideo.length > 0 ? (
-            <SwipeComponet arr={recommendations_MusicVideo} />
+            <SwipeComponet 
+              arr={recommendations_MusicVideo} 
+              recommId={recommendations_MusicVideo[0]?.recommId}
+            />
           ) : (
             <p>No recommendations available</p>
           )}
 
           <h2 className="sec-title">Meditation</h2>
           {recommendations_Meditation.length > 0 ? (
-            <SwipeComponet arr={recommendations_Meditation} />
+            <SwipeComponet 
+              arr={recommendations_Meditation}
+              recommId={recommendations_Meditation[0]?.recommId}
+            />
           ) : (
             <p>No recommendations available</p>
           )}
 
           <h2 className="sec-title">Studio Recording</h2>
           {recommendations_StudioRecording.length > 0 ? (
-            <SwipeComponet arr={recommendations_StudioRecording} />
+            <SwipeComponet 
+              arr={recommendations_StudioRecording}
+              recommId={recommendations_StudioRecording[0]?.recommId}
+            />
           ) : (
             <p>No recommendations available</p>
           )}
