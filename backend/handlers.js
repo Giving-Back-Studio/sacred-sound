@@ -27,6 +27,8 @@ const {
     SetItemValues,
     SearchItems,
     GetItemValues,
+    AddDetailView,
+    AddPurchase,
 } = require("recombee-api-client").requests;
 
 const options = {
