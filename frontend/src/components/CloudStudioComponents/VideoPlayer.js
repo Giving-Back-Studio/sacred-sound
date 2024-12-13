@@ -37,6 +37,20 @@ const VideoPlayer = () => {
     clearInterval(intervalId);
   };
 
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      const currentTime = videoRef.current.currentTime;
+      const duration = videoRef.current.duration;
+      const percentagePlayed = (currentTime / duration) * 100;
+      
+      // Test log for purchase tracking
+      if (percentagePlayed >= 90) {
+        console.log('Purchase tracked for video:', videoId);
+        console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchVideoData = async () => {
       try {
@@ -79,7 +93,15 @@ const VideoPlayer = () => {
         <BackButton onClick={() => navigate(-1)} style={{ color: 'black' }}>Close</BackButton>
       </VideoPlayerHeader>
       <div id="videoPlayerContainer" style={{ display: 'flex', justifyContent: 'center' }}>
-        <video ref={videoRef} width="80%" height="auto" controls onPlay={handlePlay} onPause={handlePause}>
+        <video 
+          ref={videoRef} 
+          width="80%" 
+          height="auto" 
+          controls 
+          onPlay={handlePlay} 
+          onPause={handlePause}
+          onTimeUpdate={handleTimeUpdate}
+        >
           <source src={videoData.fileUrl} type="video/mp4" />
           <p>Your browser does not support HTML5 video. Here is a <a href={videoData.fileUrl}>link to the video</a> instead.</p>
         </video>

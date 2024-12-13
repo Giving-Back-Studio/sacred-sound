@@ -35,6 +35,7 @@ const {
   getItemPropertiesFromRecombee,
   getItemToItemRecommendations,
   getSingleRecommendationForMusicPlayer,
+  trackInteraction,
 
   postNewAlbum,
   postAlbumImage,
@@ -186,6 +187,7 @@ express()
   .get("/api/getSearchResult/:userId/:searchQuery", getSearchResult)
   .get("/api/getItemPropertiesFromRecombee/:itemId", getItemPropertiesFromRecombee)
   .get("/api/getSingleRecommendationForMusicPlayer/:userId", getSingleRecommendationForMusicPlayer)
+  .post("/api/trackInteraction", trackInteraction)
   // .post("/api/addUserOnRecombee/:userId", addUserOnRecombee) //For Manual Insertion Only!
   // .post("/api/setUserOnRecombee/:userId", setUserOnRecombee) //For Manual Insertion Only!
   

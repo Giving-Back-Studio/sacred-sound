@@ -1,8 +1,5 @@
-import { useState, useRef } from "react";
-import Banner from "../assets/Image.svg";
-import Banner2 from "../assets/images.jpeg";
-import Banner3 from "../assets/download.jpeg";
-import Banner4 from "../assets/playlist.jpg";
+import { useState, useRef, useEffect, useCallback } from "react";
+
 const playListData = {
   time: "",
   volume: "",
@@ -14,40 +11,7 @@ const playListData = {
   albumCoverUrl: "",
   artistName: "",
   queue: [],
-  song: [
-    {
-      id: 1,
-      songUrl:
-        "https://onlinetestcase.com/wp-content/uploads/2023/06/1-MB-MP3.mp3",
-      songTitle: "song-1",
-      isVideo: false,
-      img: Banner,
-    },
-    {
-      id: 2,
-      songUrl:
-        "https://cdn.simplecast.com/audio/cae8b0eb-d9a9-480d-a652-0defcbe047f4/episodes/af52a99b-88c0-4638-b120-d46e142d06d3/audio/500344fb-2e2b-48af-be86-af6ac341a6da/default_tc.mp3",
-      songTitle: "song-2",
-      isVideo: false,
-      img: Banner2,
-    },
-    {
-      id: 3,
-      songUrl:
-        "http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3",
-      songTitle: "song-3",
-      isVideo: false,
-      img: Banner3,
-    },
-    {
-      id: 4,
-      songUrl:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      songTitle: "song-3",
-      isVideo: true,
-      img: Banner4,
-    },
-  ],
+  song: [],
   currentSongIndex: 0,
   album: null,
 };
@@ -55,6 +19,12 @@ const playListData = {
 const useAudioPlayer = () => {
   const [state, setState] = useState(playListData);
   const audioRef = useRef(null);
+  const stateRef = useRef(state);
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
 
   const getCurrentTime = () => {
     if (audioRef.current) {
@@ -66,9 +36,15 @@ const useAudioPlayer = () => {
     return "0:00";
   };
   const setSongs = (songs) => {
-    setState({ ...state, song: songs})
-    togglePlay()
-  }
+    
+    setState(prevState => {
+      const newState = {
+        ...prevState,
+        song: songs
+      };
+      return newState;
+    });
+  };
 
   const getCurrentSong = () => {
     return state.song[state.currentSongIndex].id
@@ -144,7 +120,6 @@ const useAudioPlayer = () => {
   };
 
   const handleTimeline = (e) => {
-    console.log("audioRef.current.currentTime", audioRef.current.currentTime);
     setState((prevState) => ({
       ...prevState,
       time: e.target.value,
@@ -197,6 +172,7 @@ const useAudioPlayer = () => {
   };
   return {
     state,
+    stateRef,
     setState,
     audioRef,
     getCurrentTime,
@@ -212,7 +188,7 @@ const useAudioPlayer = () => {
     handlePlay,
     setSongs,
     getCurrentSong,
-    getCurrentRunningStatus
+    getCurrentRunningStatus,
   };
 };
 

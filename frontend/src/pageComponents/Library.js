@@ -11,53 +11,48 @@ export default function Library() {
   const [error, setError] = useState(null); // Error state to handle API errors
   const { userEmail, loading } = useAuth();  // Get the userEmail and loading state from the AuthProvider
 
-  // Add logging to verify component rendering
-  console.log("Library component rendered");
-  console.log("userEmail:", userEmail);
-  console.log("loading:", loading);
-
   // Fetch recommendations when userEmail is available
   useEffect(() => {
-    console.log("useEffect triggered in Library component");
-
     let isMounted = true;
 
     const fetchRecommendations = async (scenario, setRecommendations) => {
       if (loading || !userEmail) {
-        console.log("Loading or no userEmail, skipping fetch");
         return; // Moved the condition inside the effect
       }
       try {
-        console.log(`Fetching recommendations for: ${scenario}, userEmail: ${userEmail}`);
         const recoResponse = await axios.get(
           `${process.env.REACT_APP_API_BASE_URL}/api/${scenario}/${userEmail}`
         );
-        console.log(`Fetched data for ${scenario}:`, recoResponse.data);
 
-        const contentIds = recoResponse.data.recomms.map((recomm) => recomm.id);
+        // Store the recommId from the response
+        const recommId = recoResponse.data.recommId;
+        
         const list = await Promise.all(
-          contentIds.map(async (id) => {
+          recoResponse.data.recomms.map(async (recomm) => {
             try {
               const videoResp = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${id}`
+                `${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${recomm.id}`
               );
-              return { ...videoResp.data };
+              // Include the recommId with each item
+              return { 
+                ...videoResp.data,
+                recommId: recommId // Add recommId to each item
+              };
             } catch (error) {
-              console.error(`Error fetching video metadata for id ${id}`, error);
+              console.error(`Error fetching video metadata for id ${recomm.id}`, error);
               return null;
             }
           })
         );
 
         const filteredList = list.filter(item => item !== null);
-        console.log(`Filtered list for ${scenario}:`, filteredList);
         
         if (isMounted) {
           setRecommendations(filteredList);
         }
       } catch (error) {
         console.error(`Error fetching ${scenario} recommendations:`, error);
-        setError('Failed to load recommendations.');  // Set error message
+        setError('Failed to load recommendations.');
       }
     };
 
@@ -74,10 +69,8 @@ export default function Library() {
   if (loading) {
     return <p>Loading...</p>;
   }
-
-  console.log("Recommendations - Music Video:", recommendations_MusicVideo);
-  console.log("Recommendations - Meditation:", recommendations_Meditation);
-  console.log("Recommendations - Studio Recording:", recommendations_StudioRecording);
+  
+  
 
   return (
     <MainContainer>
@@ -87,21 +80,30 @@ export default function Library() {
         <div className="top-section">
           <h2 className="sec-title">Music Video</h2>
           {recommendations_MusicVideo.length > 0 ? (
-            <SwipeComponet arr={recommendations_MusicVideo} />
+            <SwipeComponet 
+              arr={recommendations_MusicVideo} 
+              recommId={recommendations_MusicVideo[0]?.recommId}
+            />
           ) : (
             <p>No recommendations available</p>
           )}
 
           <h2 className="sec-title">Meditation</h2>
           {recommendations_Meditation.length > 0 ? (
-            <SwipeComponet arr={recommendations_Meditation} />
+            <SwipeComponet 
+              arr={recommendations_Meditation}
+              recommId={recommendations_Meditation[0]?.recommId}
+            />
           ) : (
             <p>No recommendations available</p>
           )}
 
           <h2 className="sec-title">Studio Recording</h2>
           {recommendations_StudioRecording.length > 0 ? (
-            <SwipeComponet arr={recommendations_StudioRecording} />
+            <SwipeComponet 
+              arr={recommendations_StudioRecording}
+              recommId={recommendations_StudioRecording[0]?.recommId}
+            />
           ) : (
             <p>No recommendations available</p>
           )}

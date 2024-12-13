@@ -27,6 +27,8 @@ const {
     SetItemValues,
     SearchItems,
     GetItemValues,
+    AddDetailView,
+    AddPurchase,
 } = require("recombee-api-client").requests;
 
 const options = {
@@ -1342,6 +1344,32 @@ const getSingleRecommendationForMusicPlayer = async (req, res) => {
             msg: "Internal server error",
             error: err.message || "An error occurred.",
         });
+    }
+};
+
+const trackInteraction = async (req, res) => {
+    const { userId, itemId, type, recommId } = req.body;
+    const { recombeeClient } = require("./utils/recombeeClient");
+
+    try {
+        if (type === 'detailView') {
+            await recombeeClient.send(new AddDetailView(userId, itemId, {
+                cascadeCreate: true,
+                timestamp: new Date().toISOString(),
+                recommId: recommId || undefined
+            }));
+        } else if (type === 'purchase') {
+            await recombeeClient.send(new AddPurchase(userId, itemId, {
+                cascadeCreate: true,
+                timestamp: new Date().toISOString(),
+                recommId: recommId || undefined
+            }));
+        }
+        
+        res.status(200).json({ message: 'Interaction tracked successfully' });
+    } catch (error) {
+        console.error('Error tracking interaction:', error);
+        res.status(500).json({ error: 'Failed to track interaction' });
     }
 };
 
@@ -3052,6 +3080,7 @@ module.exports = {
     getSearchResult,
     addUserOnRecombee,
     getSingleRecommendationForMusicPlayer,
+    trackInteraction,
 
     setUserOnRecombee,
     getItemPropertiesFromRecombee,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, { useEffect, useState, createContext, useContext, useRef } from "react";
 import MusicPlayer from "../components/MusicPlayer";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import styled from "styled-components";
@@ -6,7 +6,7 @@ import useAudioPlayer from "../Hooks/useAudioPlayer";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 import MediaControl from "../components/MediaControl";
-import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
+import { useAuth } from '../context/AuthContext';
 
 const NowPlayingContext = createContext({});
 
@@ -15,8 +15,8 @@ const MemoizedComponent = React.memo(({ children }) => {
 });
 
 function NowPlaying({ children }) {
-  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
-
+  const { userEmail } = useAuth();
+  const purchaseLoggedRef = useRef(false);
   const [smallScreen, setSmallScreen] = useState(true);
   const [toggle, setToggle] = useState(false);
   const handle = useFullScreenHandle();
@@ -37,7 +37,8 @@ function NowPlaying({ children }) {
     handlePlay,
     setSongs,
     getCurrentSong,
-    getCurrentRunningStatus
+    getCurrentRunningStatus,
+    stateRef
   } = useAudioPlayer();
 
   useEffect(() => {
@@ -64,7 +65,7 @@ function NowPlaying({ children }) {
           `${process.env.REACT_APP_API_BASE_URL}/api/logContentUsage/`,
           {
             user: userEmail,
-            videoId: state.song[0].id,
+            videoId: state.song[0].videoId,
           }
         );
       } catch (error) {
@@ -91,24 +92,71 @@ function NowPlaying({ children }) {
 
           const songResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${recommendedId}`);
           const songData = songResponse.data;
-          console.log("songData: ", songData);
 
           setSongs([songData]);
-        } else {
-          console.log("No recommendations received");
         }
       } catch (error) {
         console.error("Error fetching recommendation:", error);
       }
     };
 
-    console.log('fetching initial recommendation');
     fetchInitialRecommendation();
   }, [userEmail, audioRef]);
 
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const currentTime = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      const percentagePlayed = (currentTime / duration) * 100;
+      
+      if (percentagePlayed >= 90 && !purchaseLoggedRef.current) {
+        const currentState = stateRef.current;
+        const currentSong = currentState.song[currentState.currentSongIndex];
+        
+        if (currentSong) {
+          // Send interaction to backend
+          try {
+            axios.post(
+              `${process.env.REACT_APP_API_BASE_URL}/api/trackInteraction`,
+              {
+                userId: userEmail,
+                itemId: currentSong.videoId,
+                type: 'purchase',
+                // recommId is optional, can be undefined
+                recommId: currentSong.recommId
+              }
+            );
+          } catch (error) {
+            console.error('Error sending purchase interaction:', error);
+          }
+          
+          // Set flag to prevent multiple logs
+          purchaseLoggedRef.current = true;
+        }
+      }
+    }
+  };
+
+  // Reset the purchase logged flag when song changes
+  useEffect(() => {
+    purchaseLoggedRef.current = false;
+  }, [state.currentSongIndex]);
+
+
+  // Add onTimeUpdate to the audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+      
+      return () => {
+        audioRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
+      };
+    }
+  }, [state.currentSongIndex]);
+
   return (
     <>
-      {state.song[state.currentSongIndex].isVideo ?
+      {state.song[state.currentSongIndex]?.isVideo ?
         <NowPlayingContext.Provider
           value={{
             state,
