@@ -115,9 +115,11 @@ function NowPlaying({ children }) {
       const percentagePlayed = (currentTime / duration) * 100;
       
       if (percentagePlayed >= 90) {
+        console.log("Full state in handleTimeUpdate:", state);
+        console.log("Current song index:", state.currentSongIndex);
+        console.log("Songs array:", state.song);
         const currentSong = state.song[state.currentSongIndex];
-        console.log('Purchase tracked for audio:', currentSong);
-        // Use videoId instead of id
+        console.log('Current song object:', currentSong);
         console.log('Purchase tracked for audio videoId:', currentSong?.videoId);
         console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
       }
