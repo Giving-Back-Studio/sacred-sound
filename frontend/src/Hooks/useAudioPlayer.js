@@ -115,7 +115,6 @@ const useAudioPlayer = () => {
   };
 
   const handleTimeline = (e) => {
-    console.log("audioRef.current.currentTime", audioRef.current.currentTime);
     setState((prevState) => ({
       ...prevState,
       time: e.target.value,
