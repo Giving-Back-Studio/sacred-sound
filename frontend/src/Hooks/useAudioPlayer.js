@@ -1,8 +1,5 @@
 import { useState, useRef } from "react";
-import Banner from "../assets/Image.svg";
-import Banner2 from "../assets/images.jpeg";
-import Banner3 from "../assets/download.jpeg";
-import Banner4 from "../assets/playlist.jpg";
+
 const playListData = {
   time: "",
   volume: "",
@@ -13,10 +10,8 @@ const playListData = {
   shuffle: false,
   albumCoverUrl: "",
   artistName: "",
-  queue: [],
   song: [],
   currentSongIndex: 0,
-  album: null,
 };
 
 const useAudioPlayer = () => {
@@ -33,11 +28,12 @@ const useAudioPlayer = () => {
     return "0:00";
   };
   const setSongs = (songs) => {
-    console.log("Setting songs in useAudioPlayer:", songs);
-    setState({ ...state, song: songs})
-    console.log("State after setting songs:", state);
-    togglePlay()
-  }
+  setState(prevState => ({
+    ...prevState,
+    song: songs
+  }));
+  togglePlay();
+}
 
   const getCurrentSong = () => {
     console.log("state.song", state.song)
