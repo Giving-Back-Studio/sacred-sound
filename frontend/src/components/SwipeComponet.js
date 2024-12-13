@@ -11,10 +11,7 @@ import PlayButton from "./common/PlayButton";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
-export default function SwipeComponet({ arr, recommId }) {
-
-  console.log("RecommId:", recommId);
-  
+export default function SwipeComponet({ arr, recommId }) {  
   const [artistNames, setArtistNames] = useState({});
   const navigate = useNavigate();
   const { userEmail } = useAuth();

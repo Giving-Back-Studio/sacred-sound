@@ -93,7 +93,7 @@ function NowPlaying({ children }) {
           const songData = songResponse.data;
           console.log("songData: ", songData);
 
-          setSongs([songData]);
+          setSongs([songData.videoId]);
         } else {
           console.log("No recommendations received");
         }
@@ -115,7 +115,8 @@ function NowPlaying({ children }) {
       // Test log for purchase tracking
       if (percentagePlayed >= 90) {
         const currentSong = state.song[state.currentSongIndex];
-        console.log('Purchase tracked for audio:', currentSong.id);
+        console.log('Purchase tracked for audio:', currentSong);
+        console.log('Purchase tracked for audio (with getCurrentSong):', getCurrentSong());
         console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
       }
     }
