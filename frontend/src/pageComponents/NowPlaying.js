@@ -134,7 +134,7 @@ function NowPlaying({ children }) {
 
   return (
     <>
-      {state.song[state.currentSongIndex].isVideo ?
+      {state.song[state.currentSongIndex]?.isVideo ?
         <NowPlayingContext.Provider
           value={{
             state,
