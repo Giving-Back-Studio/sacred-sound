@@ -104,32 +104,38 @@ function NowPlaying({ children }) {
   }, [userEmail, audioRef]);
 
   const handleTimeUpdate = () => {
-  if (audioRef.current) {
-    const currentTime = audioRef.current.currentTime;
-    const duration = audioRef.current.duration;
-    const percentagePlayed = (currentTime / duration) * 100;
-    
-    if (percentagePlayed >= 90 && !purchaseLoggedRef.current) {
-      const currentState = stateRef.current;
-      const currentSong = currentState.song[currentState.currentSongIndex];
+    if (audioRef.current) {
+      const currentTime = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      const percentagePlayed = (currentTime / duration) * 100;
       
-      if (currentSong) {
-        console.log('=== Purchase Tracking Attempt ===');
-        console.log('Song Title:', currentSong.title);
-        console.log('VideoId:', currentSong.videoId);
-        console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
-        console.log('Would send to Recombee:', {
-          user: userEmail,
-          itemId: currentSong.videoId
-        });
-        console.log('================================');
+      if (percentagePlayed >= 90 && !purchaseLoggedRef.current) {
+        const currentState = stateRef.current;
+        const currentSong = currentState.song[currentState.currentSongIndex];
         
-        // Set flag to prevent multiple logs
-        purchaseLoggedRef.current = true;
+        if (currentSong) {
+          // Send interaction to backend
+          try {
+            axios.post(
+              `${process.env.REACT_APP_API_BASE_URL}/api/trackInteraction`,
+              {
+                userId: userEmail,
+                itemId: currentSong.videoId,
+                type: 'purchase',
+                // recommId is optional, can be undefined
+                recommId: currentSong.recommId
+              }
+            );
+          } catch (error) {
+            console.error('Error sending purchase interaction:', error);
+          }
+          
+          // Set flag to prevent multiple logs
+          purchaseLoggedRef.current = true;
+        }
       }
     }
-  }
-};
+  };
 
   // Reset the purchase logged flag when song changes
   useEffect(() => {
