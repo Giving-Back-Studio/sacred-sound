@@ -33,7 +33,9 @@ const useAudioPlayer = () => {
     return "0:00";
   };
   const setSongs = (songs) => {
+    console.log("Setting songs in useAudioPlayer:", songs);
     setState({ ...state, song: songs})
+    console.log("State after setting songs:", state);
     togglePlay()
   }
 

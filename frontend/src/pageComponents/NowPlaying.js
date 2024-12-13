@@ -91,11 +91,13 @@ function NowPlaying({ children }) {
 
           const songResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/getVideoMetaDataFromObjectId/${recommendedId}`);
           const songData = songResponse.data;
-          console.log("songData: ", songData);
+          console.log("About to set song data:", songData);
 
           setSongs([songData]);
-        } else {
-          console.log("No recommendations received");
+          
+          setTimeout(() => {
+            console.log("State after setting song:", state);
+          }, 5000);
         }
       } catch (error) {
         console.error("Error fetching recommendation:", error);
