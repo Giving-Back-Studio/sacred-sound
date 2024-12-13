@@ -29,24 +29,32 @@ const useAudioPlayer = () => {
     }
     return "0:00";
   };
-  const setSongs = (songs) => {
+  const setSongs = async (songs) => {
     console.log("setSongs received:", songs);
     
-    setState(prevState => {
-      console.log("Previous state in setSongs:", prevState);
-      const newState = {
-        ...prevState,
-        song: songs
-      };
-      console.log("New state in setSongs:", newState);
-      return newState;
+    // Update songs first
+    await new Promise(resolve => {
+      setState(prevState => {
+        const newState = {
+          ...prevState,
+          song: songs
+        };
+        resolve();
+        return newState;
+      });
     });
-    
-    setTimeout(() => {
-      console.log("State after setState:", state);
-    }, 1000);
-    
-    togglePlay();
+
+    // Then toggle play
+    await new Promise(resolve => {
+      setState(prevState => {
+        const newState = {
+          ...prevState,
+          playing: !prevState.playing
+        };
+        resolve();
+        return newState;
+      });
+    });
   }
 
   const getCurrentSong = () => {
