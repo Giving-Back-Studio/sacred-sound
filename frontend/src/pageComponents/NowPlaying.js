@@ -37,7 +37,8 @@ function NowPlaying({ children }) {
     handlePlay,
     setSongs,
     getCurrentSong,
-    getCurrentRunningStatus
+    getCurrentRunningStatus,
+    stateRef
   } = useAudioPlayer();
 
   useEffect(() => {
@@ -115,13 +116,15 @@ function NowPlaying({ children }) {
       const percentagePlayed = (currentTime / duration) * 100;
       
       if (percentagePlayed >= 90) {
-        console.log("Full state in handleTimeUpdate:", state);
-        console.log("Current song index:", state.currentSongIndex);
-        console.log("Songs array:", state.song);
-        const currentSong = state.song[state.currentSongIndex];
-        console.log('Current song object:', currentSong);
-        console.log('Purchase tracked for audio videoId:', currentSong?.videoId);
-        console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
+        const currentState = stateRef.current;
+        console.log("Current state from ref:", currentState);
+        
+        if (currentState.song && currentState.song.length > 0) {
+          const currentSong = currentState.song[currentState.currentSongIndex];
+          console.log('Current song from ref:', currentSong);
+          console.log('VideoId:', currentSong.videoId);
+          console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
+        }
       }
     }
   };

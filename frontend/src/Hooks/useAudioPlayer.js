@@ -25,6 +25,23 @@ const useAudioPlayer = () => {
     stateRef.current = state;
   }, [state]);
 
+  const handleTimeUpdate = useCallback(() => {
+    if (audioRef.current) {
+      const currentTime = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      const percentagePlayed = (currentTime / duration) * 100;
+      
+      if (percentagePlayed >= 90) {
+        const currentState = stateRef.current;
+        if (currentState.song && currentState.song.length > 0) {
+          const currentSong = currentState.song[currentState.currentSongIndex];
+          console.log('Current song:', currentSong);
+          console.log('VideoId:', currentSong.videoId);
+        }
+      }
+    }
+  }, []);
+
   const getCurrentTime = () => {
     if (audioRef.current) {
       let totalSeconds = Math.floor(audioRef.current.currentTime);
@@ -38,10 +55,10 @@ const useAudioPlayer = () => {
     console.log("setSongs received:", songs);
     
     setState(prevState => {
+      console.log("Previous state in setSongs:", prevState);
       const newState = {
         ...prevState,
-        song: songs,
-        currentSongIndex: 0
+        song: songs
       };
       console.log("New state being set:", newState);
       return newState;
@@ -71,32 +88,43 @@ const useAudioPlayer = () => {
       await audioRef?.current?.play();
     }, 400);
   };
-  const togglePlay = useCallback(() => {
-    console.log("Current state in togglePlay:", stateRef.current);
-    
-    setState(prevState => {
-      const newState = {
-        ...prevState,
-        playing: !prevState.playing
-      };
-      return newState;
-    });
+  const togglePlay = () => {
+    console.log("togglePlay called, current state:", state);
+    setState((prevState) => ({
+      ...prevState,
+      playing: !prevState.playing,
+    }));
 
-    if (stateRef.current.playing) {
-      audioRef.current?.pause();
+    if (state.playing) {
+      // Pause if already playing
+      audioRef?.current?.pause();
     } else {
-      audioRef.current?.play().catch(error => {
-        console.log("Playback failed:", error);
-      });
-    }
-  }, []);
+      // Attempt to play the audio
+      const playPromise = audioRef?.current?.play();
 
-  useEffect(() => {
-    console.log("Song state changed:", state.song);
-    if (state.song && state.song.length > 0) {
-      console.log("Current song:", state.song[state.currentSongIndex]);
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Playback started successfully, update state
+            setState((prevState) => ({
+              ...prevState,
+              playing: true,
+            }));
+          })
+          .catch((error) => {
+            // Autoplay was prevented or playback failed, revert the playing state
+            console.error("Autoplay blocked or playback failed:", error);
+
+            // Reset the state to not playing if it fails
+            setState((prevState) => ({
+              ...prevState,
+              playing: false,
+            }));
+          });
+      }
     }
-  }, [state.song, state.currentSongIndex]);
+  };
+
 
   const toggleHeart = () => {
     setState((prevState) => ({
@@ -168,6 +196,7 @@ const useAudioPlayer = () => {
   };
   return {
     state,
+    stateRef,
     setState,
     audioRef,
     getCurrentTime,
@@ -183,7 +212,8 @@ const useAudioPlayer = () => {
     handlePlay,
     setSongs,
     getCurrentSong,
-    getCurrentRunningStatus
+    getCurrentRunningStatus,
+    handleTimeUpdate
   };
 };
 
