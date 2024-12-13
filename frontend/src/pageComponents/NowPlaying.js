@@ -15,7 +15,7 @@ const MemoizedComponent = React.memo(({ children }) => {
 });
 
 function NowPlaying({ children }) {
-  const { userEmail } = useAuth(); // Use the custom hook to get the user's email
+  const { userEmail } = useAuth();
 
   const [smallScreen, setSmallScreen] = useState(true);
   const [toggle, setToggle] = useState(false);
@@ -105,6 +105,32 @@ function NowPlaying({ children }) {
     console.log('fetching initial recommendation');
     fetchInitialRecommendation();
   }, [userEmail, audioRef]);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const currentTime = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      const percentagePlayed = (currentTime / duration) * 100;
+      
+      // Test log for purchase tracking
+      if (percentagePlayed >= 90) {
+        const currentSong = state.song[state.currentSongIndex];
+        console.log('Purchase tracked for audio:', currentSong._id);
+        console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
+      }
+    }
+  };
+
+  // Add onTimeUpdate to the audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+      
+      return () => {
+        audioRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
+      };
+    }
+  }, [state.currentSongIndex]);
 
   return (
     <>

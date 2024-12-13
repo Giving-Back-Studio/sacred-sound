@@ -11,15 +11,8 @@ export default function Library() {
   const [error, setError] = useState(null); // Error state to handle API errors
   const { userEmail, loading } = useAuth();  // Get the userEmail and loading state from the AuthProvider
 
-  // Add logging to verify component rendering
-  console.log("Library component rendered");
-  console.log("userEmail:", userEmail);
-  console.log("loading:", loading);
-
   // Fetch recommendations when userEmail is available
   useEffect(() => {
-    console.log("useEffect triggered in Library component");
-
     let isMounted = true;
 
     const fetchRecommendations = async (scenario, setRecommendations) => {
@@ -53,8 +46,6 @@ export default function Library() {
         );
 
         const filteredList = list.filter(item => item !== null);
-        console.log(`Filtered list for ${scenario}:`, filteredList);
-        console.log('RecommId from Recombee:', recommId); // Debug log
         
         if (isMounted) {
           setRecommendations(filteredList);
