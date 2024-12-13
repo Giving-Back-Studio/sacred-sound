@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, { useEffect, useState, createContext, useContext, useRef } from "react";
 import MusicPlayer from "../components/MusicPlayer";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import styled from "styled-components";
