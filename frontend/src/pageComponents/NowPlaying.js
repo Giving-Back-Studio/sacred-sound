@@ -112,12 +112,11 @@ function NowPlaying({ children }) {
       const duration = audioRef.current.duration;
       const percentagePlayed = (currentTime / duration) * 100;
       
-      // Test log for purchase tracking
       if (percentagePlayed >= 90) {
         const currentSong = state.song[state.currentSongIndex];
         console.log('Purchase tracked for audio:', currentSong);
-        console.log('Purchase tracked for audio videoId:', currentSong.videoId);
-        console.log('Purchase tracked for audio (with getCurrentSong):', getCurrentSong());
+        // Use videoId instead of id
+        console.log('Purchase tracked for audio videoId:', currentSong?.videoId);
         console.log('Percentage played:', percentagePlayed.toFixed(2) + '%');
       }
     }
