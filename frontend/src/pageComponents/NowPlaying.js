@@ -6,7 +6,7 @@ import useAudioPlayer from "../Hooks/useAudioPlayer";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 import MediaControl from "../components/MediaControl";
-import { useAuth } from '../context/AuthContext'; // Import your custom useAuth hook
+import { useAuth } from '../context/AuthContext';
 
 const NowPlayingContext = createContext({});
 

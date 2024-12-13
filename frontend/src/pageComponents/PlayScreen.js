@@ -5,6 +5,7 @@ import axios from "axios";
 import styled from "styled-components";
 import MediaControl from "../components/MediaControl";
 import useAudioPlayer from "../Hooks/useAudioPlayer";
+import { useAuth } from '../context/AuthContext';
 
 const playListData = {
   time: "",
