@@ -25,22 +25,6 @@ const useAudioPlayer = () => {
     stateRef.current = state;
   }, [state]);
 
-  const handleTimeUpdate = useCallback(() => {
-    if (audioRef.current) {
-      const currentTime = audioRef.current.currentTime;
-      const duration = audioRef.current.duration;
-      const percentagePlayed = (currentTime / duration) * 100;
-      
-      if (percentagePlayed >= 90) {
-        const currentState = stateRef.current;
-        if (currentState.song && currentState.song.length > 0) {
-          const currentSong = currentState.song[currentState.currentSongIndex];
-          console.log('Current song:', currentSong);
-          console.log('VideoId:', currentSong.videoId);
-        }
-      }
-    }
-  }, []);
 
   const getCurrentTime = () => {
     if (audioRef.current) {
@@ -52,24 +36,17 @@ const useAudioPlayer = () => {
     return "0:00";
   };
   const setSongs = (songs) => {
-    console.log("setSongs received:", songs);
     
     setState(prevState => {
-      console.log("Previous state in setSongs:", prevState);
       const newState = {
         ...prevState,
         song: songs
       };
-      console.log("New state being set:", newState);
       return newState;
     });
   };
 
   const getCurrentSong = () => {
-    console.log("state.song", state.song)
-    console.log("state.currentSongIndex", state.currentSongIndex)
-    console.log("state.song[state.currentSongIndex]", state.song[state.currentSongIndex])
-    console.log("state.song[state.currentSongIndex].id", state.song[state.currentSongIndex].id)
     return state.song[state.currentSongIndex].id
   }
 
@@ -89,7 +66,6 @@ const useAudioPlayer = () => {
     }, 400);
   };
   const togglePlay = () => {
-    console.log("togglePlay called, current state:", state);
     setState((prevState) => ({
       ...prevState,
       playing: !prevState.playing,
@@ -213,7 +189,6 @@ const useAudioPlayer = () => {
     setSongs,
     getCurrentSong,
     getCurrentRunningStatus,
-    handleTimeUpdate
   };
 };
 
