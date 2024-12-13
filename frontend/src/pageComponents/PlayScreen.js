@@ -23,9 +23,8 @@ const playListData = {
   album: null,
 };
 
-const { userEmail } = useAuth();
-
 function PlayScreen() {
+  const { userEmail } = useAuth();
   const [toggle, setToggle] = useState(false);
   const [smallScreen, setSmallScreen] = useState(false);
   const handle = useFullScreenHandle();
