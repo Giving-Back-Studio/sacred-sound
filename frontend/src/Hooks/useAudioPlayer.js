@@ -10,8 +10,10 @@ const playListData = {
   shuffle: false,
   albumCoverUrl: "",
   artistName: "",
+  queue: [],
   song: [],
   currentSongIndex: 0,
+  album: null,
 };
 
 const useAudioPlayer = () => {
@@ -28,12 +30,24 @@ const useAudioPlayer = () => {
     return "0:00";
   };
   const setSongs = (songs) => {
-  setState(prevState => ({
-    ...prevState,
-    song: songs
-  }));
-  togglePlay();
-}
+    console.log("setSongs received:", songs);
+    
+    setState(prevState => {
+      console.log("Previous state in setSongs:", prevState);
+      const newState = {
+        ...prevState,
+        song: songs
+      };
+      console.log("New state in setSongs:", newState);
+      return newState;
+    });
+    
+    setTimeout(() => {
+      console.log("State after setState:", state);
+    }, 1000);
+    
+    togglePlay();
+  }
 
   const getCurrentSong = () => {
     console.log("state.song", state.song)
@@ -59,6 +73,7 @@ const useAudioPlayer = () => {
     }, 400);
   };
   const togglePlay = () => {
+    console.log("togglePlay called, current state:", state);
     setState((prevState) => ({
       ...prevState,
       playing: !prevState.playing,
